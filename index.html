@@ -123,7 +123,10 @@ svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-widt
 .field>label,.label{font-size:13.5px;font-weight:700;color:var(--ink)}
 .field .opt{font-weight:500;color:var(--ink-3)}
 .input{height:54px;width:100%;padding:0 16px;border-radius:var(--r);border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
-input[type="date"].input,input[type="time"].input{min-width:0;display:block}
+input[type="date"].input,input[type="time"].input{min-width:0;display:block;position:relative;text-align:center;line-height:51px;padding:0 14px;font-variant-numeric:tabular-nums}
+input[type="date"].input::-webkit-date-and-time-value,input[type="time"].input::-webkit-date-and-time-value{text-align:center;margin:0;line-height:51px}
+input[type="date"].input::-webkit-datetime-edit,input[type="time"].input::-webkit-datetime-edit{flex:1 1 auto;display:flex;justify-content:center;padding:0;line-height:51px}
+input[type="date"].input::-webkit-calendar-picker-indicator,input[type="time"].input::-webkit-calendar-picker-indicator{position:absolute;right:12px;top:50%;transform:translateY(-50%);margin:0;opacity:.55;cursor:pointer}
 textarea.input{height:auto;min-height:112px;padding:14px 16px;resize:vertical;line-height:1.45}
 .input::placeholder{color:var(--ink-3)}
 .input:focus{border-color:var(--ink);box-shadow:0 0 0 4px color-mix(in srgb,var(--volt) 55%,transparent)}
@@ -274,13 +277,13 @@ textarea.input{height:auto;min-height:112px;padding:14px 16px;resize:vertical;li
 .swipe-hint{display:flex;align-items:center;gap:8px}
 
 /* ---------- tab bar + fab ---------- */
-.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:40;width:min(372px,calc(100% - 28px));height:var(--nav-h);border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border:1px solid var(--glass-line);box-shadow:var(--shade);display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:6px;gap:4px}
-.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:18px;font-size:11px;font-weight:700;color:var(--ink-2);position:relative;text-decoration:none;transition:background .15s,color .15s}
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:40;width:min(420px,calc(100% - 28px));height:var(--nav-h);border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border:1px solid var(--glass-line);box-shadow:var(--shade);display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:6px;gap:4px}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:18px;font-size:10.5px;font-weight:700;font-stretch:84%;min-width:0;white-space:nowrap;color:var(--ink-2);position:relative;text-decoration:none;transition:background .15s,color .15s}
 .tab .i{width:23px;height:23px}
 .tab:hover{color:var(--ink)}
 .tab.on{background:var(--volt);color:var(--on-volt)}
 .tab .badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-family:var(--mono);font-size:9.5px;font-weight:700;display:grid;place-items:center}
-.fab{position:fixed;z-index:41;right:max(18px,calc(50% - 262px));bottom:calc(var(--nav-h) + 30px + env(safe-area-inset-bottom));width:64px;height:64px;border-radius:50%;background:var(--volt);color:var(--on-volt);border:1.5px solid var(--volt-deep);box-shadow:0 5px 0 var(--volt-deep),0 14px 30px rgba(0,0,0,.2);display:grid;place-items:center;transition:transform .08s,box-shadow .08s}
+.fab{position:fixed;z-index:41;right:max(18px,calc(50% - 262px));bottom:calc(var(--nav-h) + 30px);width:64px;height:64px;border-radius:50%;background:var(--volt);color:var(--on-volt);border:1.5px solid var(--volt-deep);box-shadow:0 5px 0 var(--volt-deep),0 14px 30px rgba(0,0,0,.2);display:grid;place-items:center;transition:transform .08s,box-shadow .08s}
 .fab .i{width:32px;height:32px;stroke-width:2.8}
 .fab:active{transform:translateY(4px);box-shadow:0 1px 0 var(--volt-deep),0 6px 14px rgba(0,0,0,.18)}
 
@@ -462,6 +465,96 @@ select.input option{background:var(--surface);color:var(--ink)}
 ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;font-size:15px}
 ol.steps li::marker{font-family:var(--mono);font-weight:700;color:var(--volt-text)}
 ol.steps .i{width:18px;height:18px;vertical-align:-4px}
+
+/* ---------- login compacto, senha, filtros v3 ---------- */
+.auth.login{justify-content:center;gap:20px;padding-top:calc(14px + env(safe-area-inset-top));padding-bottom:calc(18px + env(safe-area-inset-bottom))}
+.auth.login .brand{padding-top:0}
+.auth.login .wordmark{font-size:84px}
+.forgot{align-self:flex-end;font-size:13px;min-height:36px;margin-top:-8px}
+.signup-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.signup-row .muted{font-size:14px}
+.test-btn{align-self:center;display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;border-radius:99px;border:1.5px dashed var(--line-2);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.test-btn .i{width:16px;height:16px}
+.code-input{height:64px;text-align:center;font-family:var(--mono);font-size:28px;font-weight:700;letter-spacing:.42em;padding:0 0 0 .42em}
+.offline-note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);background:var(--warn-bg);color:var(--ink);font-size:13.5px}
+.offline-note .i{width:18px;height:18px;color:var(--warn);flex:none;margin-top:1px}
+.offline-note b{font-family:var(--mono);letter-spacing:.08em}
+.date-group .field>label{font-size:12px;font-weight:600;color:var(--ink-2)}
+.msel-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;cursor:pointer}
+.msel-btn .i{width:18px;height:18px;color:var(--ink-2);transition:transform .2s}
+.msel-btn[aria-expanded="true"] .i{transform:rotate(180deg)}
+.msel-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.msel-panel{margin-top:8px;border:1px solid var(--line-2);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.msel-actions{display:flex;justify-content:space-between;gap:8px;padding:4px 6px;border-bottom:1px solid var(--line);background:var(--raised)}
+.msel-actions button{min-height:40px;padding:0 10px;font-size:13px;font-weight:700;color:var(--ink)}
+.msel-list{max-height:220px;overflow-y:auto}
+.msel-opt{display:flex;align-items:center;gap:10px;min-height:46px;padding:0 14px;border-top:1px solid var(--line);font-weight:600;cursor:pointer}
+.msel-opt:first-child{border-top:0}
+.msel-opt input{width:20px;height:20px;margin:0;accent-color:var(--volt-deep)}
+.msel-opt .ct{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.msel-empty{padding:14px;font-size:13px;color:var(--ink-2)}
+.other-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+
+/* ---------- perfil, konexões, busca, klans, tinder ---------- */
+.rows{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--surface);overflow:hidden}
+.rowlink{display:flex;align-items:center;gap:12px;min-height:58px;padding:0 14px 0 16px;border-top:1px solid var(--line);color:var(--ink);text-decoration:none;font-weight:700;font-size:15px;width:100%;text-align:left}
+.rowlink:first-child{border-top:0}
+.rowlink:hover{color:var(--ink)}
+.rowlink>.i{width:20px;height:20px;color:var(--ink-2)}
+.rowlink .grow{flex:1;min-width:0}
+.rowlink .ct{font-family:var(--mono);font-size:12px;color:var(--ink-2)}
+.rowlink .chev{width:18px;height:18px;color:var(--ink-3)}
+.icon-btn .dot.alert{background:var(--danger);color:#fff}
+.klan-line{display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-2)}
+.klan-line a{font-weight:800;color:var(--volt-text);text-decoration:none}
+.klan-line .i{width:16px;height:16px}
+.privacy-note{font-size:13px;color:var(--ink-2);line-height:1.45}
+.small-link{align-self:center;font-size:13px;min-height:44px;color:var(--ink-2)}
+.person-row{display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 14px;border-top:1px solid var(--line);color:var(--ink);text-decoration:none;width:100%;text-align:left}
+.person-row:first-child{border-top:0}
+.person-row:hover{color:var(--ink)}
+.person-row .who{display:flex;flex-direction:column;min-width:0;flex:1}
+.person-row .who b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.person-row .who span{font-size:12.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.person-row .lock-i{width:16px;height:16px;color:var(--ink-3)}
+.person-row .btn{flex:none}
+.av-sm{width:44px;height:44px;border-radius:14px;font-size:20px}
+.searchbar{position:relative}
+.searchbar .input{padding-left:46px;padding-right:50px;border-radius:99px}
+.searchbar>.i{position:absolute;left:16px;top:17px;width:20px;height:20px;color:var(--ink-2);pointer-events:none}
+.searchbar .clear{position:absolute;right:5px;top:5px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;color:var(--ink-2)}
+.hist-row{display:flex;align-items:center;gap:6px;min-height:52px;padding:0 4px 0 14px;border-top:1px solid var(--line)}
+.hist-row:first-child{border-top:0}
+.hist-row .go{flex:1;display:flex;align-items:center;gap:10px;min-height:52px;text-align:left;font-weight:600;min-width:0}
+.hist-row .go span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist-row .i{width:18px;height:18px;color:var(--ink-3)}
+.hist-row .rm{width:44px;height:44px;display:grid;place-items:center;border-radius:50%}
+.profile-head{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;padding:4px 0}
+.profile-head .avatar{width:96px;height:96px;border-radius:30px;font-size:46px}
+.profile-head h1{font-size:40px;overflow-wrap:anywhere}
+.profile-head .nome{font-size:15px;color:var(--ink-2)}
+.lock-card{display:flex;gap:12px;align-items:flex-start;padding:16px;border-radius:var(--r-lg);border:1.5px dashed var(--line-2);color:var(--ink-2);font-size:14px}
+.lock-card .i{width:22px;height:22px;flex:none;color:var(--ink)}
+.klan-logo{display:grid;place-items:center;background:var(--volt);color:var(--on-volt);font-family:var(--display);font-stretch:62%;font-style:italic;font-weight:900;overflow:hidden;flex:none}
+.klan-logo img{width:100%;height:100%;object-fit:cover}
+.klan-hero{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:4px 0}
+.klan-hero .klan-logo{width:128px;height:128px;border-radius:36px;font-size:54px;box-shadow:0 6px 0 var(--volt-deep)}
+.klan-hero h1{font-size:44px;line-height:.9}
+.klan-hero .sigla{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--volt-text)}
+.tinder{min-height:100%;max-width:480px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:18px;padding:calc(30px + env(safe-area-inset-top)) 24px calc(var(--nav-h) + 60px)}
+.tinder .flame{width:112px;height:112px;border-radius:34px;display:grid;place-items:center;background:var(--volt);color:var(--on-volt);transform:rotate(-6deg);box-shadow:0 7px 0 var(--volt-deep)}
+.tinder .flame .i{width:60px;height:60px;stroke-width:2}
+.tinder h1{font-size:72px}
+.tinder p{font-size:16px;color:var(--ink-2);max-width:34ch}
+.soon{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:8px;background:var(--warn-bg);color:var(--warn)}
+.soon .i{width:14px;height:14px}
+.state-ok{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 14px;border-radius:var(--r);border:1.5px solid var(--volt-deep);color:var(--volt-text);font-weight:800;text-align:center}
+.state-ok .i{width:20px;height:20px;flex:none}
+.badge-dot{width:10px;height:10px;border-radius:50%;background:var(--volt);flex:none}
+.klan-logo.brc{background:#D8F6FE;color:#0AC7E4;font-family:"Cooper Black","Cooper Std","Cooper BT",Georgia,"Times New Roman",serif;font-style:normal;font-weight:900;font-stretch:normal;letter-spacing:-.06em;text-transform:lowercase}
+.klan-hero .klan-logo.brc{font-size:40px;box-shadow:none}
+.klan-logo.brc.av-sm{font-size:13px}
+.klan-hero .klan-logo:has(img){box-shadow:none}
 </style>
 </head>
 <body>
@@ -494,6 +587,8 @@ const MIN_IDADE = 18;
 const EXCLUIDA_DIAS = 7;         // corridas excluídas ficam 7 dias com opção de restaurar
 const RAIO_MAX = 300;            // fim da régua de raio (o campo aceita mais)
 const EXAMPLE_URL = "https://correriacampinas.com.br/calendario/";
+const CODIGO_TESTE = "123456";   // fase offline: não há e-mail de verdade
+const MAX_BUSCAS = 10;           // histórico de busca por conta
 
 /* ---------- ícones (traço, grade 24) ---------- */
 const ICONS = {
@@ -530,7 +625,15 @@ const ICONS = {
   heart: '<path d="M12 20.3s-7.6-4.6-9.3-9.5C1.6 7.5 3.8 4.4 7.1 4.4c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.3 0 5.5 3.1 4.4 6.4-1.7 4.9-9.3 9.5-9.3 9.5z"/>',
   camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
   share: '<path d="M12 3v12M8 7l4-4 4 4M5 11v9h14v-9"/>',
-  dots: '<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>'
+  dots: '<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>',
+  search: '<circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.3-4.3"/>',
+  fire: '<path d="M12 21.5c-4 0-7-2.8-7-6.8 0-3.4 2.2-5.3 3.8-7.3.3 1.9 1.3 3.1 2.5 3.7.2-3.1 1.6-6 4.2-8.1-.3 2.8.9 4.7 2.4 6.6 1.2 1.5 2.1 3.2 2.1 5.2 0 3.9-3 6.7-8 6.7z"/><path d="M12 21.5c-1.9 0-3.2-1.3-3.2-3.1 0-1.7 1.2-2.7 2.2-3.8.4 1 1.1 1.5 1.8 1.7.2-1.2.7-2.3 1.5-3 .2 1.3 1 2.2 1.5 3.1.4.6.5 1.2.5 1.9 0 1.9-1.9 3.2-4.3 3.2z"/>',
+  bell: '<path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2.2 2.2 0 0 0 4 0"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.9-3.5 3.5-5.2 6.5-5.2s5.6 1.7 6.5 5.2M15.5 4.8a3.5 3.5 0 0 1 0 6.4M17.5 14.9c2 .6 3.4 2.2 4 5.1"/>',
+  chev: '<path d="M9 5l7 7-7 7"/>',
+  link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/>',
+  history: '<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4M12 8v4.5l3 2"/>',
+  down: '<path d="M6 9l6 6 6-6"/>'
 };
 const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
 
@@ -595,15 +698,18 @@ function fmtStamp(iso) { const d = new Date(iso); return `${d.getDate()} ${MON[d
 const brl = n => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 /* ---------- papéis ---------- */
-const ROLE_LABEL = { usuario: "Usuário", organizador: "Organizador", admin: "Administrador" };
+const ROLE_LABEL = { usuario: "Usuário", organizador: "Organizador", moderador: "Moderador", admin: "Administrador" };
 const NEXT_ROLE = { usuario: "organizador", organizador: "admin" };
+const ROLE_ICON = { usuario: "user", organizador: "flag", moderador: "users", admin: "shield" };
 const canCreate = u => !!u && (u.role === "organizador" || u.role === "admin");
 const isAdmin = u => !!u && u.role === "admin";
+const canModKlans = u => !!u && (u.role === "moderador" || u.role === "admin");   // edita qualquer Klan e remove membros
 
 /* ---------- contas de teste (ordem da tela de login) ---------- */
 const TEST_ACCOUNTS = [
   { id: "u-user", nick: "usuario", email: "usuario@kohe.com", pass: "Usuario123!", role: "usuario", nome: "Usuário Kohe" },
   { id: "u-org", nick: "organizador", email: "organizador@kohe.com", pass: "Organizador123!", role: "organizador", nome: "Organizador Kohe" },
+  { id: "u-mod", nick: "moderador", email: "moderador@kohe.com", pass: "Moderador123!", role: "moderador", nome: "Moderador Kohe", klan: "k-brc" },
   { id: "u-admin", nick: "admin", email: "admin@kohe.com", pass: "Admin123!", role: "admin", nome: "Admin Kohe" }
 ];
 
@@ -676,28 +782,21 @@ const SS = {
 };
 const DB_KEY = "kohe.db.v1";
 const DB = {
-  users: [], races: [], ups: [],
+  users: [], races: [], ups: [], klans: [], conns: [], notifs: [], v: 3,
   load() {
     try {
       const o = JSON.parse(LS.get(DB_KEY));
-      if (o && o.users) { this.users = o.users; this.races = o.races || []; this.ups = o.ups || []; if ((o.v || 1) < 2) this.migrate(); return true; }
+      if (o && o.users) {
+        this.users = o.users; this.races = o.races || []; this.ups = o.ups || [];
+        this.klans = o.klans || []; this.conns = o.conns || []; this.notifs = o.notifs || [];
+        this.v = o.v || 1;
+        return true;
+      }
     } catch (e) {}
     return false;
   },
-  migrate() {   // dados salvos pela 1ª versão do protótipo
-    const seedIds = new Set(SEED_RACES.map(r => r.id));
-    this.users.forEach(u => { if (!Array.isArray(u.favs)) u.favs = []; });
-    this.races.forEach(r => {
-      if (seedIds.has(r.id) && r.autor === "u-admin" && r.insc && !r.insc.url) { r.insc.url = EXAMPLE_URL; r.insc.exemplo = true; if (!r.insc.tipo) r.insc.tipo = "site"; }
-      if (r.status === "removida") {
-        const h = [...(r.hist || [])].reverse().find(x => x.acao === "removida") || {};
-        r.status = "excluida"; r.exclusao = { t: h.t || new Date().toISOString(), por: h.por || "", motivo: "", via: "admin", antes: "publicada" };
-      }
-    });
-    this.save();
-  },
   save() {
-    const ok = LS.set(DB_KEY, JSON.stringify({ v: 2, users: this.users, races: this.races, ups: this.ups }));
+    const ok = LS.set(DB_KEY, JSON.stringify({ v: 3, users: this.users, races: this.races, ups: this.ups, klans: this.klans, conns: this.conns, notifs: this.notifs }));
     if (!ok) toast("O aparelho ficou sem espaço para salvar. Use imagens menores.", true);
     return ok;
   }
@@ -723,17 +822,50 @@ async function hashPass(pass, salt) {
   for (const b of data) { h1 = Math.imul(h1 ^ b, 16777619); h2 = Math.imul(h2 ^ b, 2246822507) ^ (h2 >>> 13); }
   return "f" + (h1 >>> 0).toString(16) + (h2 >>> 0).toString(16);
 }
+const BRC_LOGO = "";   // logo do Barão Running Club (data URL), usada só na tela e não gravada no aparelho
+const SEED_KLANS = [
+  { id: "k-brc", nome: "Barão Running Club", sigla: "BRC", cidade: "Campinas", local: "Caixa d'água da FEA – Barão Geraldo", horario: "", desde: "2024", dono: "u-mod", criado: "2026-09-01T12:00:00.000Z" }
+];
+async function makeTestUser(a) {
+  const salt = uid("s");
+  return {
+    id: a.id, nome: a.nome, nick: a.nick, email: a.email, tel: "+55 (19) 90000-0000", nasc: "1990-01-01",
+    end: { rua: "Conta de teste", num: "0", bairro: "Centro", cidade: "Campinas" },
+    role: a.role, salt, hash: await hashPass(a.pass, salt), criado: "2026-09-01T12:00:00.000Z", teste: true,
+    favs: [], foto: null, privado: false, klan: a.klan || null, buscas: []
+  };
+}
 async function seedDB() {
-  DB.users = await Promise.all(TEST_ACCOUNTS.map(async a => {
-    const salt = uid("s");
-    return {
-      id: a.id, nome: a.nome, nick: a.nick, email: a.email, tel: "+55 (19) 90000-0000", nasc: "1990-01-01",
-      end: { rua: "Conta de teste", num: "0", bairro: "Centro", cidade: "Campinas" },
-      role: a.role, salt, hash: await hashPass(a.pass, salt), criado: "2026-09-01T12:00:00.000Z", teste: true, favs: [], foto: null
-    };
-  }));
+  DB.users = await Promise.all(TEST_ACCOUNTS.map(makeTestUser));
   DB.races = JSON.parse(JSON.stringify(SEED_RACES));
-  DB.ups = [];
+  DB.klans = JSON.parse(JSON.stringify(SEED_KLANS));
+  DB.ups = []; DB.conns = []; DB.notifs = [];
+  DB.v = 3;
+  DB.save();
+}
+async function migrateDB() {
+  if (DB.v >= 3) return;
+  if (DB.v < 2) {   // dados gravados pela 1ª versão do protótipo
+    const seedIds = new Set(SEED_RACES.map(r => r.id));
+    DB.races.forEach(r => {
+      if (seedIds.has(r.id) && r.autor === "u-admin" && r.insc && !r.insc.url) { r.insc.url = EXAMPLE_URL; r.insc.exemplo = true; if (!r.insc.tipo) r.insc.tipo = "site"; }
+      if (r.status === "removida") {
+        const h = [...(r.hist || [])].reverse().find(x => x.acao === "removida") || {};
+        r.status = "excluida"; r.exclusao = { t: h.t || new Date().toISOString(), por: h.por || "", motivo: "", via: "admin", antes: "publicada" };
+      }
+    });
+  }
+  // v3: Klans, Konexões, perfil privado, histórico de busca e conta de moderador
+  DB.users.forEach(u => {
+    if (!Array.isArray(u.favs)) u.favs = [];
+    if (u.privado === undefined) u.privado = false;
+    if (u.klan === undefined) u.klan = null;
+    if (!Array.isArray(u.buscas)) u.buscas = [];
+  });
+  SEED_KLANS.forEach(k => { if (!DB.klans.some(x => x.id === k.id)) DB.klans.push(JSON.parse(JSON.stringify(k))); });
+  const mod = TEST_ACCOUNTS.find(a => a.id === "u-mod");
+  if (!DB.users.some(u => u.id === mod.id || u.nick === mod.nick || u.email === mod.email)) DB.users.push(await makeTestUser(mod));
+  DB.v = 3;
   DB.save();
 }
 /* ---------- tema (padrão: escuro) ---------- */
@@ -1007,12 +1139,15 @@ function redirect(path) {
   try { history.replaceState(null, "", "#" + path); } catch (e) { location.hash = path; return; }
   render();
 }
+function unreadCount(u) {
+  return u ? DB.conns.filter(c => c.status === "pendente" && c.para === u.id).length + DB.notifs.filter(n => n.para === u.id && !n.lida).length : 0;
+}
 function renderChrome(rt, u) {
   const bar = $("#tabbar"), fab = $("#fab");
   if (!u || rt.bare) { bar.hidden = true; fab.hidden = true; return; }
-  const tabs = [["feed", "#/feed", "home", "Início", 0]];
+  const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0], ["tinder", "#/tinder", "fire", "Tinder", 0]];
   if (canCreate(u)) tabs.push(["sol", "#/solicitacoes", "list", "Solicitações", isAdmin(u) ? pendingCount() : 0]);
-  tabs.push(["perfil", "#/perfil", "user", "Perfil", 0]);
+  tabs.push(["perfil", "#/perfil", "user", "Perfil", unreadCount(u)]);
   bar.innerHTML = tabs.map(([k, href, icn, label, badge]) =>
     `<a class="tab${rt.tab === k ? " on" : ""}" href="${href}"${rt.tab === k ? ' aria-current="page"' : ""}>${ic(icn)}<span>${label}</span>${badge ? `<span class="badge">${badge}</span>` : ""}</a>`).join("");
   bar.hidden = false;
@@ -1024,7 +1159,7 @@ function render() {
   const rt = ROUTES.find(x => x.re.test(path));
   if (!rt) return redirect(u ? "/feed" : "/login");
   if (rt.guest && u) return redirect("/feed");
-  if (!rt.guest && !u) return redirect("/login");
+  if (!rt.guest && !rt.any && !u) return redirect("/login");
   if (rt.roles && !rt.roles.includes(u.role)) return redirect("/feed");
   closeSheets();
   renderChrome(rt, u);
@@ -1043,43 +1178,45 @@ document.addEventListener("touchmove", e => { if (e.touches && e.touches.length 
 async function resetAll() {
   const ok = await confirmBox({
     title: "Restaurar dados?", danger: true, ok: "Restaurar",
-    text: "Apaga contas, corridas, favoritos e solicitações criadas neste aparelho e volta às 3 contas de teste e às corridas iniciais."
+    text: "Apaga contas, corridas, favoritos, Klans, Konexões e solicitações criadas neste aparelho e volta às 4 contas de teste, às corridas iniciais e ao Klan BRC."
   });
   if (!ok) return;
-  await seedDB(); Session.clear(); SS.del("kohe.draft"); SIGNUP = null;
+  await seedDB(); Session.clear(); SS.del("kohe.draft"); SIGNUP = null; RECOVERY = null;
   toast("Dados iniciais restaurados."); go("/login");
 }
 
 route(/^\/login$/, function vLogin(view, _, q) {
-  view.innerHTML = `<section class="auth">
-    <div class="brand">
-      <div class="brand-wrap"><h1 class="disp wordmark">Kohe</h1></div>
-    </div>
+  view.innerHTML = `<section class="auth login">
+    <div class="brand"><div class="brand-wrap"><h1 class="disp wordmark">Kohe</h1></div></div>
     <form class="form" id="loginForm" novalidate>
       ${F({ id: "lgUser", label: "Nickname ou e-mail", value: q.get("u") || "", ph: "seu_nick", attrs: 'autocomplete="username" autocapitalize="off" spellcheck="false"', err: "Informe seu nickname ou e-mail." })}
       ${F({ id: "lgPass", label: "Senha", type: "password", wrap: "eye", attrs: 'autocomplete="current-password"', err: "Informe sua senha." })}
+      <a class="linkbtn forgot" href="#/esqueci">Esqueci minha senha</a>
       <button class="btn btn-volt btn-block" type="submit">Entrar ${ic("arrow")}</button>
     </form>
-    <div class="form">
-      <p class="muted" style="text-align:center">Primeira vez no Kohe?</p>
-      <a class="btn btn-block" href="#/cadastro">Fazer cadastro</a>
-    </div>
-    <div class="testacc">
-      <div class="testacc-head"><span class="eyebrow">Contas de teste</span><span class="eyebrow">toque para preencher</span></div>
-      ${TEST_ACCOUNTS.map(a => {
-        const gone = !DB.users.some(u => u.id === a.id);
-        return `<button class="acc" type="button" data-acc="${a.id}"><span class="who"><b>${esc(a.email)}</b><span>${ROLE_LABEL[a.role]} · ${gone ? "conta excluída" : esc(a.pass)}</span></span><span class="use">Usar</span></button>`;
-      }).join("")}
-      <button class="linkbtn" type="button" id="resetData" style="align-self:flex-start;font-size:13px">Restaurar dados iniciais</button>
-    </div>
+    <div class="signup-row"><span class="muted">Primeira vez no Kohe?</span><a class="btn btn-sm" href="#/cadastro">Fazer cadastro</a></div>
+    <button class="test-btn" type="button" id="testAcc">${ic("users")} Contas teste</button>
   </section>`;
 
-  $$("[data-acc]", view).forEach(b => b.addEventListener("click", () => {
-    const a = TEST_ACCOUNTS.find(x => x.id === b.dataset.acc);
-    $("#lgUser").value = a.email; $("#lgPass").value = a.pass;
-    $$(".field.bad", view).forEach(f => f.classList.remove("bad"));
-  }));
-  $("#resetData").addEventListener("click", resetAll);
+  $("#testAcc").addEventListener("click", () => {
+    const sh = openSheet(`
+      <div class="sheet-head"><h2 class="disp">Contas teste</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+      <div class="testacc">
+        <div class="testacc-head"><span class="eyebrow">E-mail · senha</span><span class="eyebrow">toque para preencher</span></div>
+        ${TEST_ACCOUNTS.map(a => {
+          const gone = !DB.users.some(x => x.id === a.id);
+          return `<button class="acc" type="button" data-acc="${a.id}"><span class="who"><b>${esc(a.email)}</b><span>${ROLE_LABEL[a.role]} · ${gone ? "conta excluída" : esc(a.pass)}</span></span><span class="use">Usar</span></button>`;
+        }).join("")}
+      </div>
+      <button class="linkbtn" type="button" id="resetData" style="align-self:flex-start;font-size:13px">Restaurar dados iniciais</button>`);
+    $$("[data-acc]", sh.el).forEach(b => b.addEventListener("click", () => {
+      const a = TEST_ACCOUNTS.find(x => x.id === b.dataset.acc);
+      $("#lgUser").value = a.email; $("#lgPass").value = a.pass;
+      $$(".field.bad", view).forEach(f => f.classList.remove("bad"));
+      sh.close();
+    }));
+    $("#resetData", sh.el).addEventListener("click", () => { sh.close(); resetAll(); });
+  });
   $("#loginForm").addEventListener("submit", async e => {
     e.preventDefault();
     const who = val("lgUser"), pass = $("#lgPass").value;
@@ -1097,6 +1234,87 @@ route(/^\/login$/, function vLogin(view, _, q) {
     go("/feed");
   });
 }, { guest: true, bare: true });
+
+/* ---------- esqueci minha senha ---------- */
+let RECOVERY = null;   // { uid, step: "enviar" | "codigo" | "nova", from: "login" | "perfil" }
+function maskEmail(e) {
+  const [l, d = ""] = String(e).split("@"), dot = d.indexOf(".");
+  const dn = dot > 0 ? d.slice(0, dot) : d, tld = dot > 0 ? d.slice(dot) : "";
+  return `${l.charAt(0)}${"*".repeat(Math.max(3, Math.min(6, l.length - 1)))}@${dn.charAt(0)}***${tld}`;
+}
+route(/^\/esqueci$/, function vForgot(view) {
+  view.innerHTML = `<section class="auth">
+    <div class="steps-top"><a class="icon-btn" href="#/login" aria-label="Voltar">${ic("back")}</a></div>
+    <div class="step-title"><span class="eyebrow">Recuperar acesso</span><h1 class="disp">Esqueci minha senha</h1><p class="muted">Informe o nickname ou o e-mail da conta. O código vai para o e-mail cadastrado.</p></div>
+    <form class="form" id="fgForm" novalidate>
+      ${F({ id: "fgUser", label: "Nickname ou e-mail", ph: "seu_nick", attrs: 'autocomplete="username" autocapitalize="off" spellcheck="false"', err: "Informe seu nickname ou e-mail." })}
+      <button class="btn btn-volt btn-block" type="submit">Continuar ${ic("arrow")}</button>
+    </form>
+  </section>`;
+  $("#fgForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const k = val("fgUser").toLowerCase().replace(/^@/, "");
+    if (!k) { bad("fgUser"); goFirstBad(view); return; }
+    const u = DB.users.find(x => x.nick === k || x.email.toLowerCase() === k);
+    if (!u) { bad("fgUser", "Não achamos conta com esse nickname ou e-mail."); goFirstBad(view); return; }
+    RECOVERY = { uid: u.id, step: "enviar", from: "login" };
+    go("/recuperar");
+  });
+}, { guest: true, bare: true });
+
+route(/^\/recuperar$/, function vRecover(view, _, q, cur) {
+  const R = RECOVERY, u = R && userById(R.uid);
+  if (!u || (cur && cur.id !== u.id)) { RECOVERY = null; return redirect(cur ? "/perfil" : "/esqueci"); }
+  const back = R.from === "perfil" ? "#/perfil" : "#/login";
+  const pct = R.step === "enviar" ? 33 : R.step === "codigo" ? 66 : 100;
+  const head = (eyebrow, title, sub) => `<div class="steps-top"><a class="icon-btn" href="${back}" aria-label="Cancelar">${ic("x")}</a><div class="progress" role="progressbar" aria-label="Etapas da troca de senha" aria-valuenow="${pct}"><i style="width:${pct}%"></i></div></div>
+    <div class="step-title"><span class="eyebrow">${eyebrow}</span><h1 class="disp">${title}</h1>${sub ? `<p class="muted">${sub}</p>` : ""}</div>`;
+  let html;
+  if (R.step === "enviar") html = head("Recuperar acesso", "Enviar código", `Vamos mandar um código de 6 dígitos para <b>${esc(maskEmail(u.email))}</b>.`)
+    + `<div class="form"><button class="btn btn-volt btn-block" type="button" id="rcSend">Enviar código ${ic("send")}</button><a class="btn btn-block" href="${back}">Cancelar</a></div>`;
+  else if (R.step === "codigo") html = head("Código enviado", "Digite o código", `Enviamos para <b>${esc(maskEmail(u.email))}</b>.`) + `
+    <div class="offline-note">${ic("alert")}<span>Este protótipo roda offline e não consegue mandar e-mail. Para testar a troca de senha, use o código <b>${CODIGO_TESTE}</b>.</span></div>
+    <form class="form" id="rcCode" novalidate>
+      ${F({ id: "rcCodeIn", label: "Código de 6 dígitos", attrs: 'inputmode="numeric" autocomplete="one-time-code" maxlength="6"', err: "Digite os 6 dígitos do código." })}
+      <button class="btn btn-volt btn-block" type="submit">Confirmar código</button>
+    </form>`;
+  else html = head("Código confirmado", "Nova senha", "") + `
+    <form class="form" id="rcNew" novalidate>
+      ${F({ id: "rcPass", label: "Nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Crie a nova senha." })}
+      <ul class="rules" id="rcRules">${rulesHTML("")}</ul>
+      ${F({ id: "rcPass2", label: "Confirme a nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Repita a nova senha." })}
+      <button class="btn btn-volt btn-block" type="submit">Salvar nova senha</button>
+    </form>`;
+  view.innerHTML = `<section class="auth">${html}</section>`;
+
+  if (R.step === "enviar") $("#rcSend").addEventListener("click", () => {
+    R.step = "codigo"; vRecover(view, _, q, cur); toast(`Código enviado para ${maskEmail(u.email)}.`);
+  });
+  if (R.step === "codigo") {
+    const inp = $("#rcCodeIn"); inp.classList.add("code-input");
+    inp.addEventListener("input", () => { inp.value = inp.value.replace(/\D/g, "").slice(0, 6); });
+    $("#rcCode").addEventListener("submit", e => {
+      e.preventDefault();
+      if (inp.value.length !== 6) { bad("rcCodeIn"); goFirstBad(view); return; }
+      if (inp.value !== CODIGO_TESTE) { bad("rcCodeIn", "Código incorreto. Confira e tente de novo."); goFirstBad(view); return; }
+      R.step = "nova"; vRecover(view, _, q, cur);
+    });
+  }
+  if (R.step === "nova") {
+    $("#rcPass").addEventListener("input", e => { $("#rcRules").innerHTML = rulesHTML(e.target.value); });
+    $("#rcNew").addEventListener("submit", async e => {
+      e.preventDefault();
+      const p1 = $("#rcPass").value, p2 = $("#rcPass2").value;
+      if (!p1) bad("rcPass"); else if (!passOk(p1)) bad("rcPass", "A senha ainda não cumpre todas as regras.");
+      if (!p2) bad("rcPass2"); else if (p2 !== p1) bad("rcPass2", "As senhas não são iguais.");
+      if (goFirstBad(view) || R.step !== "nova") return;
+      u.salt = uid("s"); u.hash = await hashPass(p1, u.salt); DB.save();
+      const from = R.from; RECOVERY = null;
+      if (from === "perfil") { go("/perfil"); toast("Senha trocada."); }
+      else { go("/login?u=" + encodeURIComponent(u.nick)); toast("Senha trocada. Entre com a nova senha."); }
+    });
+  }
+}, { any: true, tab: "perfil" });
 
 /* ---------- cadastro em 3 passos ---------- */
 let SIGNUP = null;
@@ -1207,11 +1425,13 @@ route(/^\/bem-vindo$/, (view, _, q) => {
 /* =====================================================================
    TELAS — feed de corridas
    ===================================================================== */
-const defaultFilters = () => ({ kms: [], de: "", ate: "", cidade: "", raio: 0, origem: "perfil", gps: null });
+const defaultFilters = () => ({ kms: [], de: "", ate: "", cidades: [], raio: 0, origem: "perfil", gps: null });
 function feedFilters() {
   const f = Object.assign(defaultFilters(), Prefs.d.filtros || {});
   f.kms = (Array.isArray(f.kms) ? f.kms : []).map(Number).filter(n => !isNaN(n));
   delete f.mods;
+  if (!Array.isArray(f.cidades)) f.cidades = f.cidade ? [f.cidade] : [];
+  delete f.cidade;
   f.raio = Math.max(0, parseInt(f.raio, 10) || 0);
   return f;
 }
@@ -1231,7 +1451,7 @@ function filterRaces(list, f, o, skipCity = false) {
       if (f.kms.length && !kmList(r).some(k => f.kms.includes(k))) return false;
       if (f.de && r.data < f.de) return false;
       if (f.ate && r.data > f.ate) return false;
-      if (!skipCity && f.cidade && norm(r.cidade) !== norm(f.cidade)) return false;
+      if (!skipCity && f.cidades.length && !f.cidades.some(c => norm(c) === norm(r.cidade))) return false;
       if (f.raio && o && (dist == null || dist > f.raio)) return false;
       return true;
     });
@@ -1255,7 +1475,7 @@ route(/^\/feed$/, function vFeed(view, _, q, u) {
   const chips = [];
   f.kms.forEach(k => chips.push(["km:" + k, kmTxt(k) + " km"]));
   if (f.de || f.ate) chips.push(["data", f.de && f.ate ? `${fmtShort(f.de)} → ${fmtShort(f.ate)}` : f.de ? `a partir de ${fmtShort(f.de)}` : `até ${fmtShort(f.ate)}`]);
-  if (f.cidade) chips.push(["cidade", f.cidade]);
+  f.cidades.forEach(c => chips.push(["cid:" + c, c]));
   if (f.raio) chips.push(["raio", `até ${f.raio} km${o ? " de " + o.label : ""}`]);
 
   let list = "", lastDay = "";
@@ -1279,7 +1499,6 @@ route(/^\/feed$/, function vFeed(view, _, q, u) {
     </div></header>
     <section class="page${canCreate(u) ? " has-fab" : ""}">
       <div class="section-title" style="padding-top:0"><h1 class="disp" style="font-size:42px">Próximas largadas</h1></div>
-      <div class="feedsum"><span class="eyebrow num">${rows.length} corrida${rows.length === 1 ? "" : "s"}${pages > 1 ? ` · página ${p} de ${pages}` : ""}</span><span class="eyebrow">@${esc(u.nick)}</span></div>
       ${chips.length ? `<div class="active-filters">${chips.map(([k, l]) => `<button class="fchip" type="button" data-rm="${esc(k)}" aria-label="Remover filtro ${esc(l)}">${esc(l)}${ic("x")}</button>`).join("")}</div>` : ""}
       ${f.raio && !o ? `<div class="note">${ic("alert")}<span>A cidade do seu cadastro não está na lista do Kohe, então o raio foi ignorado. Nos filtros, use “Onde estou”.</span></div>` : ""}
       ${admin && slice.length ? `<p class="eyebrow swipe-hint">${ic("trash")} Arraste um card para a esquerda para excluir</p>` : ""}
@@ -1300,7 +1519,7 @@ route(/^\/feed$/, function vFeed(view, _, q, u) {
     const k = b.dataset.rm, nf = feedFilters();
     if (k.startsWith("km:")) nf.kms = nf.kms.filter(x => String(x) !== k.slice(3));
     else if (k === "data") { nf.de = ""; nf.ate = ""; }
-    else if (k === "cidade") nf.cidade = "";
+    else if (k.startsWith("cid:")) nf.cidades = nf.cidades.filter(c => c !== k.slice(4));
     else if (k === "raio") nf.raio = 0;
     saveFilters(nf); go("/feed");
   }));
@@ -1376,11 +1595,12 @@ function openFilters(u) {
     <div class="sheet-head"><h2 class="disp">Filtros</h2><button class="icon-btn" type="button" data-close aria-label="Fechar filtros">${ic("x")}</button></div>
     <div class="field"><span class="label">Distância</span>
       <div class="pick" id="fKms">${kms.map(k => `<button type="button" data-k="${k}"${f.kms.includes(k) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${kmTxt(k)} km</button>`).join("")}</div>
-      <div class="hint">Corrida e caminhada com a mesma distância contam juntas.</div>
     </div>
-    <div class="row2">
-      ${F({ id: "fDe", label: "A partir de", type: "date", value: f.de, attrs: `min="${ymd(new Date())}"` })}
-      ${F({ id: "fAte", label: "Até", type: "date", value: f.ate, attrs: `min="${ymd(new Date())}"`, err: "Precisa ser depois de “A partir de”." })}
+    <div class="field date-group"><span class="label">Data</span>
+      <div class="row2">
+        ${F({ id: "fDe", label: "A partir de", type: "date", value: f.de, attrs: `min="${ymd(new Date())}"` })}
+        ${F({ id: "fAte", label: "Até", type: "date", value: f.ate, attrs: `min="${ymd(new Date())}"`, err: "Precisa ser depois de “A partir de”." })}
+      </div>
     </div>
     <div class="field"><span class="label" id="fRaioLbl">Raio máximo</span>
       <div class="radius">
@@ -1394,9 +1614,16 @@ function openFilters(u) {
       </div>
       <div class="hint" id="fHint"></div>
     </div>
-    <div class="field"><label for="fCidade">Cidade</label><div class="select-wrap"><select id="fCidade" class="input"></select></div><div class="hint">Só aparecem cidades com corrida dentro dos filtros acima.</div></div>
+    <div class="field"><span class="label" id="fCidLbl">Cidade</span>
+      <button type="button" class="input msel-btn" id="fCidBtn" aria-expanded="false" aria-controls="fCidPanel"><span class="msel-txt" id="fCidTxt">Todas as cidades</span>${ic("down")}</button>
+      <div class="msel-panel" id="fCidPanel" hidden>
+        <div class="msel-actions"><button type="button" id="fCidAll">Selecionar todas</button><button type="button" id="fCidNone">Limpar seleção</button></div>
+        <div class="msel-list" id="fCidList" role="group" aria-labelledby="fCidLbl"></div>
+      </div>
+    </div>
     <div class="btn-row"><button class="btn" type="button" id="fClear">Limpar</button><button class="btn btn-volt" type="button" id="fApply">Ver corridas</button></div>`);
-  const el = sh.el, range = $("#fRange", el), max = $("#fMax", el), sel = $("#fCidade", el);
+  const el = sh.el, range = $("#fRange", el), max = $("#fMax", el);
+  let names = [], counts = {};
   const paint = () => {
     f.de = $("#fDe", el).value; f.ate = $("#fAte", el).value;
     const on = f.raio > 0, pos = on ? Math.min(Math.max(f.raio, 5), RAIO_MAX) : RAIO_MAX;
@@ -1416,11 +1643,15 @@ function openFilters(u) {
     }
     $("#fHint", el).innerHTML = hint;
     const o = originPoint(f, u);
-    const base = filterRaces(publishedUpcoming(), f, o, true), counts = {};
-    base.forEach(({ r }) => { const c = findCity(r.cidade), n = c ? c.n : r.cidade; counts[n] = (counts[n] || 0) + 1; });
-    const names = Object.keys(counts).sort((a, b) => a.localeCompare(b, "pt-BR"));
-    if (f.cidade && !names.includes(f.cidade)) f.cidade = "";
-    sel.innerHTML = `<option value="">Todas as cidades (${base.length})</option>` + names.map(n => `<option value="${esc(n)}"${n === f.cidade ? " selected" : ""}>${esc(n)} (${counts[n]})</option>`).join("");
+    counts = {};
+    filterRaces(publishedUpcoming(), f, o, true).forEach(({ r }) => { const c = findCity(r.cidade), n = c ? c.n : r.cidade; counts[n] = (counts[n] || 0) + 1; });
+    names = Object.keys(counts).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    f.cidades = f.cidades.filter(c => names.includes(c));
+    $("#fCidList", el).innerHTML = names.length
+      ? names.map(n => `<label class="msel-opt"><input type="checkbox" value="${esc(n)}"${f.cidades.includes(n) ? " checked" : ""}><span>${esc(n)}</span><span class="ct num">${counts[n]}</span></label>`).join("")
+      : `<div class="msel-empty">Nenhuma cidade com corrida nesses filtros.</div>`;
+    const s = f.cidades;
+    $("#fCidTxt", el).textContent = !s.length ? "Todas as cidades" : s.length === names.length ? `Todas as cidades (${names.length})` : s.length <= 2 ? s.join(", ") : `${s.length} cidades`;
     const total = filterRaces(publishedUpcoming(), f, o).length;
     $("#fApply", el).textContent = total ? `Ver ${total} corrida${total === 1 ? "" : "s"}` : "Nenhuma corrida";
   };
@@ -1445,11 +1676,22 @@ function openFilters(u) {
       { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
   });
   ["fDe", "fAte"].forEach(id => ["input", "change"].forEach(ev => $("#" + id, el).addEventListener(ev, paint)));
-  sel.addEventListener("change", () => { f.cidade = sel.value; paint(); });
+  $("#fCidBtn", el).addEventListener("click", () => {
+    const p = $("#fCidPanel", el), open = p.hidden;
+    p.hidden = !open; $("#fCidBtn", el).setAttribute("aria-expanded", open);
+  });
+  $("#fCidList", el).addEventListener("change", e => {
+    const cb = e.target.closest("input[type=checkbox]"); if (!cb) return;
+    f.cidades = cb.checked ? [...new Set([...f.cidades, cb.value])] : f.cidades.filter(c => c !== cb.value);
+    paint();
+  });
+  $("#fCidAll", el).addEventListener("click", () => { f.cidades = [...names]; paint(); });
+  $("#fCidNone", el).addEventListener("click", () => { f.cidades = []; paint(); });
   $("#fClear", el).addEventListener("click", () => { saveFilters(defaultFilters()); sh.close(); go("/feed"); });
   $("#fApply", el).addEventListener("click", () => {
     f.de = $("#fDe", el).value; f.ate = $("#fAte", el).value;
     if (f.de && f.ate && f.ate < f.de) { bad("fAte"); goFirstBad(el); return; }
+    if (names.length && f.cidades.length === names.length) f.cidades = [];   // todas marcadas = sem filtro
     saveFilters(f); sh.close(); go("/feed");
   });
   paint();
@@ -1527,9 +1769,12 @@ route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
     view.innerHTML = notFoundHTML("Corrida fora do feed", "Ela pode ter sido excluída ou ainda não foi aprovada.", "#/feed", "Voltar ao feed");
     return;
   }
-  const from = q.get("de");
-  if (from === "perfil" || (from === "sol" && canCreate(u))) renderChrome({ tab: from }, u);
-  const back = from === "sol" ? "#/solicitacoes" : from === "perfil" ? "#/perfil" : (SS.get("kohe.lastFeed") || "#/feed");
+  const from = q.get("de") || "";
+  const BACK = { sol: ["#/solicitacoes", "sol"], perfil: ["#/perfil", "perfil"], fav: ["#/perfil/favoritas", "perfil"] };
+  let back = SS.get("kohe.lastFeed") || "#/feed", tab = "feed";
+  if (BACK[from]) [back, tab] = BACK[from];
+  else if (from.startsWith("u:")) { back = "#/u/" + encodeURIComponent(from.slice(2)); tab = "buscar"; }
+  if (tab !== "feed" && (tab !== "sol" || canCreate(u))) renderChrome({ tab }, u);
   view.innerHTML = `
     <div class="cover top">${bibHTML(r, true)}
       <div class="cover-bar"><a class="glassbtn" href="${esc(back)}" aria-label="Voltar">${ic("back")}</a>${st !== "publicada" ? stPill(st) : ""}</div>
@@ -1540,14 +1785,10 @@ route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
 /* =====================================================================
    TELAS — cadastro de corrida → conferência → enviada
    ===================================================================== */
-const MOD_PRESETS = ["3 km", "5 km", "6 km", "7 km", "8 km", "10 km", "15 km", "21 km", "42 km"];
-const normMod = s => {
-  s = String(s).trim().replace(/\s+/g, " "); if (!s) return "";
-  const m = s.match(/^(\d+(?:[.,]\d+)?)\s*(k|km)?$/i);
-  if (m) return m[1].replace(".", ",") + " km";
-  s = s.replace(/(\d)\s*(k|km)\b/gi, "$1 km");
-  return s.charAt(0).toUpperCase() + s.slice(1);
-};
+const MOD_PRESETS = ["5 km", "10 km", "21 km", "42 km"];
+// "Outro": só números (7, 8, 7,9) → "7 km", "7,9 km"
+const kmInput = v => String(v).replace(/\./g, ",").replace(/[^\d,]/g, "").replace(/,(?=.*,)/g, "").replace(/^,/, "").slice(0, 5);
+const normMod = s => { const n = parseFloat(String(s).replace(",", ".")); return n > 0 && n <= 250 ? String(Math.round(n * 10) / 10).replace(".", ",") + " km" : ""; };
 const parseBRL = v => { const n = parseFloat(String(v).replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return isNaN(n) ? null : Math.round(n * 100) / 100; };
 function draftFromRace(r) {
   return {
@@ -1600,8 +1841,8 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
         ${F({ id: "rf_rua", label: "Rua de largada", value: d.rua, ph: "Ex.: Av. 9 de Julho, em frente ao parque", err: "Informe a rua de largada." })}
         <div class="field" id="f-rf_mods">
           <span class="label">Modalidades</span>
-          <div class="pick" id="modPick">${allMods.map(m => `<button type="button" data-m="${esc(m)}"${d.mods.includes(m) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${d.mods.includes(m) ? ic("check") : ""}${esc(m)}</button>`).join("")}</div>
-          <div class="input-wrap"><input id="modOther" class="input" placeholder="Outra: ex. Caminhada 3 km" autocomplete="off"><button type="button" class="suffix" id="modAdd" aria-label="Adicionar modalidade">${ic("plus")}</button></div>
+          <div class="pick" id="modPick">${allMods.map(m => `<button type="button" data-m="${esc(m)}"${d.mods.includes(m) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${d.mods.includes(m) ? ic("check") : ""}${esc(m)}</button>`).join("")}<button type="button" data-other${d.outro ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${ic("plus")}Outro</button></div>
+          ${d.outro ? `<div class="other-row"><div class="input-wrap km"><input id="modOther" class="input" inputmode="decimal" autocomplete="off" maxlength="5" placeholder="Ex.: 7 ou 7,9" aria-label="Outra distância em km"><span class="post">km</span></div><button type="button" class="btn" id="modAdd">Adicionar</button></div>` : ""}
           <div class="msg">${ic("alert")}<span>Escolha pelo menos uma modalidade.</span></div>
         </div>
         ${F({ id: "rf_preco", label: "Preço do kit básico", value: d.preco, pre: "R$", ph: "0,00", attrs: 'inputmode="decimal" autocomplete="off"', hint: `<span id="pricePrev">${pricePreview()}</span>`, err: "Informe o preço do kit mais básico." })}
@@ -1639,18 +1880,24 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
   $("#rf_preco").addEventListener("input", () => { d.preco = val("rf_preco"); $("#pricePrev").innerHTML = pricePreview(); });
   $("#modPick").addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
+    if (b.hasAttribute("data-other")) { collect(); d.outro = !d.outro; rerender(); const o = $("#modOther"); if (o) o.focus(); return; }
     const m = b.dataset.m, on = !d.mods.includes(m);
     d.mods = on ? [...d.mods, m] : d.mods.filter(x => x !== m);
     b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.innerHTML = (on ? ic("check") : "") + esc(m);
     $("#f-rf_mods").classList.remove("bad"); saveDraft();
   });
   const addMod = () => {
-    const m = normMod($("#modOther").value); if (!m) return;
+    const inp = $("#modOther"), m = normMod(inp.value);
+    if (!m) { toast("Digite só a distância em km. Ex.: 7 ou 7,9", true); inp.focus(); return; }
     if (!d.mods.includes(m)) d.mods.push(m);
-    rerender(); toast(`Modalidade “${m}” adicionada.`);
+    d.outro = false; rerender(); toast(`Modalidade “${m}” adicionada.`);
   };
-  $("#modAdd").addEventListener("click", addMod);
-  $("#modOther").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addMod(); } });
+  const other = $("#modOther");
+  if (other) {
+    other.addEventListener("input", () => { const v = kmInput(other.value); if (v !== other.value) other.value = v; });
+    other.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addMod(); } });
+    $("#modAdd").addEventListener("click", addMod);
+  }
   $("#inscTipo").addEventListener("click", e => { const b = e.target.closest("button"); if (!b || b.dataset.t === d.inscTipo) return; collect(); d.inscTipo = b.dataset.t; rerender(); });
   $("#arteIn").addEventListener("change", async e => {
     const file = e.target.files && e.target.files[0]; if (!file) return;
@@ -1967,6 +2214,35 @@ route(/^\/aprovar\/([\w-]+)$/, function vApprove(view, [id], q, u) {
     DB.save(); toast("Corrida negada. O organizador vai ver o motivo."); go("/solicitacoes?ver=aprovar");
   });
 }, { tab: "sol", roles: ["admin"] });
+/* ---------- konexões e Klans: base usada pelo perfil, busca e Klans ---------- */
+const connBetween = (a, b) => DB.conns.find(c => (c.de === a && c.para === b) || (c.de === b && c.para === a));
+const isConnected = (a, b) => { const c = connBetween(a, b); return !!c && c.status === "ativa"; };
+const konexoesOf = id => DB.conns.filter(c => c.status === "ativa" && (c.de === id || c.para === id)).map(c => userById(c.de === id ? c.para : c.de)).filter(Boolean);
+const canSeeProfile = (viewer, other) => !other.privado || viewer.id === other.id || isConnected(viewer.id, other.id);
+const klanById = id => (id && DB.klans.find(k => k.id === id)) || null;
+const klanTag = k => k.sigla ? "@" + k.sigla : k.nome;
+function klanLineHTML(user, from) {
+  const k = klanById(user.klan);
+  return k ? `<span class="klan-line">${ic("users")}Kohendo com <a href="#/klan/${k.id}${from ? "?de=" + from : ""}">${esc(klanTag(k))}</a></span>` : "";
+}
+function personRow(p, href) {
+  return `<a class="person-row" href="${href}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p.nick)}</b><span>${esc(p.nome)}</span></span>${p.privado ? ic("lock", "lock-i") : ""}</a>`;
+}
+function acceptConn(c, u) {
+  const t = new Date().toISOString();
+  c.status = "ativa"; c.t2 = t;
+  DB.notifs.push({ id: uid("n"), para: c.de, tipo: "aceita", de: u.id, t, lida: false });
+  DB.save();
+}
+function removeConn(c) { DB.conns = DB.conns.filter(x => x.id !== c.id); DB.save(); }
+function subHead(title, back, eyebrow) {
+  return `<header class="topbar"><div class="topbar-in"><a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a><div class="t">${eyebrow ? `<span class="eyebrow">${eyebrow}</span>` : ""}<h1 class="disp" style="font-size:30px">${title}</h1></div></div></header>`;
+}
+function favRacesOf(u) {
+  const rs = favsOf(u).map(id => DB.races.find(r => r.id === id)).filter(r => r && r.status === "publicada");
+  return [...rs.filter(r => !isOver(r)).sort((a, b) => startOf(a) - startOf(b)), ...rs.filter(isOver).sort((a, b) => startOf(b) - startOf(a))];
+}
+
 /* =====================================================================
    TELAS — perfil e configurações
    ===================================================================== */
@@ -1978,12 +2254,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
   const next = NEXT_ROLE[u.role];
   const last = DB.ups.filter(x => x.uid === u.id).sort((a, b) => b.criado.localeCompare(a.criado))[0];
   const pend = last && last.status === "pendente" ? last : null;
-  const e = u.end || {};
-  const favRaces = favsOf(u).map(id => DB.races.find(r => r.id === id)).filter(r => r && r.status === "publicada");
-  const favList = [
-    ...favRaces.filter(r => !isOver(r)).sort((a, b) => startOf(a) - startOf(b)),
-    ...favRaces.filter(isOver).sort((a, b) => startOf(b) - startOf(a))
-  ];
+  const e = u.end || {}, nUnread = unreadCount(u);
   let upgrade = "";
   if (pend) upgrade = `<div class="upgrade">
       <span class="eyebrow">Pedido enviado ${fmtStamp(pend.criado)}</span>
@@ -2001,6 +2272,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
   view.innerHTML = `
     <header class="topbar"><div class="topbar-in">
       <div class="t"><span class="eyebrow">Configurações</span><h1 class="disp" style="font-size:30px">Perfil</h1></div>
+      <a class="icon-btn" href="#/perfil/notificacoes" aria-label="Notificações${nUnread ? ` (${nUnread} novas)` : ""}">${ic("bell")}${nUnread ? `<span class="dot alert">${nUnread}</span>` : ""}</a>
       <button class="icon-btn" type="button" id="logout" aria-label="Sair da conta">${ic("logout")}</button>
     </div></header>
     <section class="page">
@@ -2008,19 +2280,26 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
         <label class="av-edit">${avatarHTML(u)}<span class="av-cam">${ic("camera")}</span><input type="file" id="fotoIn" accept="image/*" aria-label="${u.foto ? "Trocar foto de perfil" : "Adicionar foto de perfil"}"></label>
         <div class="who">
           <h1 class="disp">@${esc(u.nick)}</h1>
-          <span class="role ${u.role}">${ic(u.role === "admin" ? "shield" : u.role === "organizador" ? "flag" : "user")}${ROLE_LABEL[u.role]}</span>
+          <span class="role ${u.role}">${ic(ROLE_ICON[u.role] || "user")}${ROLE_LABEL[u.role]}</span>
+          ${klanLineHTML(u, "perfil")}
           ${u.foto ? `<button class="linkbtn" type="button" id="fotoRm" style="font-size:13px;min-height:32px;align-self:flex-start">Remover foto</button>` : ""}
         </div>
       </div>
+      <nav class="rows" aria-label="Suas listas">
+        <a class="rowlink" href="#/perfil/favoritas">${ic("heart")}<span class="grow">Favoritas</span><span class="ct num">${favRacesOf(u).length}</span>${ic("chev", "chev")}</a>
+        <a class="rowlink" href="#/perfil/konexoes">${ic("link")}<span class="grow">Konexões</span><span class="ct num">${konexoesOf(u.id).length}</span>${ic("chev", "chev")}</a>
+      </nav>
       <div class="group slim">
         <div class="setting sm">
           <span class="txt"><b>Modo noturno</b></span>
           <label class="switch sm"><input type="checkbox" role="switch" id="darkSw"${isDark() ? " checked" : ""} aria-label="Modo noturno"><i></i></label>
         </div>
+        <div class="setting sm" style="border-top:1px solid var(--line)">
+          <span class="txt"><b>Perfil privado</b></span>
+          <label class="switch sm"><input type="checkbox" role="switch" id="privSw"${u.privado ? " checked" : ""} aria-label="Perfil privado" aria-describedby="privTxt"><i></i></label>
+        </div>
+        <p class="privacy-note" id="privTxt" style="padding-bottom:12px">Com o perfil privado, outras pessoas veem só sua foto, nickname e nome. Suas corridas, Konexões e Klan ficam visíveis apenas para quem você aprovar como konexão.</p>
       </div>
-      <div class="section-title"><h2 class="disp">Favoritas</h2><span class="eyebrow num">${favList.length}</span></div>
-      ${favList.length ? favList.map(r => raceCard(r, u, null, { date: true, from: "perfil" })).join("")
-        : `<div class="empty sm"><p>Toque no ${ic("heart")} de uma corrida para guardar aqui.</p></div>`}
       <div class="group">
         <h2 class="disp">Seus dados</h2>
         <form class="form" id="pf" novalidate>
@@ -2039,6 +2318,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
         <h2 class="disp">Senha</h2>
         <form class="form" id="pwf" novalidate>
           ${F({ id: "pw_old", label: "Senha atual", type: "password", wrap: "eye", attrs: 'autocomplete="current-password"', err: "Informe a senha atual." })}
+          <button class="linkbtn forgot" type="button" id="pwForgot">Esqueci minha senha</button>
           ${F({ id: "pw_new", label: "Nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Crie a nova senha." })}
           <ul class="rules" id="pwRules">${rulesHTML("")}</ul>
           ${F({ id: "pw_new2", label: "Confirme a nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Repita a nova senha." })}
@@ -2052,17 +2332,23 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
       </div>
       ${isAdmin(u) ? `<div class="group">
         <h2 class="disp">Fase de testes</h2>
-        <p class="muted" style="font-size:13.5px">Tudo fica salvo só neste aparelho. Restaurar volta às 3 contas de teste e às corridas iniciais.</p>
+        <p class="muted" style="font-size:13.5px">Tudo fica salvo só neste aparelho. Restaurar volta às 4 contas de teste, às corridas iniciais e ao Klan BRC.</p>
         <button class="btn btn-block" type="button" id="reset">${ic("refresh")} Restaurar dados iniciais</button>
       </div>` : ""}
       ${upgrade}
+      <a class="linkbtn small-link" href="#/klan/novo">${ic("plus")} Criar Klan</a>
     </section>`;
 
   bindPhone($("#pf_tel")); bindCity($("#pf_cidade"));
   $("#darkSw").addEventListener("change", ev => setMode(ev.target.checked));
+  $("#privSw").addEventListener("change", ev => {
+    u.privado = ev.target.checked; DB.save();
+    toast(u.privado ? "Perfil privado: novas konexões precisam da sua aprovação." : "Perfil público: qualquer pessoa pode se konectar.");
+  });
   const logout = () => { Session.clear(); SS.del("kohe.draft"); toast("Você saiu da conta."); go("/login"); };
   $("#logout").addEventListener("click", logout); $("#logout2").addEventListener("click", logout);
   const rs = $("#reset"); if (rs) rs.addEventListener("click", resetAll);
+  $("#pwForgot").addEventListener("click", () => { RECOVERY = { uid: u.id, step: "enviar", from: "perfil" }; go("/recuperar"); });
 
   $("#fotoIn").addEventListener("change", async ev => {
     const file = ev.target.files && ev.target.files[0]; if (!file) return;
@@ -2108,7 +2394,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
     ev.preventDefault();
     const old = $("#pw_old").value, nw = $("#pw_new").value, nw2 = $("#pw_new2").value;
     if (!old) bad("pw_old");
-    else if ((await hashPass(old, u.salt)) !== u.hash) bad("pw_old", "A senha atual não confere.");
+    else if ((await hashPass(old, u.salt)) !== u.hash) bad("pw_old", "A senha atual não confere. Se esqueceu, use “Esqueci minha senha”.");
     if (!nw) bad("pw_new"); else if (!passOk(nw)) bad("pw_new", "A nova senha ainda não cumpre todas as regras.");
     if (!nw2) bad("pw_new2"); else if (nw2 !== nw) bad("pw_new2", "As senhas não são iguais.");
     if (goFirstBad(view)) return;
@@ -2123,20 +2409,316 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
     }
     const ok = await confirmBox({
       title: "Excluir conta?", danger: true, ok: "Excluir conta", typeToConfirm: u.nick,
-      text: "Seu cadastro sai deste aparelho e não dá para desfazer. Pedidos pendentes são cancelados; corridas já publicadas continuam no feed."
+      text: "Seu cadastro sai deste aparelho e não dá para desfazer. Pedidos pendentes e Konexões são apagados; corridas já publicadas continuam no feed."
     });
     if (!ok) return;
     DB.users = DB.users.filter(x => x.id !== u.id);
     DB.ups = DB.ups.filter(x => x.uid !== u.id);
     DB.races = DB.races.filter(r => !(r.autor === u.id && (r.status === "pendente" || r.status === "negada")));
+    DB.conns = DB.conns.filter(c => c.de !== u.id && c.para !== u.id);
+    DB.notifs = DB.notifs.filter(n => n.para !== u.id && n.de !== u.id);
+    DB.klans.forEach(k => { if (k.dono === u.id) k.dono = null; });
     DB.save(); Session.clear(); SS.del("kohe.draft");
     go("/login"); toast("Conta excluída.");
   });
 }, { tab: "perfil" });
 
+route(/^\/perfil\/favoritas$/, function vFavs(view, _, q, u) {
+  const list = favRacesOf(u);
+  view.innerHTML = `${subHead("Favoritas", "#/perfil", "Perfil")}
+    <section class="page">
+      ${list.length ? list.map(r => raceCard(r, u, null, { date: true, from: "fav" })).join("")
+        : `<div class="empty"><h3>Nenhuma favorita</h3><p>Toque no ${ic("heart")} de uma corrida para guardar aqui.</p><a class="btn btn-sm btn-volt" href="#/feed">Ver corridas</a></div>`}
+    </section>`;
+}, { tab: "perfil" });
+
+route(/^\/perfil\/konexoes$/, function vKonexoes(view, _, q, u) {
+  const list = konexoesOf(u.id).sort((a, b) => a.nick.localeCompare(b.nick));
+  const sent = DB.conns.filter(c => c.status === "pendente" && c.de === u.id).map(c => userById(c.para)).filter(Boolean);
+  const href = p => "#/u/" + encodeURIComponent(p.nick) + "?de=konexoes";
+  view.innerHTML = `${subHead("Konexões", "#/perfil", "Perfil")}
+    <section class="page">
+      ${list.length ? `<div class="rows">${list.map(p => personRow(p, href(p))).join("")}</div>`
+        : `<div class="empty"><h3>Nenhuma konexão</h3><p>Busque pessoas pelo nickname e toque em Konectar.</p><a class="btn btn-sm btn-volt" href="#/buscar">${ic("search")} Buscar pessoas</a></div>`}
+      ${sent.length ? `<div class="section-title"><h2 class="disp">Pedidos enviados</h2><span class="eyebrow num">${sent.length}</span></div><div class="rows">${sent.map(p => personRow(p, href(p))).join("")}</div>` : ""}
+    </section>`;
+}, { tab: "perfil" });
+
+route(/^\/perfil\/notificacoes$/, function vNotifs(view, _, q, u) {
+  const reqs = DB.conns.filter(c => c.status === "pendente" && c.para === u.id).sort((a, b) => b.t.localeCompare(a.t));
+  const acts = DB.notifs.filter(n => n.para === u.id).sort((a, b) => b.t.localeCompare(a.t)).slice(0, 30);
+  const unreadIds = new Set(acts.filter(n => !n.lida).map(n => n.id));
+  view.innerHTML = `${subHead("Notificações", "#/perfil", "Perfil")}
+    <section class="page">
+      <div class="section-title"><h2 class="disp">Pedidos de konexão</h2><span class="eyebrow num">${reqs.length}</span></div>
+      ${reqs.length ? `<div class="rows">${reqs.map(c => {
+        const p = userById(c.de); if (!p) return "";
+        return `<div class="person-row">${avatarHTML(p, "avatar av-sm")}<a class="who" href="#/u/${encodeURIComponent(p.nick)}?de=notif" style="color:inherit;text-decoration:none"><b>@${esc(p.nick)}</b><span>${esc(p.nome)} · ${fmtStamp(c.t)}</span></a><button class="btn btn-sm" type="button" data-deny="${c.id}" aria-label="Recusar pedido de @${esc(p.nick)}">${ic("x")}</button><button class="btn btn-sm btn-volt" type="button" data-accept="${c.id}">Aceitar</button></div>`;
+      }).join("")}</div>` : `<div class="empty sm"><p>Nenhum pedido esperando você.</p></div>`}
+      <div class="section-title"><h2 class="disp">Atividade</h2></div>
+      ${acts.length ? `<div class="rows">${acts.map(n => {
+        const p = userById(n.de);
+        return `<a class="person-row" href="${p ? "#/u/" + encodeURIComponent(p.nick) + "?de=notif" : "#/perfil/notificacoes"}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p ? p.nick : "conta excluída")} aceitou sua konexão</b><span>${fmtStamp(n.t)}</span></span>${unreadIds.has(n.id) ? '<span class="badge-dot" aria-label="Nova"></span>' : ""}</a>`;
+      }).join("")}</div>` : `<div class="empty sm"><p>Quando alguém aceitar seu pedido de konexão, aparece aqui.</p></div>`}
+    </section>`;
+  $$("[data-accept]", view).forEach(b => b.addEventListener("click", () => {
+    const c = DB.conns.find(x => x.id === b.dataset.accept); if (!c) return;
+    const p = userById(c.de); acceptConn(c, u); render(); toast(`Konectado com @${p ? p.nick : ""}.`);
+  }));
+  $$("[data-deny]", view).forEach(b => b.addEventListener("click", () => {
+    const c = DB.conns.find(x => x.id === b.dataset.deny); if (!c) return;
+    removeConn(c); render(); toast("Pedido recusado.");
+  }));
+  if (unreadIds.size) { DB.notifs.forEach(n => { if (unreadIds.has(n.id)) n.lida = true; }); DB.save(); renderChrome({ tab: "perfil" }, u); }
+}, { tab: "perfil" });
+
 /* =====================================================================
    INÍCIO
    ===================================================================== */
+/* =====================================================================
+   TELAS — perfil de outra pessoa, busca e Tinder
+   ===================================================================== */
+route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
+  const p = DB.users.find(x => x.nick === decodeURIComponent(nickEnc).toLowerCase());
+  if (!p) { view.innerHTML = notFoundHTML("Perfil não encontrado", "Essa conta pode ter sido excluída.", "#/buscar", "Voltar à busca"); return; }
+  if (p.id === u.id) return redirect("/perfil");
+  const from = q.get("de") || "";
+  const BACKS = { konexoes: ["#/perfil/konexoes", "perfil"], notif: ["#/perfil/notificacoes", "perfil"], busca: ["#/buscar", "buscar"] };
+  let back = "#/buscar", tab = "buscar";
+  if (BACKS[from]) [back, tab] = BACKS[from];
+  else if (from.startsWith("klan:")) back = "#/klan/" + encodeURIComponent(from.slice(5));
+  if (tab !== "buscar") renderChrome({ tab }, u);
+  const c = connBetween(u.id, p.id), see = canSeeProfile(u, p);
+  let action;
+  if (c && c.status === "ativa") action = `<div class="state-ok">${ic("check")} Vocês estão konectados</div><button class="linkbtn" type="button" id="kUndo" style="align-self:center;font-size:13px;color:var(--danger)">Desfazer konexão</button>`;
+  else if (c && c.de === u.id) action = `<div class="state-ok" style="border-color:var(--line-2);color:var(--ink-2)">${ic("clock")} Pedido enviado. @${esc(p.nick)} precisa aprovar</div><button class="linkbtn" type="button" id="kCancel" style="align-self:center;font-size:13px">Cancelar pedido</button>`;
+  else if (c) action = `<p class="muted" style="text-align:center">@${esc(p.nick)} quer se konectar com você.</p><div class="btn-row"><button class="btn" type="button" id="kDeny">Recusar</button><button class="btn btn-volt" type="button" id="kAccept">${ic("check")} Aceitar</button></div>`;
+  else action = `<button class="btn btn-volt btn-block" type="button" id="kGo">${ic("link")} Konectar</button>${p.privado ? `<p class="eyebrow" style="text-align:center">Perfil privado: @${esc(p.nick)} precisa aprovar</p>` : ""}`;
+  const kons = see ? konexoesOf(p.id).sort((a, b) => a.nick.localeCompare(b.nick)) : [];
+  const favs = see ? favRacesOf(p) : [];
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in"><a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a><div class="t"><span class="eyebrow">Perfil</span></div></div></header>
+    <section class="page">
+      <div class="profile-head">
+        ${avatarHTML(p)}
+        <h1 class="disp">@${esc(p.nick)}</h1>
+        <span class="nome">${esc(p.nome)}</span>
+        ${see ? klanLineHTML(p, "u:" + p.nick) : ""}
+      </div>
+      ${action}
+      ${see ? `
+        <div class="section-title"><h2 class="disp">Konexões</h2><span class="eyebrow num">${kons.length}</span></div>
+        ${kons.length ? `<div class="rows">${kons.map(x => personRow(x, x.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(x.nick) + "?de=busca")).join("")}</div>` : `<div class="empty sm"><p>@${esc(p.nick)} ainda não tem Konexões.</p></div>`}
+        <div class="section-title"><h2 class="disp">Favoritas</h2><span class="eyebrow num">${favs.length}</span></div>
+        ${favs.length ? favs.map(r => raceCard(r, u, null, { date: true, from: "u:" + p.nick })).join("") : `<div class="empty sm"><p>Nenhuma corrida favoritada.</p></div>`}`
+      : `<div class="lock-card">${ic("lock")}<span>Perfil privado. Konecte-se para ver as corridas, as Konexões e o Klan de @${esc(p.nick)}.</span></div>`}
+    </section>`;
+  const on = (id, fn) => { const b = document.getElementById(id); if (b) b.addEventListener("click", fn); };
+  on("kGo", () => {
+    const t = new Date().toISOString();
+    if (p.privado) { DB.conns.push({ id: uid("c"), de: u.id, para: p.id, status: "pendente", t }); DB.save(); render(); toast(`Pedido enviado. @${p.nick} precisa aprovar.`); }
+    else { DB.conns.push({ id: uid("c"), de: u.id, para: p.id, status: "ativa", t, t2: t }); DB.save(); render(); toast(`Konectado com @${p.nick}.`); }
+  });
+  on("kCancel", () => { removeConn(c); render(); toast("Pedido cancelado."); });
+  on("kAccept", () => { acceptConn(c, u); render(); toast(`Konectado com @${p.nick}.`); });
+  on("kDeny", () => { removeConn(c); render(); toast("Pedido recusado."); });
+  on("kUndo", async () => {
+    const ok = await confirmBox({ title: "Desfazer konexão?", ok: "Desfazer", danger: true, text: `Você e <b>@${esc(p.nick)}</b> deixam de aparecer nas Konexões um do outro.` });
+    if (!ok) return;
+    removeConn(c); render(); toast("Konexão desfeita.");
+  });
+}, { tab: "buscar" });
+
+function searchAll(term, u) {
+  const k = norm(String(term).replace(/^@/, "")); if (!k) return { people: [], klans: [] };
+  const score = (main, extra) => main.startsWith(k) ? 0 : main.includes(k) ? 1 : extra.includes(k) ? 2 : -1;
+  const people = DB.users.filter(x => x.id !== u.id).map(x => ({ x, s: score(norm(x.nick), norm(x.nome)) }))
+    .filter(o => o.s >= 0).sort((a, b) => a.s - b.s || a.x.nick.localeCompare(b.x.nick)).slice(0, 20).map(o => o.x);
+  const klans = DB.klans.map(x => ({ x, s: score(norm(x.sigla || ""), norm(x.nome)) }))
+    .filter(o => o.s >= 0).sort((a, b) => a.s - b.s || a.x.nome.localeCompare(b.x.nome)).slice(0, 10).map(o => o.x);
+  return { people, klans };
+}
+function logSearch(u, tipo, v) {
+  u.buscas = [{ tipo, v, t: new Date().toISOString() }, ...(u.buscas || []).filter(b => !(b.tipo === tipo && b.v === v))].slice(0, MAX_BUSCAS);
+  DB.save();
+}
+
+route(/^\/buscar$/, function vSearch(view, _, q, u) {
+  const start = q.get("q") ?? SS.get("kohe.lastSearch") ?? "";
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in"><div class="t"><span class="eyebrow">Pessoas e Klans</span><h1 class="disp" style="font-size:30px">Buscar</h1></div></div></header>
+    <section class="page">
+      <form class="searchbar" id="sForm" role="search">${ic("search")}<input id="sIn" class="input" type="search" enterkeyhint="search" placeholder="@nickname ou Klan" value="${esc(start)}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Buscar por nickname ou Klan"><button type="button" class="clear" id="sClear" aria-label="Limpar busca" hidden>${ic("x")}</button></form>
+      <div id="sOut" class="form" style="gap:14px"></div>
+    </section>`;
+  const inp = $("#sIn"), out = $("#sOut");
+  const paint = () => {
+    const v = inp.value.trim();
+    $("#sClear").hidden = !v;
+    if (v) SS.set("kohe.lastSearch", v); else SS.del("kohe.lastSearch");
+    if (!v) {
+      const hist = (u.buscas || []).map(b => {
+        if (b.tipo === "perfil") { const p = DB.users.find(x => x.nick === b.v); return p && { b, icon: "user", label: "@" + p.nick, href: "#/u/" + encodeURIComponent(p.nick) + "?de=busca" }; }
+        if (b.tipo === "klan") { const k = klanById(b.v); return k && { b, icon: "users", label: k.nome, href: "#/klan/" + k.id + "?de=busca" }; }
+        return { b, icon: "history", label: b.v, term: b.v };
+      }).filter(Boolean);
+      out.innerHTML = hist.length
+        ? `<div class="section-title"><h2 class="disp">Buscas recentes</h2><button class="linkbtn" type="button" id="hClear" style="font-size:13px">Limpar histórico</button></div>
+           <div class="rows">${hist.map((h, i) => `<div class="hist-row">${h.href ? `<a class="go" href="${h.href}">${ic(h.icon)}<span>${esc(h.label)}</span></a>` : `<button class="go" type="button" data-hterm="${i}">${ic(h.icon)}<span>${esc(h.label)}</span></button>`}<button class="rm" type="button" data-hrm="${i}" aria-label="Remover ${esc(h.label)} do histórico">${ic("x")}</button></div>`).join("")}</div>`
+        : `<div class="empty"><h3>Ache sua turma</h3><p>Busque pessoas pelo @nickname ou Klans pela sigla, como @BRC.</p></div>`;
+      const hc = $("#hClear", out);
+      if (hc) hc.addEventListener("click", () => { u.buscas = []; DB.save(); paint(); });
+      $$("[data-hrm]", out).forEach(b => b.addEventListener("click", () => { const h = hist[+b.dataset.hrm]; u.buscas = u.buscas.filter(x => x !== h.b); DB.save(); paint(); }));
+      $$("[data-hterm]", out).forEach(b => b.addEventListener("click", () => { inp.value = hist[+b.dataset.hterm].term; paint(); }));
+      return;
+    }
+    const { people, klans } = searchAll(v, u);
+    out.innerHTML = (klans.length ? `<div class="section-title"><h2 class="disp">Klans</h2></div><div class="rows">${klans.map(k => `<a class="person-row" href="#/klan/${k.id}?de=busca" data-klan="${k.id}">${klanLogoHTML(k, "av-sm")}<span class="who"><b>${esc(k.nome)}</b><span>${k.sigla ? "@" + esc(k.sigla) + " · " : ""}${esc(k.cidade)}</span></span></a>`).join("")}</div>` : "")
+      + (people.length ? `<div class="section-title"><h2 class="disp">Pessoas</h2></div><div class="rows">${people.map(p => `<a class="person-row" href="#/u/${encodeURIComponent(p.nick)}?de=busca" data-person="${esc(p.nick)}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p.nick)}</b><span>${esc(p.nome)}</span></span>${p.privado ? ic("lock", "lock-i") : ""}</a>`).join("")}</div>` : "")
+      || `<div class="empty"><h3>Nada encontrado</h3><p>Ninguém com “${esc(v)}” no nickname, no nome ou na sigla.</p></div>`;
+    $$("[data-klan]", out).forEach(a => a.addEventListener("click", () => logSearch(u, "klan", a.dataset.klan)));
+    $$("[data-person]", out).forEach(a => a.addEventListener("click", () => logSearch(u, "perfil", a.dataset.person)));
+  };
+  inp.addEventListener("input", paint);
+  $("#sForm").addEventListener("submit", e => { e.preventDefault(); const v = inp.value.trim(); if (v) { logSearch(u, "termo", v); inp.blur(); } });
+  $("#sClear").addEventListener("click", () => { inp.value = ""; paint(); inp.focus(); });
+  paint();
+}, { tab: "buscar" });
+
+route(/^\/tinder$/, function vTinder(view) {
+  view.innerHTML = `<section class="tinder">
+    <div class="flame">${ic("fire")}</div>
+    <span class="soon">${ic("clock")} Em testes</span>
+    <h1 class="disp">Tinder</h1>
+    <p>Essa parte ainda está em testes. Vai ser o jeito mais rápido de koher com os outros: deslizar pelas corridas, achar quem vai no mesmo pace e se konectar.</p>
+  </section>`;
+}, { tab: "tinder" });
+/* =====================================================================
+   TELAS — Klans
+   ===================================================================== */
+const klanMembers = id => DB.users.filter(x => x.klan === id);
+const canManageKlan = (u, k) => canModKlans(u) || (!!k && k.dono === u.id);
+function klanLogoHTML(k, cls = "") {
+  const src = k.foto || (k.id === "k-brc" ? BRC_LOGO : "");
+  if (src) return `<span class="klan-logo ${cls}"><img src="${src}" alt="Logo do ${esc(k.nome)}"></span>`;
+  if (k.id === "k-brc") return `<span class="klan-logo brc ${cls}" aria-hidden="true">brc_</span>`;
+  const ini = (k.sigla || k.nome.split(/\s+/).map(w => w.charAt(0)).join("")).slice(0, 3).toUpperCase();
+  return `<span class="klan-logo ${cls}" aria-hidden="true">${esc(ini)}</span>`;
+}
+function validDesde(s) {
+  const y = new Date().getFullYear();
+  let m = s.match(/^(\d{4})$/);
+  if (m) return +m[1] >= 1900 && +m[1] <= y;
+  m = s.match(/^(\d{2})\/(\d{4})$/);
+  if (m) return +m[1] >= 1 && +m[1] <= 12 && +m[2] >= 1900 && +m[2] <= y;
+  m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (m) { const dt = new Date(+m[3], +m[2] - 1, +m[1]); return dt.getDate() === +m[1] && dt.getMonth() === +m[2] - 1 && +m[3] >= 1900 && dt <= new Date(); }
+  return false;
+}
+
+function klanForm(view, u, k) {
+  const editing = !!k, d = k || { nome: "", cidade: "", horario: "", local: "", sigla: "", desde: "" };
+  const current = !editing && klanById(u.klan);
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="${editing ? "#/klan/" + k.id : "#/perfil"}" aria-label="Cancelar">${ic("x")}</a>
+      <div class="t"><span class="eyebrow">${editing ? esc(klanTag(k)) : "Grupo de corrida"}</span><h1 class="disp" style="font-size:30px">${editing ? "Editar Klan" : "Criar Klan"}</h1></div>
+    </div></header>
+    <section class="page">
+      ${current ? `<div class="note">${ic("alert")}<span>Você está no ${esc(klanTag(current))}. Ao criar um Klan novo, sai de lá e passa a koher com ele.</span></div>` : ""}
+      <form class="form" id="kf" novalidate>
+        ${F({ id: "kf_nome", label: "Nome", value: d.nome, ph: "Ex.: Barão Running Club", attrs: 'maxlength="60" autocapitalize="words"', err: "Dê um nome para o Klan." })}
+        ${F({ id: "kf_cidade", label: "Cidade", value: d.cidade, wrap: "city", ph: "Comece a digitar", err: "Informe a cidade do Klan." })}
+        ${F({ id: "kf_sigla", label: "Sigla para ser encontrado", value: d.sigla, pre: "@", opt: true, ph: "BRC", attrs: 'maxlength="10" autocapitalize="characters" autocomplete="off" spellcheck="false"', hint: "2 a 10 letras ou números. É assim que o Klan aparece na busca.", err: "Use de 2 a 10 letras ou números." })}
+        ${F({ id: "kf_local", label: "De onde saem", value: d.local, opt: true, ph: "Ex.: Ciclo Básico / Taquaral", attrs: 'maxlength="80"' })}
+        ${F({ id: "kf_horario", label: "Horário dos corres", value: d.horario, opt: true, ph: "Ex.: ter e qui às 6h, sáb às 7h", attrs: 'maxlength="80"' })}
+        ${F({ id: "kf_desde", label: "Data de criação", value: d.desde, opt: true, ph: "2024 ou 15/03/2024", attrs: 'inputmode="numeric" maxlength="10" autocomplete="off"', hint: "Pode ser só o ano.", err: "Use o ano (2024) ou a data completa (15/03/2024)." })}
+        <button class="btn btn-volt btn-block" type="submit">${editing ? "Salvar Klan" : "Criar Klan " + ic("arrow")}</button>
+      </form>
+    </section>`;
+  bindCity($("#kf_cidade"));
+  $("#kf_sigla").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); });
+  $("#kf_desde").addEventListener("input", e => { e.target.value = e.target.value.replace(/[^\d/]/g, ""); });
+  $("#kf").addEventListener("submit", async e => {
+    e.preventDefault();
+    const v = { nome: val("kf_nome"), cidade: val("kf_cidade"), sigla: val("kf_sigla").toUpperCase(), local: val("kf_local"), horario: val("kf_horario"), desde: val("kf_desde") };
+    if (v.nome.length < 3) bad("kf_nome", v.nome ? "Use pelo menos 3 letras no nome." : "Dê um nome para o Klan.");
+    if (!v.cidade) bad("kf_cidade");
+    if (v.sigla) {
+      if (!/^[A-Z0-9]{2,10}$/.test(v.sigla)) bad("kf_sigla");
+      else if (DB.klans.some(x => x.id !== (k && k.id) && (x.sigla || "").toUpperCase() === v.sigla) || DB.users.some(x => x.nick === v.sigla.toLowerCase())) bad("kf_sigla", "Essa sigla já está em uso. Tente outra.");
+    }
+    if (v.desde && !validDesde(v.desde)) bad("kf_desde");
+    if (goFirstBad(view)) return;
+    const c = findCity(v.cidade); v.cidade = c ? c.n : v.cidade;
+    if (editing) { Object.assign(k, v); DB.save(); go("/klan/" + k.id); toast("Klan atualizado."); return; }
+    if (current) {
+      const ok = await confirmBox({ title: "Trocar de Klan?", ok: "Criar e trocar", text: `Você sai do <b>${esc(klanTag(current))}</b> e passa a koher com o Klan novo.` });
+      if (!ok) return;
+    }
+    const nk = Object.assign({ id: uid("k"), dono: u.id, criado: new Date().toISOString() }, v);
+    DB.klans.push(nk); u.klan = nk.id; DB.save();
+    go("/klan/" + nk.id); toast(`Klan criado. Você já está kohendo com ${klanTag(nk)}.`);
+  });
+}
+route(/^\/klan\/novo$/, (view, _, q, u) => klanForm(view, u, null), { tab: "perfil" });
+route(/^\/klan\/([\w-]+)\/editar$/, (view, [id], q, u) => {
+  const k = klanById(id);
+  if (!k || !canManageKlan(u, k)) return redirect(k ? "/klan/" + id : "/buscar");
+  klanForm(view, u, k);
+}, { tab: "buscar" });
+
+route(/^\/klan\/([\w-]+)$/, function vKlan(view, [id], q, u) {
+  const k = klanById(id);
+  if (!k) { view.innerHTML = notFoundHTML("Klan não encontrado", "Esse Klan pode não existir mais.", "#/buscar", "Voltar à busca"); return; }
+  const from = q.get("de") || "";
+  let back = "#/buscar";
+  if (from === "perfil") { back = "#/perfil"; renderChrome({ tab: "perfil" }, u); }
+  else if (from.startsWith("u:")) back = "#/u/" + encodeURIComponent(from.slice(2));
+  const members = klanMembers(k.id).sort((a, b) => (b.id === k.dono) - (a.id === k.dono) || a.nick.localeCompare(b.nick));
+  const mine = u.klan === k.id, other = !mine && klanById(u.klan), manage = canManageKlan(u, k);
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a>
+      <div class="t"><span class="eyebrow">Klan</span></div>
+      ${manage ? `<a class="icon-btn" href="#/klan/${k.id}/editar" aria-label="Editar Klan">${ic("edit")}</a>` : ""}
+    </div></header>
+    <section class="page">
+      <div class="klan-hero">${klanLogoHTML(k)}<h1 class="disp">${esc(k.nome)}</h1>${k.sigla ? `<span class="sigla">@${esc(k.sigla)}</span>` : ""}</div>
+      ${mine
+        ? `<div class="state-ok">${ic("check")} Kohendo com ${esc(klanTag(k))}</div><button class="linkbtn" type="button" id="kLeave" style="align-self:center;font-size:13px;color:var(--danger)">Sair do Klan</button>`
+        : `<button class="btn btn-volt btn-block" type="button" id="kJoin">${ic("users")} Koher junto</button>${other ? `<p class="eyebrow" style="text-align:center">Você está no ${esc(klanTag(other))}. Ao entrar aqui, sai de lá.</p>` : ""}`}
+      <dl class="dl">
+        <div><dt>${ic("pin")}Cidade</dt><dd>${esc(k.cidade)}</dd></div>
+        <div><dt>${ic("cal")}Desde</dt><dd class="${k.desde ? "num" : "tbd"}">${k.desde ? esc(k.desde) : "Não informado"}</dd></div>
+        <div class="wide"><dt>${ic("flag")}De onde saem</dt><dd class="${k.local ? "" : "tbd"}">${k.local ? esc(k.local) : "Não informado"}</dd></div>
+        <div class="wide"><dt>${ic("clock")}Horário dos corres</dt><dd class="${k.horario ? "" : "tbd"}">${k.horario ? esc(k.horario) : "Não informado"}</dd></div>
+      </dl>
+      <div class="section-title"><h2 class="disp">Membros</h2><span class="eyebrow num">${members.length}</span></div>
+      ${members.length ? `<div class="rows">${members.map(p => `<div class="person-row">${avatarHTML(p, "avatar av-sm")}<a class="who" href="${p.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(p.nick) + "?de=klan:" + k.id}" style="color:inherit;text-decoration:none"><b>@${esc(p.nick)}</b><span>${esc(p.nome)}${p.id === k.dono ? " · responsável" : ""}</span></a>${manage && p.id !== u.id ? `<button class="btn btn-sm" type="button" data-kick="${p.id}" aria-label="Remover @${esc(p.nick)} do Klan">Remover</button>` : ""}</div>`).join("")}</div>`
+        : `<div class="empty sm"><p>Ninguém kohendo aqui ainda. Toque em Koher junto para ser a primeira pessoa.</p></div>`}
+    </section>`;
+  const join = $("#kJoin");
+  if (join) join.addEventListener("click", async () => {
+    if (other) {
+      const ok = await confirmBox({ title: `Koher com ${klanTag(k)}?`, ok: "Koher junto", text: `Você sai do <b>${esc(klanTag(other))}</b> e entra no <b>${esc(klanTag(k))}</b>. Dá para estar em um Klan por vez.` });
+      if (!ok) return;
+    }
+    u.klan = k.id; DB.save(); render(); toast(`Agora você está kohendo com ${klanTag(k)}.`);
+  });
+  const leave = $("#kLeave");
+  if (leave) leave.addEventListener("click", async () => {
+    const ok = await confirmBox({ title: "Sair do Klan?", ok: "Sair", danger: true, text: `Você deixa de aparecer entre os membros do <b>${esc(klanTag(k))}</b>.` });
+    if (!ok) return;
+    u.klan = null; DB.save(); render(); toast("Você saiu do Klan.");
+  });
+  $$("[data-kick]", view).forEach(b => b.addEventListener("click", async () => {
+    const p = userById(b.dataset.kick); if (!p) return;
+    const ok = await confirmBox({ title: "Remover membro?", ok: "Remover", danger: true, text: `<b>@${esc(p.nick)}</b> deixa de fazer parte do <b>${esc(klanTag(k))}</b>.` });
+    if (!ok) return;
+    p.klan = null; DB.save(); render(); toast(`@${p.nick} saiu do Klan.`);
+  }));
+}, { tab: "buscar" });
 function installAppIcon() {
   const draw = size => {
     const c = document.createElement("canvas"); c.width = c.height = size;
@@ -2185,7 +2767,7 @@ function maybeInstallTip() {
 
 (async function boot() {
   Prefs.load(); applyTheme();
-  if (!DB.load()) await seedDB();
+  if (!DB.load()) await seedDB(); else await migrateDB();
   purgeExcluded();
   $("#fab").addEventListener("click", () => { SS.del("kohe.draft"); go("/nova"); });
   window.addEventListener("storage", ev => {
