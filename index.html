@@ -1,0 +1,2201 @@
+<!doctype html>
+<html lang="pt-BR" data-mode="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Kohe">
+<meta name="application-name" content="Kohe">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" id="themeColor" content="#090A08">
+<meta name="description" content="Kohe: corridas de rua em ordem de largada. Veja detalhes, filtre por distância e inscreva-se.">
+<title>Kohe</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23C4FF2E'/%3E%3Cpath d='M19 50L26 14H34L30.6 31.5L45 14H55L37.5 33L47 50H37.5L31.3 37.5L28.8 40L27 50Z' fill='%230D0F0B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Martian+Mono:wght@400;600;700&display=swap">
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --ground:#F3F4EE; --surface:#FFFFFF; --raised:#E9EBE2; --sunken:#E2E5D9;
+  --ink:#0D0F0B; --ink-2:#565C51; --ink-3:#8A9083;
+  --line:#DCDFD2; --line-2:#C7CBBD;
+  --volt:#C4FF2E; --volt-deep:#86BD00; --on-volt:#0D0F0B; --volt-text:#3B6A00; --heart:#2F7A00;
+  --danger:#C9302A; --danger-bg:#FBE8E6; --danger-deep:#8A1C17;
+  --warn:#8F5400; --warn-bg:#FFF0D2;
+  --ok:#2E7412; --ok-bg:#E5F6CD;
+  --glass:rgba(255,255,255,.76); --glass-line:rgba(13,15,11,.09);
+  --shade:0 1px 2px rgba(13,15,11,.06),0 10px 28px rgba(13,15,11,.10);
+  --bib:#0D0F0B; --bib-ink:#F3F4EE; --bib-pin:#F3F4EE;
+  --scrim:rgba(8,9,7,.46);
+  --display:"Archivo","Arial Narrow","Roboto Condensed",system-ui,sans-serif;
+  --sans:"Archivo",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Martian Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --r-sm:10px; --r:14px; --r-lg:20px;
+  --nav-h:66px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-mode="light"]){
+    --ground:#090A08; --surface:#131511; --raised:#1C1F19; --sunken:#0F110D;
+    --ink:#F1F4E9; --ink-2:#A3AA99; --ink-3:#6C7364;
+    --line:#252921; --line-2:#363C30;
+    --volt:#C8FF3A; --volt-deep:#78A800; --on-volt:#0D0F0B; --volt-text:#C8FF3A; --heart:#C8FF3A;
+    --danger:#FF5E52; --danger-bg:#381613; --danger-deep:#9E231B;
+    --warn:#F2B347; --warn-bg:#33260D;
+    --ok:#C8FF3A; --ok-bg:#22300F;
+    --glass:rgba(24,26,21,.74); --glass-line:rgba(241,244,233,.09);
+    --shade:0 1px 2px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.5);
+    --bib:#1C1F19; --bib-ink:#F1F4E9; --bib-pin:#090A08;
+    --scrim:rgba(0,0,0,.62);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]:not([data-mode="light"]),
+:root[data-mode="dark"]{
+  --ground:#090A08; --surface:#131511; --raised:#1C1F19; --sunken:#0F110D;
+  --ink:#F1F4E9; --ink-2:#A3AA99; --ink-3:#6C7364;
+  --line:#252921; --line-2:#363C30;
+  --volt:#C8FF3A; --volt-deep:#78A800; --on-volt:#0D0F0B; --volt-text:#C8FF3A; --heart:#C8FF3A;
+  --danger:#FF5E52; --danger-bg:#381613; --danger-deep:#9E231B;
+  --warn:#F2B347; --warn-bg:#33260D;
+  --ok:#C8FF3A; --ok-bg:#22300F;
+  --glass:rgba(24,26,21,.74); --glass-line:rgba(241,244,233,.09);
+  --shade:0 1px 2px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.5);
+  --bib:#1C1F19; --bib-ink:#F1F4E9; --bib-pin:#090A08;
+  --scrim:rgba(0,0,0,.62);
+  color-scheme:dark;
+}
+
+/* ---------- base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;background:var(--ground)}
+body{margin:0;height:100%;height:100dvh;overflow:hidden;background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--ground)}
+#view{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;outline:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-user-select:none;user-select:none}
+input,select,textarea{font:inherit;font-size:16px;color:inherit}
+a{color:var(--volt-text);text-underline-offset:3px}
+a:hover{color:var(--ink)}
+:focus-visible{outline:2.5px solid var(--volt-deep);outline-offset:2px}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0;text-wrap:pretty}
+ul{margin:0;padding:0}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+svg.i{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* ---------- type ---------- */
+.disp{font-family:var(--display);font-stretch:68%;font-style:italic;font-weight:850;text-transform:uppercase;letter-spacing:-.005em;line-height:.92}
+.eyebrow{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.muted{color:var(--ink-2)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- buttons ---------- */
+.btn{--bg:var(--surface);--fg:var(--ink);--depth:var(--line-2);--edge:var(--line-2);
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:54px;padding:0 22px;border-radius:var(--r);
+  background:var(--bg);color:var(--fg);border:1.5px solid var(--edge);box-shadow:0 4px 0 var(--depth);
+  font-family:var(--display);font-stretch:82%;font-style:italic;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.02em;
+  transition:transform .08s ease,box-shadow .08s ease;text-decoration:none;margin-bottom:4px}
+.btn:hover{color:var(--fg)}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--depth)}
+.btn[disabled],.btn.is-off{opacity:.45;pointer-events:none;box-shadow:0 4px 0 var(--depth)}
+.btn-volt{--bg:var(--volt);--fg:var(--on-volt);--depth:var(--volt-deep);--edge:var(--volt-deep)}
+.btn-ink{--bg:var(--ink);--fg:var(--ground);--depth:var(--ink-3);--edge:var(--ink)}
+.btn-danger{--bg:var(--danger);--fg:#fff;--depth:var(--danger-deep);--edge:var(--danger)}
+.btn-outline-danger{--fg:var(--danger);--edge:var(--danger);--depth:var(--danger)}
+.btn-ghost{--edge:transparent;--depth:transparent;background:transparent;box-shadow:none;margin-bottom:0}
+.btn-block{width:100%}
+.btn-sm{min-height:44px;font-size:15px;padding:0 16px;border-radius:12px}
+.btn .i{width:20px;height:20px;stroke-width:2.4}
+.btn-row{display:flex;gap:10px}
+.btn-row>.btn{flex:1}
+.icon-btn{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1.5px solid var(--line);color:var(--ink);flex:none;position:relative}
+.icon-btn .dot{position:absolute;top:-3px;right:-3px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--volt);color:var(--on-volt);border:2px solid var(--ground);font-family:var(--mono);font-size:10px;font-weight:700;display:grid;place-items:center}
+.linkbtn{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:44px;display:inline-flex;align-items:center}
+
+/* ---------- fields ---------- */
+.form{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:7px;position:relative;scroll-margin-top:120px}
+.field>label,.label{font-size:13.5px;font-weight:700;color:var(--ink)}
+.field .opt{font-weight:500;color:var(--ink-3)}
+.input{height:54px;width:100%;padding:0 16px;border-radius:var(--r);border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);outline:none;transition:border-color .15s,box-shadow .15s;-webkit-appearance:none;appearance:none}
+input[type="date"].input,input[type="time"].input{min-width:0;display:block}
+textarea.input{height:auto;min-height:112px;padding:14px 16px;resize:vertical;line-height:1.45}
+.input::placeholder{color:var(--ink-3)}
+.input:focus{border-color:var(--ink);box-shadow:0 0 0 4px color-mix(in srgb,var(--volt) 55%,transparent)}
+.input[readonly]{background:var(--raised);color:var(--ink-2);border-color:var(--line)}
+.field.bad .input,.field.bad .pick,.field.bad .choice,.field.bad .drop{border-color:var(--danger)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--danger) 16%,transparent)}
+.field.bad>label{color:var(--danger)}
+.field .msg{display:none;align-items:flex-start;gap:6px;font-size:12.5px;font-weight:600;color:var(--danger)}
+.field .msg .i{width:16px;height:16px;margin-top:1px}
+.field.bad .msg{display:flex}
+.field .hint{font-size:12.5px;color:var(--ink-2)}
+.input-wrap{position:relative}
+.input-wrap .input{padding-right:54px}
+.input-wrap .suffix{position:absolute;right:5px;top:5px;width:44px;height:44px;display:grid;place-items:center;color:var(--ink-2);border-radius:10px}
+.input-wrap.prefix .input{padding-left:46px;padding-right:16px}
+.input-wrap .pre{position:absolute;left:16px;top:0;height:54px;display:flex;align-items:center;font-weight:700;color:var(--ink-2);pointer-events:none}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.row-num{display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:12px}
+.check{display:flex;align-items:center;gap:10px;min-height:44px;font-size:14px;font-weight:600;cursor:pointer}
+.check input{width:22px;height:22px;margin:0;accent-color:var(--ink)}
+.rules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 12px;font-size:12.5px;color:var(--ink-2)}
+.rules li{display:flex;gap:7px;align-items:center;list-style:none}
+.rules li::before{content:"";width:9px;height:9px;border-radius:50%;border:1.5px solid currentColor;flex:none}
+.rules li.ok{color:var(--ok);font-weight:650}
+.rules li.ok::before{background:currentColor}
+
+/* ---------- auth ---------- */
+.auth{min-height:100%;display:flex;flex-direction:column;gap:24px;max-width:480px;margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 22px calc(28px + env(safe-area-inset-bottom))}
+.brand{display:flex;flex-direction:column;gap:14px;padding-top:34px}
+.wordmark{position:relative;display:inline-block;align-self:flex-start;font-size:104px;line-height:.8;padding-right:6px}
+.wordmark::after{content:"";position:absolute;left:-6px;right:-10px;bottom:-12px;height:14px;background:var(--volt);transform:skewX(-18deg);z-index:-1}
+.brand-wrap{position:relative;z-index:0}
+.tagline{font-size:17px;line-height:1.35;color:var(--ink-2);max-width:30ch;margin-top:10px}
+.tagline b{color:var(--ink)}
+.testacc{border:1.5px dashed var(--line-2);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:4px}
+.testacc-head{display:flex;justify-content:space-between;align-items:baseline;padding-bottom:6px}
+.acc{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;min-height:52px;padding:6px 0;border-top:1px solid var(--line);text-align:left;width:100%}
+.acc:first-of-type{border-top:0}
+.acc .who{display:flex;flex-direction:column;gap:2px;min-width:0}
+.acc .who b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acc .who span{font-family:var(--mono);font-size:11px;color:var(--ink-2)}
+.acc .use{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;border-radius:9px;background:var(--raised)}
+.steps-top{display:flex;align-items:center;gap:12px}
+.progress{flex:1;height:14px;border-radius:99px;background:var(--raised);overflow:hidden}
+.progress i{display:block;height:100%;border-radius:99px;background:var(--volt);box-shadow:inset 0 -4px 0 color-mix(in srgb,var(--volt-deep) 55%,transparent);transition:width .35s cubic-bezier(.2,.8,.2,1)}
+.step-title{display:flex;flex-direction:column;gap:6px}
+.step-title h1{font-size:46px}
+.grow{flex:1}
+/* ---------- screens shell ---------- */
+.topbar{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--ground) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.topbar-in{max-width:560px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 18px 10px}
+.topbar-in .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.topbar-in h1{font-size:32px}
+.page{max-width:560px;margin:0 auto;padding:6px 18px calc(var(--nav-h) + 44px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:14px}
+.page.has-fab{padding-bottom:calc(var(--nav-h) + 110px + env(safe-area-inset-bottom))}
+.section-title{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-top:6px}
+.section-title h2{font-size:26px}
+
+/* ---------- feed ---------- */
+.logo-sm{font-size:30px;position:relative;display:inline-block;align-self:flex-start;padding-right:4px;z-index:0}
+.logo-sm::after{content:"";position:absolute;left:-3px;right:-5px;bottom:-4px;height:6px;background:var(--volt);transform:skewX(-18deg);z-index:-1}
+.feedsum{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.active-filters{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:0 18px}
+.active-filters::-webkit-scrollbar{display:none}
+.fchip{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 8px 0 12px;border-radius:99px;background:var(--ink);color:var(--ground);font-size:12.5px;font-weight:650}
+.fchip .i{width:16px;height:16px}
+.day{display:flex;align-items:flex-end;gap:10px;padding:16px 2px 2px}
+.day .dnum{font-size:50px;line-height:.78}
+.day .dtxt{display:flex;flex-direction:column;gap:3px;padding-bottom:2px}
+.day .dname{font-family:var(--display);font-stretch:75%;font-style:italic;font-weight:800;font-size:17px;text-transform:uppercase;line-height:1}
+.day .rel{margin-left:auto;padding-bottom:3px}
+.rel.soon{color:var(--volt-text)}
+.rc{display:grid;grid-template-columns:80px minmax(0,1fr);gap:14px;padding:12px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);position:relative;color:var(--ink);transition:transform .12s ease}
+.rc:has(.rc-link:active){transform:scale(.985)}
+.rc-link{color:inherit;text-decoration:none}
+.rc-link:hover{color:inherit}
+.rc-link::after{content:"";position:absolute;inset:0;border-radius:inherit;z-index:1}
+.rc-link:focus-visible{outline:none}
+.rc:has(.rc-link:focus-visible){outline:2.5px solid var(--volt-deep);outline-offset:2px}
+.rc-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.fav{position:relative;z-index:2;display:inline-flex;align-items:center;gap:5px;min-height:44px;min-width:44px;padding:0 8px;margin:-10px -8px -10px 0;border-radius:99px;color:var(--ink-2);font-family:var(--mono);font-size:12px;font-weight:700;flex:none}
+.fav .i{width:20px;height:20px}
+.fav.on{color:var(--heart)}
+.fav.on .i{fill:currentColor}
+.fav.pop .i{animation:beat .4s cubic-bezier(.2,1.6,.4,1)}
+.fav.big{margin:0;padding:0 14px;border:1.5px solid var(--line-2);background:var(--surface)}
+.fav.big.on{border-color:currentColor}
+.fav-row{display:flex;align-items:center;gap:12px;font-size:14px}
+.fav .fl{font-family:var(--sans);font-size:14px;font-weight:700}
+@keyframes beat{45%{transform:scale(1.35)}}
+.rc .thumb{width:80px;height:100px;border-radius:12px;overflow:hidden;position:relative}
+.rc .body{display:flex;flex-direction:column;gap:6px;min-width:0;padding:2px 0}
+.rc .meta{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--ink-2);text-transform:uppercase;display:flex;gap:4px 10px;flex-wrap:wrap}
+.rc .meta span{display:inline-flex;align-items:center;gap:4px}
+.rc .meta .i{width:13px;height:13px;stroke-width:2.2}
+.rc h3{font-family:var(--display);font-stretch:76%;font-weight:800;font-size:19px;line-height:1.06;letter-spacing:-.005em}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:4px 7px;border-radius:7px;background:var(--raised);color:var(--ink);white-space:nowrap}
+.price{font-size:13px;color:var(--ink-2)}
+.price b{color:var(--ink);font-weight:750}
+.price.tbd{font-style:italic}
+.pager{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0 0;flex-wrap:wrap}
+.pager button{min-width:46px;height:46px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--surface);font-family:var(--mono);font-weight:700;font-size:13px;display:grid;place-items:center}
+.pager button.on{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.pager button[disabled]{opacity:.35}
+.empty{padding:34px 16px;text-align:center;color:var(--ink-2);display:flex;flex-direction:column;align-items:center;gap:12px;border:1.5px dashed var(--line-2);border-radius:var(--r-lg)}
+.empty h3{font-family:var(--display);font-stretch:75%;font-style:italic;font-weight:850;font-size:24px;text-transform:uppercase;color:var(--ink)}
+.empty p{max-width:32ch}
+.note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:var(--r);background:var(--warn-bg);color:var(--warn);font-size:13px;font-weight:600}
+.note .i{width:18px;height:18px;margin-top:1px}
+
+/* ---------- race bib art ---------- */
+.bib{position:absolute;inset:0;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:10px 9px 12px;background:#0D0F0B;color:#F3F4EE}
+.bib.t-white{background:#FFFFFF;color:#0D0F0B;box-shadow:inset 0 0 0 1px rgba(13,15,11,.14)}
+.bib.t-dark{background:#0D0F0B;color:#F3F4EE;box-shadow:inset 0 0 0 1px rgba(243,244,238,.12)}
+.bib.t-green{background:#C4FF2E;color:#0D0F0B}
+.bib::before{content:"";position:absolute;left:-40%;right:-40%;top:var(--y,22%);height:16%;background:currentColor;opacity:.07;transform:rotate(var(--rot,-12deg))}
+.bib .pin{position:absolute;width:6px;height:6px;border-radius:50%;background:var(--surface);box-shadow:inset 0 1px 1.5px rgba(0,0,0,.4);z-index:2}
+.bib .pin:nth-of-type(1){top:6px;left:6px}.bib .pin:nth-of-type(2){top:6px;right:6px}
+.bib .pin:nth-of-type(3){bottom:6px;left:6px}.bib .pin:nth-of-type(4){bottom:6px;right:6px}
+.bib .row{position:relative;display:flex;align-items:flex-end;gap:4px}
+.bib .n{font-family:var(--display);font-stretch:62%;font-style:italic;font-weight:900;font-size:var(--ns,46px);line-height:.78;letter-spacing:-.02em}
+.bib .side{display:flex;flex-direction:column;gap:3px;padding-bottom:1px;min-width:0}
+.bib .u{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;line-height:1}
+.bib .upto{font-family:var(--mono);font-size:8.5px;font-weight:600;letter-spacing:.02em;text-transform:uppercase;line-height:1.2;opacity:.82;white-space:nowrap}
+.bib .nm{position:relative;font-family:var(--display);font-stretch:72%;font-style:italic;font-weight:850;text-transform:uppercase;font-size:28px;line-height:.95;max-width:22ch;margin-top:14px;text-wrap:balance}
+.art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.kmtag{position:absolute;z-index:2;left:6px;bottom:6px;font-family:var(--mono);font-size:9.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:4px 6px;border-radius:6px;white-space:nowrap}
+.kmtag.t-white{background:#FFFFFF;color:#0D0F0B}.kmtag.t-dark{background:#0D0F0B;color:#F3F4EE}.kmtag.t-green{background:#C4FF2E;color:#0D0F0B}
+.bib.big{padding:24px 22px 26px}
+.bib.big .pin{width:11px;height:11px}
+.bib.big .pin:nth-of-type(1){top:14px;left:14px}.bib.big .pin:nth-of-type(2){top:14px;right:14px}
+.bib.big .pin:nth-of-type(3){bottom:14px;left:14px}.bib.big .pin:nth-of-type(4){bottom:14px;right:14px}
+.cover.top .bib.big .pin:nth-of-type(1),.cover.top .bib.big .pin:nth-of-type(2){top:calc(14px + env(safe-area-inset-top))}
+.bib.big .row{gap:12px}
+.bib.big .side{gap:6px;padding-bottom:4px}
+.bib.big .u{font-size:16px}
+.bib.big .upto{font-size:14px;opacity:.9}
+.bib.big .upto br{display:none}
+.cover .kmtag{left:14px;bottom:14px;font-size:12px;padding:6px 9px}
+
+/* ---------- swipe to delete ---------- */
+.swipe{position:relative;border-radius:var(--r-lg);overflow:hidden}
+.swipe .under{position:absolute;inset:0;display:flex;justify-content:flex-end;background:var(--danger);opacity:0;transition:opacity .15s}
+.swipe.dragging .under,.swipe.open .under{opacity:1}
+.swipe .under button{width:92px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.swipe .rc{touch-action:pan-y;transition:transform .22s cubic-bezier(.2,.8,.2,1)}
+.swipe .rc.drag{transition:none}
+.swipe-hint{display:flex;align-items:center;gap:8px}
+
+/* ---------- tab bar + fab ---------- */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom));z-index:40;width:min(372px,calc(100% - 28px));height:var(--nav-h);border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border:1px solid var(--glass-line);box-shadow:var(--shade);display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:6px;gap:4px}
+.tab{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-radius:18px;font-size:11px;font-weight:700;color:var(--ink-2);position:relative;text-decoration:none;transition:background .15s,color .15s}
+.tab .i{width:23px;height:23px}
+.tab:hover{color:var(--ink)}
+.tab.on{background:var(--volt);color:var(--on-volt)}
+.tab .badge{position:absolute;top:5px;left:calc(50% + 6px);min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;font-family:var(--mono);font-size:9.5px;font-weight:700;display:grid;place-items:center}
+.fab{position:fixed;z-index:41;right:max(18px,calc(50% - 262px));bottom:calc(var(--nav-h) + 30px + env(safe-area-inset-bottom));width:64px;height:64px;border-radius:50%;background:var(--volt);color:var(--on-volt);border:1.5px solid var(--volt-deep);box-shadow:0 5px 0 var(--volt-deep),0 14px 30px rgba(0,0,0,.2);display:grid;place-items:center;transition:transform .08s,box-shadow .08s}
+.fab .i{width:32px;height:32px;stroke-width:2.8}
+.fab:active{transform:translateY(4px);box-shadow:0 1px 0 var(--volt-deep),0 6px 14px rgba(0,0,0,.18)}
+
+/* ---------- sheets, dialogs, toast ---------- */
+.scrim{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center;animation:fade .18s ease}
+.scrim.center{align-items:center;padding:20px}
+.sheet{width:100%;max-width:560px;max-height:90dvh;overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border-radius:26px 26px 0 0;padding:10px 20px calc(22px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px;animation:up .28s cubic-bezier(.2,.8,.2,1)}
+.scrim.center .sheet{border-radius:24px;max-width:420px;padding:22px 20px 18px}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line-2);margin:0 auto -4px;flex:none}
+.sheet-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sheet-head h2{font-size:34px}
+.sheet .lead{color:var(--ink-2);font-size:14.5px}
+@keyframes up{from{transform:translateY(48px);opacity:.3}}
+@keyframes fade{from{opacity:0}}
+@keyframes drop{from{transform:translate(-50%,-14px);opacity:0}}
+#toastHost{position:fixed;left:0;right:0;top:0;z-index:95;pointer-events:none}
+.toast{position:absolute;left:50%;top:calc(12px + env(safe-area-inset-top));transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--ground);padding:12px 16px;border-radius:14px;font-weight:650;font-size:14px;box-shadow:var(--shade);animation:drop .24s ease;width:max-content;max-width:calc(100% - 32px)}
+.toast .i{width:18px;height:18px;color:var(--volt)}
+.toast.bad .i{color:var(--danger)}
+
+/* ---------- pickers ---------- */
+.pick{display:flex;flex-wrap:wrap;gap:8px;border-radius:var(--r);border:1.5px solid transparent;transition:box-shadow .15s}
+.pick button{min-height:44px;padding:0 14px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--surface);font-family:var(--mono);font-size:12.5px;font-weight:700;display:inline-flex;align-items:center;gap:6px}
+.pick button.on{background:var(--volt);color:var(--on-volt);border-color:var(--volt-deep)}
+.pick button .i{width:15px;height:15px}
+.choice{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;border-radius:var(--r);border:1.5px solid transparent}
+.choice button{min-height:54px;border-radius:var(--r);border:1.5px solid var(--line-2);background:var(--surface);font-weight:750;display:flex;align-items:center;justify-content:center;gap:8px}
+.choice button.on{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.ac{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r);box-shadow:var(--shade);max-height:232px;overflow-y:auto}
+.ac button{display:flex;width:100%;justify-content:space-between;align-items:center;gap:10px;min-height:46px;padding:0 14px;text-align:left;border-top:1px solid var(--line);font-weight:600}
+.ac button:first-child{border-top:0}
+.ac button span{font-family:var(--mono);font-size:10.5px;color:var(--ink-2)}
+.range-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -20px;padding:2px 20px}
+.range-row button{flex:none}
+.drop{position:relative;display:flex;align-items:center;gap:14px;padding:12px;border-radius:var(--r);border:1.5px dashed var(--line-2);background:var(--surface);min-height:84px;cursor:pointer}
+.drop .thumb{width:60px;height:74px;border-radius:10px;overflow:hidden;position:relative;flex:none;background:var(--raised);display:grid;place-items:center;color:var(--ink-2)}
+.drop input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.drop .txt{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--ink-2)}
+.drop .txt b{color:var(--ink);font-size:14px}
+
+/* ---------- detail / review ---------- */
+.cover{position:relative;height:340px;border-radius:0 0 30px 30px;overflow:hidden;flex:none}
+.cover-bar{position:absolute;z-index:5;top:calc(12px + env(safe-area-inset-top));left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.glassbtn{width:46px;height:46px;border-radius:50%;background:var(--glass);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--glass-line);color:var(--ink);display:grid;place-items:center}
+.detail{max-width:560px;margin:0 auto;padding:20px 18px calc(var(--nav-h) + 44px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:18px}
+.detail h1{font-size:44px;line-height:.9}
+.dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-lg);overflow:hidden;margin:0}
+.dl>div{background:var(--surface);padding:13px 14px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.dl>div.wide{grid-column:1/-1}
+.dl dt{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);display:flex;align-items:center;gap:6px}
+.dl dt .i{width:14px;height:14px}
+.dl dd{margin:0;font-weight:700;font-size:15px;overflow-wrap:anywhere}
+.dl dd.tbd{font-weight:500;font-style:italic;color:var(--ink-2)}
+.big-price{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.big-price small{font-size:14px;color:var(--ink-2);font-weight:600}
+.big-price strong{font-family:var(--display);font-stretch:70%;font-style:italic;font-weight:900;font-size:42px;line-height:.9}
+.prose{font-size:15.5px;line-height:1.55;max-width:62ch;white-space:pre-line}
+.coupon{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 14px;border:1.5px dashed var(--line-2);border-radius:var(--r)}
+.coupon code{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.05em;overflow-wrap:anywhere}
+.cta-card{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:var(--r-lg);background:var(--sunken)}
+.byline{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
+.mini-av{width:34px;height:34px;border-radius:11px;background:var(--ink);color:var(--volt);display:grid;place-items:center;font-family:var(--display);font-stretch:70%;font-style:italic;font-weight:900;font-size:16px;flex:none}
+.review-banner{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:var(--r-lg);background:var(--volt);color:var(--on-volt)}
+.review-banner .i{width:22px;height:22px;flex:none}
+.review-banner p{font-size:14px;font-weight:600}
+.actionbar{display:flex;flex-direction:column;gap:10px}
+
+/* ---------- requests ---------- */
+.seg{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -18px;padding:2px 18px}
+.seg::-webkit-scrollbar{display:none}
+.seg button{flex:none;min-height:42px;padding:0 14px;border-radius:99px;border:1.5px solid var(--line-2);background:var(--surface);font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:7px}
+.seg button.on{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.seg .ct{font-family:var(--mono);font-size:10.5px;opacity:.72}
+.modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:4px;border-radius:16px;background:var(--raised);gap:4px}
+.modes button{min-height:44px;border-radius:12px;font-weight:750;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ink-2)}
+.modes button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.modes .badge{min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--danger);color:#fff;font-family:var(--mono);font-size:10px;font-weight:700;display:grid;place-items:center}
+.st{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:6px;white-space:nowrap}
+.st::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.st-pend{background:var(--warn-bg);color:var(--warn)}
+.st-pub{background:var(--ok-bg);color:var(--ok)}
+.st-neg,.st-rem{background:var(--danger-bg);color:var(--danger)}
+.st-fin{background:var(--raised);color:var(--ink-2)}
+.req{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:10px}
+.req-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.req h3{font-family:var(--display);font-stretch:76%;font-weight:800;font-size:19px;line-height:1.08}
+.req .meta{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--ink-2);text-transform:uppercase;letter-spacing:.04em}
+.reason{padding:10px 12px;border-radius:12px;background:var(--danger-bg);color:var(--ink);font-size:13.5px;display:flex;flex-direction:column;gap:3px}
+.reason b{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--danger)}
+.person{display:flex;align-items:center;gap:12px}
+.person .who{display:flex;flex-direction:column;min-width:0}
+.person .who b{font-size:15px}
+.person .who span{font-size:12.5px;color:var(--ink-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arrow-roles{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.counter{font-family:var(--mono);font-size:11px;color:var(--ink-2);text-align:right}
+.counter.ok{color:var(--ok)}
+
+/* ---------- profile ---------- */
+.me{display:flex;align-items:center;gap:14px;padding:6px 0}
+.avatar{width:72px;height:72px;border-radius:22px;background:var(--ink);color:var(--volt);display:grid;place-items:center;font-family:var(--display);font-stretch:66%;font-style:italic;font-weight:900;font-size:36px;flex:none}
+.me .who{display:flex;flex-direction:column;gap:6px;min-width:0}
+.me .who h1{font-size:34px;overflow-wrap:anywhere}
+.role{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 9px;border-radius:7px;background:var(--volt);color:var(--on-volt)}
+.role.usuario{background:var(--raised);color:var(--ink)}
+.role .i{width:13px;height:13px;stroke-width:2.4}
+.group{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:14px}
+.group>h2{font-size:24px}
+.group-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.setting{display:flex;align-items:center;gap:12px;min-height:52px}
+.setting .txt{flex:1;display:flex;flex-direction:column;gap:2px}
+.setting .txt b{font-size:15px}
+.setting .txt span{font-size:12.5px;color:var(--ink-2)}
+.switch{position:relative;width:58px;height:34px;flex:none}
+.switch input{-webkit-appearance:none;appearance:none;width:100%;height:100%;margin:0;border-radius:99px;background:var(--line-2);transition:background .2s;cursor:pointer}
+.switch input:checked{background:var(--volt)}
+.switch i{position:absolute;top:4px;left:4px;width:26px;height:26px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .22s cubic-bezier(.2,.8,.2,1);pointer-events:none;display:grid;place-items:center}
+.switch input:checked+i{transform:translateX(24px);background:#0D0F0B}
+.upgrade{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:12px;padding:18px 16px 16px;border-radius:var(--r-lg);background:var(--volt);color:var(--on-volt)}
+.upgrade::after{content:"";position:absolute;right:-34px;top:-14px;width:130px;height:24px;background:#0D0F0B;transform:rotate(-14deg)}
+.upgrade h2{font-size:34px;max-width:13ch}
+.upgrade p{font-size:14px;font-weight:550;max-width:40ch}
+.upgrade .eyebrow{color:inherit;opacity:.72}
+.upgrade .btn-ink{--bg:#0D0F0B;--fg:#F3F4EE;--depth:#46560F;--edge:#0D0F0B}
+.upgrade .btn-plain{--bg:transparent;--fg:#0D0F0B;--edge:rgba(13,15,11,.35);--depth:transparent;box-shadow:none;margin-bottom:0}
+.danger-zone{display:flex;flex-direction:column;gap:6px}
+.lock{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}
+.lock .i{width:14px;height:14px}
+
+/* ---------- success ---------- */
+.done{min-height:100%;max-width:480px;margin:0 auto;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:calc(30px + env(safe-area-inset-top)) 22px calc(var(--nav-h) + 50px + env(safe-area-inset-bottom))}
+.done.no-nav{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+.done-badge{width:104px;height:104px;border-radius:32px;background:var(--volt);color:var(--on-volt);display:grid;place-items:center;box-shadow:0 7px 0 var(--volt-deep);transform:rotate(-6deg);animation:pop .5s cubic-bezier(.2,1.6,.4,1)}
+.done-badge .i{width:58px;height:58px;stroke-width:3}
+.done h1{font-size:64px}
+.done p{font-size:16px;color:var(--ink-2);max-width:34ch}
+@keyframes pop{from{transform:rotate(-6deg) scale(.4);opacity:0}}
+
+/* ---------- filtros: raio e cidade ---------- */
+.radius{display:grid;grid-template-columns:minmax(0,1fr) 108px;gap:14px;align-items:end}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:54px;margin:0;background:transparent;--p:50%;cursor:pointer}
+.range::-webkit-slider-runnable-track{height:8px;border-radius:99px;background:linear-gradient(to right,var(--volt) 0 var(--p),var(--raised) var(--p) 100%)}
+.range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:30px;height:30px;margin-top:-11px;border-radius:50%;background:var(--surface);border:3px solid var(--volt);box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.range::-moz-range-track{height:8px;border-radius:99px;background:var(--raised)}
+.range::-moz-range-progress{height:8px;border-radius:99px;background:var(--volt)}
+.range::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--surface);border:3px solid var(--volt)}
+.range.off{opacity:.38}
+.maxbox{display:flex;flex-direction:column;gap:6px}
+.input-wrap.km .input{padding:0 42px 0 14px;text-align:right;font-weight:700}
+.input-wrap .post{position:absolute;right:14px;top:0;height:54px;display:flex;align-items:center;font-family:var(--mono);font-size:11px;font-weight:700;color:var(--ink-2);pointer-events:none}
+.radius-foot{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.radius-foot .linkbtn{font-size:13px}
+.radius-foot .linkbtn.on{color:var(--volt-text);text-decoration:none}
+.select-wrap{position:relative}
+.select-wrap::after{content:"";position:absolute;right:20px;top:50%;width:8px;height:8px;border-right:2px solid var(--ink-2);border-bottom:2px solid var(--ink-2);transform:translateY(-70%) rotate(45deg);pointer-events:none}
+select.input{padding-right:46px;cursor:pointer;text-overflow:ellipsis}
+select.input option{background:var(--surface);color:var(--ink)}
+
+/* ---------- solicitações, perfil, dicas ---------- */
+.modes.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.modes.three button{font-size:13px;gap:5px}
+.example-note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;line-height:1.4;color:var(--ink-2)}
+.example-note .i{width:16px;height:16px;margin-top:1px;color:var(--warn)}
+.reason.warn{background:var(--warn-bg)}
+.reason.warn b{color:var(--warn)}
+.avatar,.mini-av{overflow:hidden}
+.avatar img,.mini-av img{width:100%;height:100%;object-fit:cover;display:block}
+.av-edit{position:relative;flex:none;cursor:pointer;border-radius:22px}
+.av-edit input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.av-cam{position:absolute;right:-6px;bottom:-6px;width:32px;height:32px;border-radius:50%;background:var(--volt);color:var(--on-volt);border:3px solid var(--ground);display:grid;place-items:center;pointer-events:none}
+.av-cam .i{width:16px;height:16px;stroke-width:2.4}
+.group.slim{padding:3px 14px;gap:0}
+.setting.sm{min-height:50px}
+.setting.sm .txt b{font-size:14.5px}
+.switch.sm{width:50px;height:30px}
+.switch.sm i{top:4px;left:4px;width:22px;height:22px}
+.switch.sm input:checked+i{transform:translateX(20px)}
+.empty.sm{padding:22px 16px}
+.empty p .i{width:16px;height:16px;vertical-align:-3px}
+ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px;font-size:15px}
+ol.steps li::marker{font-family:var(--mono);font-weight:700;color:var(--volt-text)}
+ol.steps .i{width:18px;height:18px;vertical-align:-4px}
+</style>
+</head>
+<body>
+<div id="app">
+  <main id="view" tabindex="-1"></main>
+</div>
+<nav id="tabbar" class="tabbar" aria-label="Menu principal" hidden></nav>
+<button id="fab" class="fab" type="button" aria-label="Nova corrida" hidden></button>
+<div id="toastHost" aria-live="polite"></div>
+<script>
+"use strict";
+/* =====================================================================
+   KOHE — protótipo HTML (fase de testes, dados salvos só no aparelho)
+   ===================================================================== */
+
+/* ---------- utils ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const uid = p => p + "-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const norm = s => String(s || "").normalize("NFD").replace(/\p{M}/gu, "").toLowerCase()
+  .replace(/\s*[-\/,]\s*sp$/, "").replace(/[^a-z0-9' ]/g, " ").replace(/\s+/g, " ").trim();
+
+/* ---------- regras de negócio ---------- */
+const MAX_ENVIOS = 3;            // envio original + 2 reenvios após negativa
+const POR_PAGINA = 10;
+const MIN_MOTIVO = 10;           // negar corrida
+const MIN_JUST = 10;             // pedir exclusão
+const MIN_IDADE = 18;
+const EXCLUIDA_DIAS = 7;         // corridas excluídas ficam 7 dias com opção de restaurar
+const RAIO_MAX = 300;            // fim da régua de raio (o campo aceita mais)
+const EXAMPLE_URL = "https://correriacampinas.com.br/calendario/";
+
+/* ---------- ícones (traço, grade 24) ---------- */
+const ICONS = {
+  home: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/>',
+  list: '<rect x="5" y="3.5" width="14" height="18" rx="2.5"/><path d="M9 3.5h6v3H9zM9 11h6M9 15h4"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.2-4.2 4.3-6 8-6s6.8 1.8 8 6"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  sliders: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/>',
+  back: '<path d="M15 5l-7 7 7 7"/>',
+  x: '<path d="M6 6l12 12M18 6 6 18"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  eyeoff: '<path d="M3 3l18 18M10.6 5.1A10.8 10.8 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7c1.9 0 3.5-.6 4.9-1.4M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  cal: '<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  pin: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+  flag: '<path d="M5 21V4M5 4h12l-2 4 2 4H5"/>',
+  phone: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V5.5A1.5 1.5 0 0 0 14.5 4h-9A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16H8"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  alert: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.5v.01"/>',
+  logout: '<path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 16l-4-4 4-4M6 12h10"/>',
+  shield: '<path d="M12 3l8 3v6c0 4.6-3.4 8.3-8 9-4.6-.7-8-4.4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  gps: '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>',
+  image: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
+  send: '<path d="M21 3 10 14M21 3l-7 18-4-7-7-4z"/>',
+  external: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  key: '<circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M16 7l3 3"/>',
+  bolt: '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  refresh: '<path d="M20 11a8 8 0 0 0-14.9-3M4 13a8 8 0 0 0 14.9 3M4 4v4h4M20 20v-4h-4"/>',
+  heart: '<path d="M12 20.3s-7.6-4.6-9.3-9.5C1.6 7.5 3.8 4.4 7.1 4.4c2 0 3.6 1.1 4.9 2.9 1.3-1.8 2.9-2.9 4.9-2.9 3.3 0 5.5 3.1 4.4 6.4-1.7 4.9-9.3 9.5-9.3 9.5z"/>',
+  camera: '<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>',
+  share: '<path d="M12 3v12M8 7l4-4 4 4M5 11v9h14v-9"/>',
+  dots: '<circle cx="12" cy="5" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="12" cy="19" r="1.3"/>'
+};
+const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+
+/* ---------- cidades (interior de SP) — coordenadas aproximadas do centro ---------- */
+const CITIES = ("Campinas|-22.906|-47.061;Americana|-22.737|-47.333;Atibaia|-23.117|-46.556;Boituva|-23.285|-47.679;" +
+  "Bragança Paulista|-22.953|-46.542;Itu|-23.264|-47.299;Jundiaí|-23.186|-46.898;Limeira|-22.565|-47.402;" +
+  "Monte Mor|-22.945|-47.316;Paulínia|-22.761|-47.154;Piracicaba|-22.725|-47.649;Rio Claro|-22.411|-47.561;" +
+  "São Roque|-23.529|-47.136;Sorocaba|-23.502|-47.458;Sumaré|-22.822|-47.267;Valinhos|-22.971|-46.996;" +
+  "Vinhedo|-23.030|-46.975;Louveira|-23.086|-46.951;Itupeva|-23.153|-47.058;Indaiatuba|-23.090|-47.218;" +
+  "Salto|-23.200|-47.287;Cabreúva|-23.307|-47.133;Hortolândia|-22.858|-47.220;Nova Odessa|-22.779|-47.296;" +
+  "Santa Bárbara d'Oeste|-22.754|-47.414;Cosmópolis|-22.646|-47.196;Artur Nogueira|-22.573|-47.173;" +
+  "Engenheiro Coelho|-22.488|-47.215;Jaguariúna|-22.706|-46.986;Holambra|-22.633|-47.056;Pedreira|-22.742|-46.901;" +
+  "Amparo|-22.701|-46.765;Serra Negra|-22.612|-46.701;Socorro|-22.593|-46.529;Águas de Lindóia|-22.476|-46.633;" +
+  "Itatiba|-23.006|-46.839;Morungaba|-22.880|-46.792;Jarinu|-23.101|-46.728;Campo Limpo Paulista|-23.208|-46.788;" +
+  "Várzea Paulista|-23.211|-46.828;Nazaré Paulista|-23.181|-46.395;Piracaia|-23.054|-46.358;" +
+  "Bom Jesus dos Perdões|-23.135|-46.465;Joanópolis|-22.930|-46.275;Pinhalzinho|-22.781|-46.590;Tuiuti|-22.819|-46.694;" +
+  "Vargem|-22.887|-46.412;Mogi Mirim|-22.432|-46.958;Mogi Guaçu|-22.372|-46.942;Itapira|-22.436|-46.822;" +
+  "Espírito Santo do Pinhal|-22.191|-46.748;São João da Boa Vista|-21.969|-46.798;Conchal|-22.330|-47.173;" +
+  "Araras|-22.357|-47.384;Leme|-22.186|-47.390;Pirassununga|-21.996|-47.426;Porto Ferreira|-21.854|-47.479;" +
+  "Cordeirópolis|-22.482|-47.457;Iracemápolis|-22.581|-47.519;Santa Gertrudes|-22.457|-47.530;Capivari|-22.995|-47.508;" +
+  "Rafard|-23.011|-47.531;Elias Fausto|-23.043|-47.374;Rio das Pedras|-22.843|-47.606;Saltinho|-22.844|-47.677;" +
+  "São Pedro|-22.548|-47.914;Charqueada|-22.510|-47.778;Tietê|-23.102|-47.715;Cerquilho|-23.165|-47.743;" +
+  "Porto Feliz|-23.215|-47.524;Iperó|-23.350|-47.689;Araçoiaba da Serra|-23.505|-47.614;Votorantim|-23.547|-47.438;" +
+  "Mairinque|-23.546|-47.183;Alumínio|-23.522|-47.254;Ibiúna|-23.656|-47.223;Tatuí|-23.355|-47.857;" +
+  "Itapetininga|-23.592|-48.053;Capão Bonito|-24.006|-48.349;Itapeva|-23.982|-48.876;Avaré|-23.105|-48.925;" +
+  "Botucatu|-22.886|-48.445;Lençóis Paulista|-22.599|-48.800;Jaú|-22.296|-48.558;Bauru|-22.315|-49.061;" +
+  "Marília|-22.214|-49.946;Ourinhos|-22.979|-49.871;Assis|-22.661|-50.412;Presidente Prudente|-22.121|-51.388;" +
+  "Araçatuba|-21.209|-50.433;Birigui|-21.289|-50.340;Lins|-21.678|-49.742;São José do Rio Preto|-20.820|-49.379;" +
+  "Catanduva|-21.138|-48.973;Votuporanga|-20.423|-49.973;Fernandópolis|-20.284|-50.246;Barretos|-20.557|-48.568;" +
+  "Bebedouro|-20.949|-48.479;Jaboticabal|-21.255|-48.322;Sertãozinho|-21.138|-47.990;Ribeirão Preto|-21.178|-47.806;" +
+  "Franca|-20.539|-47.401;São Carlos|-22.018|-47.891;Araraquara|-21.794|-48.176;Matão|-21.603|-48.366;" +
+  "Américo Brasiliense|-21.728|-48.103;Descalvado|-21.904|-47.620;Santa Rita do Passa Quatro|-21.710|-47.478;" +
+  "Casa Branca|-21.774|-47.086;Mococa|-21.467|-47.004;São José dos Campos|-23.179|-45.887;Jacareí|-23.305|-45.966;" +
+  "Taubaté|-23.026|-45.556;Caçapava|-23.101|-45.707;Pindamonhangaba|-22.925|-45.462;Guaratinguetá|-22.816|-45.193;" +
+  "Lorena|-22.731|-45.125")
+  .split(";").map(s => { const [n, la, lo] = s.split("|"); return { n, lat: +la, lon: +lo, k: norm(n) }; })
+  .sort((a, b) => a.n.localeCompare(b.n, "pt-BR"));
+const findCity = s => { const k = norm(s); return k ? CITIES.find(c => c.k === k) || null : null; };
+function distKm(a, b) {
+  const R = 6371, rad = x => x * Math.PI / 180;
+  const dLa = rad(b.lat - a.lat), dLo = rad(b.lon - a.lon);
+  const s = Math.sin(dLa / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLo / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+
+/* ---------- datas ---------- */
+const DOW = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+const DOW_FULL = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
+const MON = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const MON_FULL = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+const pad2 = n => String(n).padStart(2, "0");
+const ymd = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
+const pDate = s => { const [y, m, d] = String(s).split("-").map(Number); return new Date(y, m - 1, d); };
+const today0 = () => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; };
+function startOf(r) { const d = pDate(r.data); if (r.hora) { const [h, mi] = r.hora.split(":").map(Number); d.setHours(h, mi); } else d.setHours(23, 59); return d; }
+const isOver = r => startOf(r) < new Date();
+const daysFrom = s => Math.round((pDate(s) - today0()) / 864e5);
+function relDay(s) { const n = daysFrom(s); return n === 0 ? "hoje" : n === 1 ? "amanhã" : n < 0 ? (n === -1 ? "ontem" : `há ${-n} dias`) : `em ${n} dias`; }
+function fmtLong(s) { const d = pDate(s); return `${DOW_FULL[d.getDay()]}, ${d.getDate()} de ${MON_FULL[d.getMonth()]} de ${d.getFullYear()}`; }
+function fmtShort(s) { const d = pDate(s); return `${DOW[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`; }
+function fmtStamp(iso) { const d = new Date(iso); return `${d.getDate()} ${MON[d.getMonth()]} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+const brl = n => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+/* ---------- papéis ---------- */
+const ROLE_LABEL = { usuario: "Usuário", organizador: "Organizador", admin: "Administrador" };
+const NEXT_ROLE = { usuario: "organizador", organizador: "admin" };
+const canCreate = u => !!u && (u.role === "organizador" || u.role === "admin");
+const isAdmin = u => !!u && u.role === "admin";
+
+/* ---------- contas de teste (ordem da tela de login) ---------- */
+const TEST_ACCOUNTS = [
+  { id: "u-user", nick: "usuario", email: "usuario@kohe.com", pass: "Usuario123!", role: "usuario", nome: "Usuário Kohe" },
+  { id: "u-org", nick: "organizador", email: "organizador@kohe.com", pass: "Organizador123!", role: "organizador", nome: "Organizador Kohe" },
+  { id: "u-admin", nick: "admin", email: "admin@kohe.com", pass: "Admin123!", role: "admin", nome: "Admin Kohe" }
+];
+
+/* ---------- corridas iniciais (hardcoded) ---------- */
+const SEED_RACES = [
+  ["Ryze Run – Campinas", "Campinas", "2026-09-12", null, ["4 km", "8 km"], "Shopping Parque das Bandeiras", "",
+    "A Corrida Ryze Run é um circuito nacional que passará por 6 estados. A etapa Campinas será dia 12 de setembro de 2026 no Shopping Parque das Bandeiras, nas distâncias de 4 km e 8 km."],
+  ["II Corrida da Linguiça – Bragança Paulista", "Bragança Paulista", "2026-09-12", "19:00", ["5 km", "10 km"], "", "CORRERIA10",
+    "A II Corrida da Linguiça será no dia 12 de setembro de 2026 às 19:00 em Bragança Paulista, com percursos de 5 km e 10 km."],
+  ["Circuito das Estações 2026 Primavera – Campinas", "Campinas", "2026-09-13", null, ["5 km", "10 km"], "", "",
+    "A etapa Campinas do Circuito das Estações 2026 Primavera será no dia 13 de setembro de 2026 nas distâncias de 5 km e 10 km."],
+  ["Super Action – Sorocaba", "Sorocaba", "2026-09-13", "06:30", ["5 km"], "", "CORRERIACAMPINAS10",
+    "A Super Action etapa Sorocaba será no dia 13 de setembro de 2026 às 06:30. A corrida terá a distância de 5 km."],
+  ["Super Run – Sorocaba", "Sorocaba", "2026-09-13", "06:30", ["5 km"], "", "",
+    "A Corrida Super Run será no dia 13 de setembro de 2026 às 06:30 em Sorocaba, na distância de 5 km."],
+  ["10º Corrida Avenida Brasil – Americana", "Americana", "2026-09-13", "07:00", ["5 km", "10 km", "Caminhada 5 km"], "", "CORRERIA10",
+    "A corrida mais tradicional de Americana-SP chega na sua 10ª edição. Dia 13 de setembro às 07:00, a Corrida Avenida Brasil terá as modalidades Corrida 5 km e 10 km e Caminhada 5 km."],
+  ["Meia Maratona de Limeira", "Limeira", "2026-09-13", "07:00", ["21 km", "10 km", "5 km"], "Em frente ao Parque Cidade", "CORRERIACAMPINAS",
+    "A Meia Maratona de Limeira será no dia 13 de setembro de 2026 às 07:00, nas modalidades de 21 km, 10 km e 5 km, com largada em frente ao Parque Cidade."],
+  ["Corrida do Gigante – Itu", "Itu", "2026-09-13", "07:00", ["5 km", "Caminhada 5 km"], "Avenida Galileu Bicudo", "CORRERIACAMPINAS",
+    "A Corrida do Gigante acontece no dia 13 de setembro de 2026 às 07:00 na Avenida Galileu Bicudo, em Itu. Terá a distância de 5 km para corrida e caminhada."],
+  ["5º Ação Solidária NHL – Monte Mor", "Monte Mor", "2026-09-13", "07:00", ["5 km"], "", "",
+    "A 5ª edição da Corrida Ação Solidária NHL será no dia 13 de setembro de 2026 às 07:00 em Monte Mor, na distância de 5 km."],
+  ["Corrida do Coração – Jundiaí", "Jundiaí", "2026-09-13", "07:00", ["10 km", "5 km", "Caminhada 3 km"], "Av. 9 de Julho", "CORRERIA10",
+    "A Corrida do Coração será no dia 13 de setembro de 2026 às 07 horas na Av. 9 de Julho, em Jundiaí/SP. Modalidades: 10 km, 5 km e Caminhada 3 km."],
+  ["Track&Field Experience – Paulínia", "Paulínia", "2026-09-13", "07:00", ["5 km", "10 km"], "", "CORRERIA10",
+    "A Corrida Track&Field Experience etapa Paulínia será no dia 13 de setembro de 2026 às 07:00, nas modalidades de 5 km e 10 km.", { tipo: "app", app: "TF Sports" }],
+  ["Maprun Quebrando o Silêncio – Atibaia", "Atibaia", "2026-09-13", "07:00", ["5 km", "Caminhada 3 km"], "", "",
+    "A Corrida Maprun Quebrando o Silêncio será no dia 13 de setembro de 2026 às 07:05 em Atibaia-SP. Modalidades: Corrida 5 km e Caminhada 3 km."],
+  ["Corrida e Caminhada Drogal Geração em Movimento – Piracicaba", "Piracicaba", "2026-09-13", "07:00", ["5 km", "10 km", "Caminhada 5 km"], "", "",
+    "A Corrida e Caminhada Drogal Geração em Movimento será no dia 13 de setembro de 2026 às 7 horas em Piracicaba-SP. Modalidades: Corrida 5 km e 10 km e Caminhada 5 km."],
+  ["Corrida Good Run – Sumaré", "Sumaré", "2026-09-13", "07:00", ["10 km", "5 km", "Caminhada 5 km"], "Avenida Rebouças", "",
+    "A Corrida Good Run etapa Sumaré será no dia 13 de setembro de 2026 às 07 horas na Avenida Rebouças. Modalidades: Corrida 10 km e Corrida 5 km ou Caminhada 5 km."],
+  ["Circuito Transformar Campinas", "Campinas", "2026-09-13", "07:00", ["5 km", "10 km"], "Parque Ecológico Monsenhor Salim", "",
+    "A Corrida Circuito Transformar etapa Campinas será no dia 13 de setembro de 2026 às 07 horas no Parque Ecológico Monsenhor Salim. Modalidades: 5 km e 10 km."],
+  ["Corrida e Caminhada GUS Running – São Roque", "São Roque", "2026-09-13", "08:00", ["5 km", "Caminhada 3 km"], "", "",
+    "A Corrida e Caminhada GUS Running será no dia 13 de setembro de 2026 às 08:00 em São Roque, na distância de 5 km (corrida) e 3 km (caminhada)."],
+  ["6º Corrida Inclusiva Blue Angels – Rio Claro", "Rio Claro", "2026-09-13", "08:00", ["5 km", "10 km", "Caminhada 5 km", "Kids"], "", "",
+    "A 6ª Corrida Inclusiva Blue Angels acontecerá no dia 13 de setembro de 2026 às 08:00 em Rio Claro-SP. Modalidades: Corrida 5 km, Corrida 10 km, Caminhada 5 km e Corrida Kids."],
+  ["Corrida e Caminhada em Louvor a São Francisco de Assis – Boituva", "Boituva", "2026-09-19", "07:30", ["3 km", "5 km"], "", "",
+    "A Corrida e Caminhada em Louvor a São Francisco de Assis será no dia 19 de setembro de 2026 às 07:30 em Boituva-SP, nas distâncias de 3 km e 5 km."],
+  ["Corrida dos Distritos – Etapa Barão Geraldo", "Campinas", "2026-09-19", "17:00", ["6 km"], "Praça Durval Pattaro", "",
+    "A etapa Barão Geraldo da tradicional Corrida dos Distritos de Campinas acontecerá no dia 19 de setembro de 2026 às 17:00 na Praça Durval Pattaro, com distância única de 6 km.", { plataforma: "Ticket Sports" }],
+  ["Aero Night Run – GWM Dahruj – Etapa Jundiaí", "Jundiaí", "2026-09-19", "19:00", ["6 km", "Caminhada 3 km"], "", "",
+    "A Aero Night Run GWM Dahruj Etapa Jundiaí é parte do circuito de corridas nos aeroportos de Jundiaí, Campinas e Sorocaba. Será realizada no dia 19 de setembro de 2026 às 19:00, com as modalidades Caminhada 3 km e Corrida 6 km."],
+  ["SRUN – Limeira", "Limeira", "2026-09-20", null, ["5 km", "10 km"], "", "",
+    "O Circuito SRun Santander chegará em Limeira no dia 20 de setembro e terá as distâncias de 5 km e 10 km."],
+  ["Half Marathon – Sorocaba", "Sorocaba", "2026-09-20", "06:00", ["21 km", "7,9 km", "Caminhada 4 km"], "Parque das Águas", "CORRERIACAMPINAS",
+    "A Corrida Half Marathon acontecerá no dia 20 de setembro de 2026 às 06:00 no Parque das Águas, em Sorocaba. Modalidades: Corrida 21 km e 7,9 km, e Caminhada 4 km."],
+  ["Corrida Track&Field Run Series – Dom Pedro Shopping Campinas", "Campinas", "2026-09-20", "06:30", ["5 km", "10 km"], "Dom Pedro Shopping", "CORRERIA10",
+    "A Corrida Track&Field Run Series etapa Dom Pedro Shopping será realizada no dia 20 de setembro de 2026 às 06:45 em Campinas, com as modalidades de 5 km e 10 km.", { tipo: "app", app: "TF Sports" }]
+].map(([nome, cidade, data, hora, mods, rua, cupom, desc, insc], i) => ({
+  id: "r-" + pad2(i + 1), nome, cidade, data, hora, mods, rua, cupom, desc,
+  preco: null, insc: Object.assign({ tipo: "site", url: EXAMPLE_URL, app: "", plataforma: "", exemplo: true }, insc || {}),
+  arte: null, status: "publicada", autor: "u-admin", criado: "2026-09-01T12:00:00.000Z",
+  envios: 1, motivo: "", hist: [{ t: "2026-09-01T12:00:00.000Z", acao: "publicada", por: "u-admin" }]
+}));
+
+/* ---------- armazenamento local ---------- */
+const mem = {};
+const LS = {
+  get(k) { try { return localStorage.getItem(k); } catch (e) { return mem[k] ?? null; } },
+  set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { if (e && e.name === "QuotaExceededError") return false; mem[k] = v; return true; } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) { delete mem[k]; } }
+};
+const SS = {
+  get(k) { try { return JSON.parse(sessionStorage.getItem(k)); } catch (e) { return mem["s:" + k] ?? null; } },
+  set(k, v) { try { sessionStorage.setItem(k, JSON.stringify(v)); } catch (e) { mem["s:" + k] = v; } },
+  del(k) { try { sessionStorage.removeItem(k); } catch (e) { delete mem["s:" + k]; } }
+};
+const DB_KEY = "kohe.db.v1";
+const DB = {
+  users: [], races: [], ups: [],
+  load() {
+    try {
+      const o = JSON.parse(LS.get(DB_KEY));
+      if (o && o.users) { this.users = o.users; this.races = o.races || []; this.ups = o.ups || []; if ((o.v || 1) < 2) this.migrate(); return true; }
+    } catch (e) {}
+    return false;
+  },
+  migrate() {   // dados salvos pela 1ª versão do protótipo
+    const seedIds = new Set(SEED_RACES.map(r => r.id));
+    this.users.forEach(u => { if (!Array.isArray(u.favs)) u.favs = []; });
+    this.races.forEach(r => {
+      if (seedIds.has(r.id) && r.autor === "u-admin" && r.insc && !r.insc.url) { r.insc.url = EXAMPLE_URL; r.insc.exemplo = true; if (!r.insc.tipo) r.insc.tipo = "site"; }
+      if (r.status === "removida") {
+        const h = [...(r.hist || [])].reverse().find(x => x.acao === "removida") || {};
+        r.status = "excluida"; r.exclusao = { t: h.t || new Date().toISOString(), por: h.por || "", motivo: "", via: "admin", antes: "publicada" };
+      }
+    });
+    this.save();
+  },
+  save() {
+    const ok = LS.set(DB_KEY, JSON.stringify({ v: 2, users: this.users, races: this.races, ups: this.ups }));
+    if (!ok) toast("O aparelho ficou sem espaço para salvar. Use imagens menores.", true);
+    return ok;
+  }
+};
+const Prefs = {
+  d: {},
+  load() { try { this.d = JSON.parse(LS.get("kohe.prefs")) || {}; } catch (e) { this.d = {}; } },
+  save() { LS.set("kohe.prefs", JSON.stringify(this.d)); }
+};
+const Session = {
+  get: () => LS.get("kohe.session"),
+  set: id => LS.set("kohe.session", id),
+  clear: () => LS.del("kohe.session")
+};
+const me = () => DB.users.find(u => u.id === Session.get()) || null;
+
+async function hashPass(pass, salt) {
+  const data = new TextEncoder().encode(salt + "::" + pass);
+  if (window.crypto && crypto.subtle) {
+    try { const buf = await crypto.subtle.digest("SHA-256", data); return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join(""); } catch (e) {}
+  }
+  let h1 = 0x811c9dc5, h2 = 0x9747b28c;
+  for (const b of data) { h1 = Math.imul(h1 ^ b, 16777619); h2 = Math.imul(h2 ^ b, 2246822507) ^ (h2 >>> 13); }
+  return "f" + (h1 >>> 0).toString(16) + (h2 >>> 0).toString(16);
+}
+async function seedDB() {
+  DB.users = await Promise.all(TEST_ACCOUNTS.map(async a => {
+    const salt = uid("s");
+    return {
+      id: a.id, nome: a.nome, nick: a.nick, email: a.email, tel: "+55 (19) 90000-0000", nasc: "1990-01-01",
+      end: { rua: "Conta de teste", num: "0", bairro: "Centro", cidade: "Campinas" },
+      role: a.role, salt, hash: await hashPass(a.pass, salt), criado: "2026-09-01T12:00:00.000Z", teste: true, favs: [], foto: null
+    };
+  }));
+  DB.races = JSON.parse(JSON.stringify(SEED_RACES));
+  DB.ups = [];
+  DB.save();
+}
+/* ---------- tema (padrão: escuro) ---------- */
+const isDark = () => (Prefs.d.mode || "dark") === "dark";
+function applyTheme() {
+  document.documentElement.setAttribute("data-mode", Prefs.d.mode || "dark");
+  const tc = $("#themeColor"); if (tc) tc.setAttribute("content", isDark() ? "#090A08" : "#F3F4EE");
+}
+function setMode(dark) { Prefs.d.mode = dark ? "dark" : "light"; Prefs.save(); applyTheme(); }
+
+/* ---------- avisos e janelas ---------- */
+function toast(msg, isBad = false) {
+  const host = $("#toastHost");
+  host.innerHTML = `<div class="toast${isBad ? " bad" : ""}" role="status">${ic(isBad ? "alert" : "check")}<span>${esc(msg)}</span></div>`;
+  clearTimeout(toast.t); toast.t = setTimeout(() => { host.innerHTML = ""; }, isBad ? 3600 : 2400);
+}
+function openSheet(html, { center = false, onClose } = {}) {
+  const s = document.createElement("div");
+  s.className = "scrim" + (center ? " center" : "");
+  s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${center ? "" : '<div class="grab"></div>'}${html}</div>`;
+  let closed = false;
+  const close = () => { if (closed) return; closed = true; s.remove(); if (onClose) onClose(); };
+  s.addEventListener("click", e => { if (e.target === s || e.target.closest("[data-close]")) close(); });
+  s._close = close;
+  document.body.appendChild(s);
+  return { el: s.querySelector(".sheet"), close };
+}
+function closeSheets() { $$(".scrim").forEach(s => s._close ? s._close() : s.remove()); }
+document.addEventListener("keydown", e => { if (e.key === "Escape") { const s = $$(".scrim").pop(); if (s && s._close) s._close(); } });
+
+function confirmBox(o) {
+  return new Promise(resolve => {
+    let settled = false;
+    const finish = v => { if (!settled) { settled = true; resolve(v); } };
+    const r = o.reason, typed = o.typeToConfirm;
+    const sh = openSheet(`
+      <div class="sheet-head"><h2 class="disp">${esc(o.title)}</h2></div>
+      ${o.text ? `<p class="lead">${o.text}</p>` : ""}
+      ${typed ? `<div class="field" id="f-cfI"><label for="cfI">Digite <b>${esc(typed)}</b> para confirmar</label><input id="cfI" class="input" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="msg">${ic("alert")}<span>O texto não confere com ${esc(typed)}.</span></div></div>` : ""}
+      ${r ? `<div class="field" id="f-cfI"><label for="cfI">${esc(r.label)}</label><textarea id="cfI" class="input" maxlength="500" placeholder="${esc(r.placeholder || "")}"></textarea><div class="counter" id="cfC">0 / mínimo ${r.min}</div><div class="msg">${ic("alert")}<span>Escreva pelo menos ${r.min} caracteres explicando o motivo.</span></div></div>` : ""}
+      <div class="btn-row"><button class="btn" type="button" data-close>${esc(o.cancel || "Cancelar")}</button><button class="btn ${o.danger ? "btn-danger" : "btn-volt"}" type="button" id="cfOk">${esc(o.ok || "Confirmar")}</button></div>`,
+      { center: !r && !typed, onClose: () => finish(null) });
+    const inp = $("#cfI", sh.el);
+    if (r) inp.addEventListener("input", () => {
+      const n = inp.value.trim().length, c = $("#cfC", sh.el);
+      c.textContent = `${n} / mínimo ${r.min}`; c.classList.toggle("ok", n >= r.min);
+    });
+    $("#cfOk", sh.el).addEventListener("click", () => {
+      if (r && inp.value.trim().length < r.min) { $("#f-cfI", sh.el).classList.add("bad"); inp.focus(); return; }
+      if (typed && inp.value.trim().toLowerCase() !== typed.toLowerCase()) { $("#f-cfI", sh.el).classList.add("bad"); inp.focus(); return; }
+      finish(r ? inp.value.trim() : true); sh.close();
+    });
+    if (inp) setTimeout(() => inp.focus(), 300);
+  });
+}
+
+/* ---------- campos e validação ---------- */
+function F(o) {
+  const input = o.type === "textarea"
+    ? `<textarea id="${o.id}" class="input" placeholder="${esc(o.ph || "")}" ${o.attrs || ""}>${esc(o.value || "")}</textarea>`
+    : `<input id="${o.id}" class="input" type="${o.type || "text"}" value="${esc(o.value ?? "")}" placeholder="${esc(o.ph || "")}" ${o.attrs || ""}>`;
+  let control = input;
+  if (o.wrap === "eye") control = `<div class="input-wrap">${input}<button type="button" class="suffix" data-eye="${o.id}" aria-label="Mostrar senha">${ic("eye")}</button></div>`;
+  else if (o.wrap === "city") control = `<div class="input-wrap">${input}</div>`;
+  else if (o.pre) control = `<div class="input-wrap prefix"><span class="pre">${esc(o.pre)}</span>${input}</div>`;
+  return `<div class="field" id="f-${o.id}"><label for="${o.id}">${esc(o.label)}${o.opt ? ' <span class="opt">(opcional)</span>' : ""}</label>${control}${o.hint ? `<div class="hint">${o.hint}</div>` : ""}<div class="msg">${ic("alert")}<span>${esc(o.err || "Preencha este campo.")}</span></div></div>`;
+}
+function bad(id, msg) {
+  const f = document.getElementById("f-" + id); if (!f) return;
+  if (msg) { const s = $(".msg span", f); if (s) s.textContent = msg; }
+  f.classList.add("bad");
+}
+function goFirstBad(scope) {
+  const f = $(".field.bad", scope); if (!f) return false;
+  f.scrollIntoView({ behavior: "smooth", block: "center" });
+  const el = $("input,textarea,select,.pick button,.choice button,button", f);
+  setTimeout(() => { if (el) el.focus({ preventScroll: true }); }, 340);
+  return true;
+}
+const val = id => { const el = document.getElementById(id); return el ? el.value.trim() : ""; };
+document.addEventListener("input", e => { const f = e.target.closest && e.target.closest(".field.bad"); if (f) f.classList.remove("bad"); });
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-eye]"); if (!b) return;
+  const i = document.getElementById(b.dataset.eye), show = i.type === "password";
+  i.type = show ? "text" : "password";
+  b.innerHTML = ic(show ? "eyeoff" : "eye"); b.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+});
+
+const PASS_RULES = [
+  ["6+ caracteres", p => p.length >= 6],
+  ["1 letra maiúscula", p => /[A-ZÀ-Ý]/.test(p)],
+  ["1 número", p => /\d/.test(p)],
+  ["1 caractere especial", p => /[^A-Za-zÀ-ÿ0-9\s]/.test(p)]
+];
+const passOk = p => PASS_RULES.every(r => r[1](p));
+const rulesHTML = p => PASS_RULES.map(r => `<li class="${r[1](p) ? "ok" : ""}">${r[0]}</li>`).join("");
+const emailOk = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+const nickClean = v => String(v).trim().toLowerCase().replace(/^@/, "");
+const nickOk = v => /^[a-z0-9_.]{3,20}$/.test(v);
+function ageOf(nasc) {
+  const b = pDate(nasc), t = new Date(); let a = t.getFullYear() - b.getFullYear();
+  if (t.getMonth() < b.getMonth() || (t.getMonth() === b.getMonth() && t.getDate() < b.getDate())) a--;
+  return a;
+}
+function maskPhone(d) {
+  if (!d) return "+";
+  if (!d.startsWith("55")) return "+" + d.slice(0, 15);
+  const n = d.slice(2, 13); let out = "+55";
+  if (n.length) out += " (" + n.slice(0, 2) + (n.length >= 2 ? ")" : "");
+  const rest = n.slice(2);
+  if (rest) out += " " + (rest.length > 8 ? rest.slice(0, 5) + "-" + rest.slice(5, 9) : rest.length > 4 ? rest.slice(0, 4) + "-" + rest.slice(4) : rest);
+  return out;
+}
+function bindPhone(inp) {
+  inp.dataset.d = inp.value.replace(/\D/g, "");
+  inp.addEventListener("input", e => {
+    let d = inp.value.replace(/\D/g, "");
+    if (e.inputType && e.inputType.startsWith("delete") && d === inp.dataset.d) d = d.slice(0, -1);
+    inp.value = maskPhone(d); inp.dataset.d = d;
+  });
+}
+const phoneOk = v => { const d = String(v).replace(/\D/g, ""); return d.startsWith("55") ? d.length === 13 : d.length >= 10 && d.length <= 15; };
+
+function bindCity(inp) {
+  const wrap = inp.parentElement; let box = null;
+  const close = () => { if (box) { box.remove(); box = null; } };
+  inp.setAttribute("autocomplete", "off");
+  inp.addEventListener("input", () => {
+    close(); const q = norm(inp.value); if (q.length < 2) return;
+    const hits = CITIES.filter(c => c.k.includes(q))
+      .sort((a, b) => (a.k.startsWith(q) ? 0 : 1) - (b.k.startsWith(q) ? 0 : 1)).slice(0, 6);
+    if (!hits.length || (hits.length === 1 && hits[0].n === inp.value.trim())) return;
+    box = document.createElement("div"); box.className = "ac";
+    box.innerHTML = hits.map(c => `<button type="button" data-n="${esc(c.n)}">${esc(c.n)}<span>SP</span></button>`).join("");
+    box.addEventListener("pointerdown", e => e.preventDefault());
+    box.addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      inp.value = b.dataset.n; close(); inp.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    wrap.appendChild(box);
+  });
+  inp.addEventListener("blur", () => setTimeout(close, 150));
+}
+function compressImage(file, { max = 960, q = 0.72, square = false } = {}) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const c = document.createElement("canvas"), x = c.getContext("2d");
+      if (square) {
+        const s = Math.min(img.width, img.height), size = Math.min(max, s);
+        c.width = c.height = size;
+        x.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+      } else {
+        const k = Math.min(1, max / Math.max(img.width, img.height));
+        c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+        x.drawImage(img, 0, 0, c.width, c.height);
+      }
+      URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", q));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error("imagem")); };
+    img.src = url;
+  });
+}
+
+/* ---------- distâncias e capa da corrida ---------- */
+function hashNum(s) { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); }
+const kmOf = m => { const x = String(m).replace(",", ".").match(/\d+(\.\d+)?/); return x ? parseFloat(x[0]) : null; };
+const kmList = r => [...new Set((r.mods || []).map(kmOf).filter(v => v != null))];
+const kmTxt = n => String(n).replace(".", ",");
+function kmRange(r) { const l = kmList(r); return l.length ? { min: Math.min(...l), max: Math.max(...l) } : null; }
+// cor pela MAIOR distância: até 5 km branco · até 10 km escuro · acima de 10 km verde
+const kmTone = k => !k ? "dark" : k.max <= 5 ? "white" : k.max <= 10 ? "dark" : "green";
+function bibHTML(r, big = false) {
+  const k = kmRange(r), tone = kmTone(k);
+  if (r.arte) return `<img class="art" src="${r.arte}" alt="Arte da corrida">${k ? `<span class="kmtag t-${tone}">${kmTxt(k.min)} km${k.max > k.min ? " · até " + kmTxt(k.max) : ""}</span>` : ""}`;
+  const h = hashNum(r.id || r.nome), n = k ? kmTxt(k.min) : "K";
+  const ns = big ? (n.length > 2 ? 110 : 136) : (n.length > 2 ? 36 : 46);
+  const side = k
+    ? `<span class="side"><span class="u">km</span>${k.max > k.min ? `<span class="upto">até<br> ${kmTxt(k.max)} km</span>` : ""}</span>`
+    : `<span class="side"><span class="u">kohe</span></span>`;
+  return `<div class="bib t-${tone}${big ? " big" : ""}" style="--rot:${-(8 + (h >> 2) % 9)}deg;--y:${12 + (h >> 4) % 30}%;--ns:${ns}px" aria-hidden="true"><i class="pin"></i><i class="pin"></i><i class="pin"></i><i class="pin"></i><div class="row"><span class="n">${esc(n)}</span>${side}</div>${big ? `<div class="nm">${esc(r.nome)}</div>` : ""}</div>`;
+}
+
+/* ---------- favoritos ---------- */
+const favsOf = u => (u && Array.isArray(u.favs)) ? u.favs : [];
+const isFav = (u, id) => favsOf(u).includes(id);
+const favCount = id => DB.users.reduce((n, x) => n + (favsOf(x).includes(id) ? 1 : 0), 0);
+const favWord = n => n === 0 ? "Ninguém favoritou ainda" : n === 1 ? "1 pessoa favoritou" : `${n} pessoas favoritaram`;
+function favBtn(id, u, big = false) {
+  const on = isFav(u, id);
+  const inner = big ? `<span class="fl">${on ? "Favorita" : "Favoritar"}</span>` : `<span class="fc num">${favCount(id)}</span>`;
+  return `<button class="fav${big ? " big" : ""}${on ? " on" : ""}" type="button" data-fav="${id}" aria-pressed="${on}" aria-label="${on ? "Remover dos favoritos" : "Favoritar"}">${ic("heart")}${inner}</button>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-fav]"); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const card = b.closest(".rc"); if (card && card.dataset.moved) return;
+  const u = me(); if (!u) return;
+  const id = b.dataset.fav, on = !isFav(u, id);
+  u.favs = on ? [...favsOf(u), id] : favsOf(u).filter(x => x !== id);
+  DB.save();
+  const n = favCount(id);
+  $$(`[data-fav="${id}"]`).forEach(x => {
+    x.classList.toggle("on", on); x.setAttribute("aria-pressed", on);
+    x.setAttribute("aria-label", on ? "Remover dos favoritos" : "Favoritar");
+    const c = $(".fc", x); if (c) c.textContent = n;
+    const l = $(".fl", x); if (l) l.textContent = on ? "Favorita" : "Favoritar";
+  });
+  $$(`[data-favtxt="${id}"]`).forEach(x => { x.textContent = favWord(n); });
+  if (on) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); toast("Salva nos favoritos do seu perfil."); }
+}, true);
+
+/* ---------- card de corrida ---------- */
+const hasPrice = r => r.preco !== null && r.preco !== undefined && r.preco !== "";
+const priceHTML = r => hasPrice(r) ? `A partir de <b>${brl(r.preco)}</b>` : "Preço a confirmar";
+function raceCard(r, u, dist, opts = {}) {
+  return `<article class="rc" data-race="${r.id}">
+    <div class="thumb">${bibHTML(r)}</div>
+    <div class="body">
+      <div class="meta">${opts.date ? `<span>${ic("cal")}${fmtShort(r.data)}${isOver(r) ? " · finalizada" : ""}</span>` : ""}<span>${ic("clock")}${r.hora || "hora a confirmar"}</span><span>${ic("pin")}${esc(r.cidade)}${dist != null && dist >= 1 ? " · " + Math.round(dist) + " km" : ""}</span></div>
+      <h3><a class="rc-link" href="#/corrida/${r.id}${opts.from ? "?de=" + opts.from : ""}">${esc(r.nome)}</a></h3>
+      <div class="chips">${(r.mods || []).map(m => `<span class="chip">${esc(m)}</span>`).join("")}</div>
+      <div class="rc-foot"><span class="price${hasPrice(r) ? "" : " tbd"}">${priceHTML(r)}</span>${favBtn(r.id, u)}</div>
+    </div>
+  </article>`;
+}
+
+/* ---------- estados, pessoas, exclusões ---------- */
+function raceState(r) { return r.status === "publicada" ? (isOver(r) ? "finalizada" : "publicada") : r.status; }
+const ST = { pendente: ["st-pend", "Aguardando"], publicada: ["st-pub", "Publicada"], finalizada: ["st-fin", "Finalizada"], negada: ["st-neg", "Negada"], excluida: ["st-rem", "Excluída"] };
+const stPill = s => { const x = ST[s] || ST.excluida; return `<span class="st ${x[0]}">${x[1]}</span>`; };
+const userById = id => DB.users.find(u => u.id === id);
+const initials = u => (u ? (u.nick || u.nome || "?") : "?").slice(0, 1).toUpperCase();
+const avatarHTML = (u, cls = "avatar", style = "") => `<span class="${cls}"${style ? ` style="${style}"` : ""}>${u && u.foto ? `<img src="${u.foto}" alt="">` : esc(initials(u))}</span>`;
+const lastEvent = (r, ...acoes) => [...(r.hist || [])].reverse().find(h => acoes.includes(h.acao));
+const diasRestantes = r => Math.max(0, Math.ceil((new Date(r.exclusao.t).getTime() + EXCLUIDA_DIAS * 864e5 - Date.now()) / 864e5));
+const delPending = r => !!(r.pedidoExclusao && r.pedidoExclusao.status === "pendente" && r.status !== "excluida");
+function excludeRace(r, u, motivo, via) {
+  const t = new Date().toISOString();
+  const pedido = r.pedidoExclusao && r.pedidoExclusao.status === "pendente";
+  r.exclusao = { t, por: u.id, motivo: motivo || "", via, antes: r.status };
+  r.status = "excluida";
+  if (pedido) Object.assign(r.pedidoExclusao, { status: "aprovado", decidido: t, decididoPor: u.id });
+  r.hist.push({ t, acao: "excluida", por: u.id, obs: motivo || "" });
+}
+function restoreRace(r, u) {
+  const antes = r.exclusao && r.exclusao.antes;
+  r.status = antes === "pendente" || antes === "negada" ? antes : "publicada";
+  r.hist.push({ t: new Date().toISOString(), acao: "restaurada", por: u.id });
+  delete r.exclusao; delete r.pedidoExclusao;
+}
+function purgeExcluded() {
+  const lim = Date.now() - EXCLUIDA_DIAS * 864e5, n = DB.races.length;
+  DB.races = DB.races.filter(r => !(r.status === "excluida" && r.exclusao && new Date(r.exclusao.t).getTime() < lim));
+  if (DB.races.length !== n) {
+    const ids = new Set(DB.races.map(r => r.id));
+    DB.users.forEach(u => { u.favs = favsOf(u).filter(id => ids.has(id)); });
+    DB.save();
+  }
+}
+function pendingCount() {
+  return DB.races.filter(r => r.status === "pendente").length + DB.races.filter(delPending).length + DB.ups.filter(x => x.status === "pendente").length;
+}
+
+/* ---------- navegação ---------- */
+const ROUTES = [];
+const route = (re, view, o = {}) => ROUTES.push(Object.assign({ re, view }, o));
+function parseHash() { const h = location.hash.replace(/^#/, "") || "/"; const i = h.indexOf("?"); return { path: i < 0 ? h : h.slice(0, i), q: new URLSearchParams(i < 0 ? "" : h.slice(i + 1)) }; }
+function go(path) { if (location.hash === "#" + path) render(); else location.hash = path; }
+function redirect(path) {
+  try { history.replaceState(null, "", "#" + path); } catch (e) { location.hash = path; return; }
+  render();
+}
+function renderChrome(rt, u) {
+  const bar = $("#tabbar"), fab = $("#fab");
+  if (!u || rt.bare) { bar.hidden = true; fab.hidden = true; return; }
+  const tabs = [["feed", "#/feed", "home", "Início", 0]];
+  if (canCreate(u)) tabs.push(["sol", "#/solicitacoes", "list", "Solicitações", isAdmin(u) ? pendingCount() : 0]);
+  tabs.push(["perfil", "#/perfil", "user", "Perfil", 0]);
+  bar.innerHTML = tabs.map(([k, href, icn, label, badge]) =>
+    `<a class="tab${rt.tab === k ? " on" : ""}" href="${href}"${rt.tab === k ? ' aria-current="page"' : ""}>${ic(icn)}<span>${label}</span>${badge ? `<span class="badge">${badge}</span>` : ""}</a>`).join("");
+  bar.hidden = false;
+  fab.innerHTML = ic("plus");
+  fab.hidden = !(rt.fab && canCreate(u));
+}
+function render() {
+  const { path, q } = parseHash(), u = me();
+  const rt = ROUTES.find(x => x.re.test(path));
+  if (!rt) return redirect(u ? "/feed" : "/login");
+  if (rt.guest && u) return redirect("/feed");
+  if (!rt.guest && !u) return redirect("/login");
+  if (rt.roles && !rt.roles.includes(u.role)) return redirect("/feed");
+  closeSheets();
+  renderChrome(rt, u);
+  const view = $("#view");
+  view.scrollTop = 0;
+  rt.view(view, path.match(rt.re).slice(1), q, u);
+}
+window.addEventListener("hashchange", render);
+
+/* ---------- sem zoom (pinça / gesto iOS) ---------- */
+document.addEventListener("gesturestart", e => e.preventDefault(), { passive: false });
+document.addEventListener("touchmove", e => { if (e.touches && e.touches.length > 1) e.preventDefault(); }, { passive: false });
+/* =====================================================================
+   TELAS — acesso
+   ===================================================================== */
+async function resetAll() {
+  const ok = await confirmBox({
+    title: "Restaurar dados?", danger: true, ok: "Restaurar",
+    text: "Apaga contas, corridas, favoritos e solicitações criadas neste aparelho e volta às 3 contas de teste e às corridas iniciais."
+  });
+  if (!ok) return;
+  await seedDB(); Session.clear(); SS.del("kohe.draft"); SIGNUP = null;
+  toast("Dados iniciais restaurados."); go("/login");
+}
+
+route(/^\/login$/, function vLogin(view, _, q) {
+  view.innerHTML = `<section class="auth">
+    <div class="brand">
+      <div class="brand-wrap"><h1 class="disp wordmark">Kohe</h1></div>
+    </div>
+    <form class="form" id="loginForm" novalidate>
+      ${F({ id: "lgUser", label: "Nickname ou e-mail", value: q.get("u") || "", ph: "seu_nick", attrs: 'autocomplete="username" autocapitalize="off" spellcheck="false"', err: "Informe seu nickname ou e-mail." })}
+      ${F({ id: "lgPass", label: "Senha", type: "password", wrap: "eye", attrs: 'autocomplete="current-password"', err: "Informe sua senha." })}
+      <button class="btn btn-volt btn-block" type="submit">Entrar ${ic("arrow")}</button>
+    </form>
+    <div class="form">
+      <p class="muted" style="text-align:center">Primeira vez no Kohe?</p>
+      <a class="btn btn-block" href="#/cadastro">Fazer cadastro</a>
+    </div>
+    <div class="testacc">
+      <div class="testacc-head"><span class="eyebrow">Contas de teste</span><span class="eyebrow">toque para preencher</span></div>
+      ${TEST_ACCOUNTS.map(a => {
+        const gone = !DB.users.some(u => u.id === a.id);
+        return `<button class="acc" type="button" data-acc="${a.id}"><span class="who"><b>${esc(a.email)}</b><span>${ROLE_LABEL[a.role]} · ${gone ? "conta excluída" : esc(a.pass)}</span></span><span class="use">Usar</span></button>`;
+      }).join("")}
+      <button class="linkbtn" type="button" id="resetData" style="align-self:flex-start;font-size:13px">Restaurar dados iniciais</button>
+    </div>
+  </section>`;
+
+  $$("[data-acc]", view).forEach(b => b.addEventListener("click", () => {
+    const a = TEST_ACCOUNTS.find(x => x.id === b.dataset.acc);
+    $("#lgUser").value = a.email; $("#lgPass").value = a.pass;
+    $$(".field.bad", view).forEach(f => f.classList.remove("bad"));
+  }));
+  $("#resetData").addEventListener("click", resetAll);
+  $("#loginForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const who = val("lgUser"), pass = $("#lgPass").value;
+    if (!who) bad("lgUser");
+    if (!pass) bad("lgPass", "Informe sua senha.");
+    if (goFirstBad(view)) return;
+    const k = who.toLowerCase().replace(/^@/, "");
+    const u = DB.users.find(x => x.nick === k || x.email.toLowerCase() === k);
+    if (!u || (await hashPass(pass, u.salt)) !== u.hash) {
+      bad("lgPass", "Nickname, e-mail ou senha não conferem. Confira e tente de novo.");
+      goFirstBad(view); return;
+    }
+    Session.set(u.id);
+    toast(`Boa, @${u.nick}! Bora correr.`);
+    go("/feed");
+  });
+}, { guest: true, bare: true });
+
+/* ---------- cadastro em 3 passos ---------- */
+let SIGNUP = null;
+const SIGN_STEPS = [
+  { title: "Quem é você", sub: "" },
+  { title: "Contato e senha", sub: "A senha precisa de letra maiúscula, número e caractere especial." },
+  { title: "Onde você mora", sub: "Sua cidade serve de ponto de partida para o filtro de raio das corridas." }
+];
+route(/^\/cadastro$/, function vSignup(view) {
+  if (!SIGNUP) SIGNUP = { step: 0, prev: 0, d: { tel: "+55 " } };
+  const S = SIGNUP, d = S.d, step = S.step;
+  const collect = () => $$("input", view).forEach(i => {
+    if (!i.id.startsWith("su_")) return;
+    d[i.id.slice(3)] = i.id.startsWith("su_pass") ? i.value : i.value.trim();
+  });
+  let fields = "";
+  if (step === 0) {
+    fields = F({ id: "su_nome", label: "Nome", value: d.nome, attrs: 'autocomplete="name" autocapitalize="words"', err: "Informe seu nome." })
+      + F({ id: "su_nick", label: "Nickname", value: d.nick, ph: "corre_ana", pre: "@", attrs: 'autocapitalize="off" autocomplete="off" spellcheck="false" maxlength="20"', hint: "3 a 20 caracteres: letras, números, ponto ou _. Não dá para trocar depois.", err: "Escolha um nickname." })
+      + F({ id: "su_nasc", label: "Data de nascimento", type: "date", value: d.nasc, attrs: `max="${ymd(new Date())}"`, hint: "O Kohe é para maiores de 18 anos.", err: "Informe sua data de nascimento." });
+  } else if (step === 1) {
+    const t = d.show ? "text" : "password";
+    fields = F({ id: "su_email", label: "E-mail", type: "email", value: d.email, attrs: 'autocomplete="email" autocapitalize="off" spellcheck="false"', err: "Informe seu e-mail." })
+      + F({ id: "su_tel", label: "Celular com DDD", type: "tel", value: d.tel || "+55 ", attrs: 'autocomplete="tel" inputmode="tel"', hint: "O código do Brasil já vem preenchido. Formato: +55 (19) 99876-5432", err: "Informe o celular com DDD." })
+      + F({ id: "su_pass", label: "Senha", type: t, value: d.pass, attrs: 'autocomplete="new-password"', err: "Crie uma senha." })
+      + `<ul class="rules" id="suRules" aria-live="polite">${rulesHTML(d.pass || "")}</ul>`
+      + F({ id: "su_pass2", label: "Confirme a senha", type: t, value: d.pass2, attrs: 'autocomplete="new-password"', err: "Repita a senha para confirmar." })
+      + `<label class="check"><input type="checkbox" id="suShow"${d.show ? " checked" : ""}> Mostrar senha</label>`;
+  } else {
+    fields = `<div class="row-num">${F({ id: "su_rua", label: "Rua", value: d.rua, attrs: 'autocomplete="address-line1"', err: "Informe a rua." })}${F({ id: "su_num", label: "Número", value: d.num, attrs: 'inputmode="numeric"', err: "Informe o nº." })}</div>`
+      + F({ id: "su_bairro", label: "Bairro", value: d.bairro, err: "Informe o bairro." })
+      + F({ id: "su_cidade", label: "Cidade", value: d.cidade, wrap: "city", ph: "Comece a digitar", hint: "Por enquanto a lista sugere cidades do interior de SP.", err: "Informe a cidade." });
+  }
+  view.innerHTML = `<section class="auth">
+    <div class="steps-top">
+      <button class="icon-btn" type="button" id="suBack" aria-label="Voltar">${ic("back")}</button>
+      <div class="progress" role="progressbar" aria-label="Progresso do cadastro" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${step + 1}"><i style="width:${((S.prev + 1) / 3) * 100}%"></i></div>
+      <span class="eyebrow num">${step + 1}/3</span>
+    </div>
+    <div class="step-title"><span class="eyebrow">Cadastro</span><h1 class="disp">${SIGN_STEPS[step].title}</h1>${SIGN_STEPS[step].sub ? `<p class="muted">${SIGN_STEPS[step].sub}</p>` : ""}</div>
+    <form class="form" id="suForm" novalidate>
+      ${fields}
+      <button class="btn btn-volt btn-block" type="submit">${step < 2 ? "Continuar " + ic("arrow") : "Criar conta " + ic("check")}</button>
+    </form>
+    <p class="muted" style="text-align:center">Já tem conta? <a class="linkbtn" href="#/login">Entrar</a></p>
+  </section>`;
+  requestAnimationFrame(() => requestAnimationFrame(() => { const bar = $(".progress i", view); if (bar) bar.style.width = ((step + 1) / 3) * 100 + "%"; }));
+  S.prev = step;
+
+  if (step === 0) $("#su_nick").addEventListener("input", e => { e.target.value = e.target.value.toLowerCase().replace(/\s/g, ""); });
+  if (step === 1) {
+    bindPhone($("#su_tel"));
+    $("#su_pass").addEventListener("input", e => { $("#suRules").innerHTML = rulesHTML(e.target.value); });
+    $("#suShow").addEventListener("change", e => { d.show = e.target.checked; ["su_pass", "su_pass2"].forEach(id => { $("#" + id).type = d.show ? "text" : "password"; }); });
+  }
+  if (step === 2) bindCity($("#su_cidade"));
+
+  $("#suBack").addEventListener("click", () => { collect(); if (S.step > 0) { S.step--; vSignup(view); view.scrollTop = 0; } else { SIGNUP = null; go("/login"); } });
+  $("#suForm").addEventListener("submit", async e => {
+    e.preventDefault(); collect();
+    if (step === 0) {
+      d.nick = nickClean(d.nick || "");
+      if (!d.nome || d.nome.length < 2) bad("su_nome");
+      if (!d.nick) bad("su_nick", "Escolha um nickname.");
+      else if (!nickOk(d.nick)) bad("su_nick", "Use 3 a 20 caracteres: letras, números, ponto ou _.");
+      else if (DB.users.some(u => u.nick === d.nick)) bad("su_nick", "Esse nickname já está em uso. Tente outro.");
+      if (!d.nasc) bad("su_nasc");
+      else if (ageOf(d.nasc) < MIN_IDADE) bad("su_nasc", "É preciso ter 18 anos ou mais para usar o Kohe.");
+    } else if (step === 1) {
+      if (!d.email) bad("su_email");
+      else if (!emailOk(d.email)) bad("su_email", "Esse e-mail parece incompleto. Exemplo: nome@email.com");
+      else if (DB.users.some(u => u.email.toLowerCase() === d.email.toLowerCase())) bad("su_email", "Já existe uma conta com esse e-mail.");
+      if (!phoneOk(d.tel)) bad("su_tel", "Informe o celular com DDD. Formato: +55 (19) 99876-5432");
+      if (!d.pass) bad("su_pass", "Crie uma senha.");
+      else if (!passOk(d.pass)) bad("su_pass", "A senha ainda não cumpre todas as regras abaixo.");
+      if (!d.pass2) bad("su_pass2", "Repita a senha para confirmar.");
+      else if (d.pass2 !== d.pass) bad("su_pass2", "As senhas não são iguais. Digite de novo.");
+    } else {
+      if (!d.rua) bad("su_rua");
+      if (!d.num) bad("su_num");
+      if (!d.bairro) bad("su_bairro");
+      if (!d.cidade) bad("su_cidade");
+    }
+    if (goFirstBad(view)) return;
+    if (step < 2) { S.step++; vSignup(view); view.scrollTop = 0; return; }
+    const salt = uid("s"), c = findCity(d.cidade);
+    const user = {
+      id: uid("u"), nome: d.nome, nick: d.nick, email: d.email.toLowerCase(), tel: d.tel, nasc: d.nasc,
+      end: { rua: d.rua, num: d.num, bairro: d.bairro, cidade: c ? c.n : d.cidade },
+      role: "usuario", salt, hash: await hashPass(d.pass, salt), criado: new Date().toISOString(), favs: [], foto: null
+    };
+    DB.users.push(user);
+    if (!DB.save()) { DB.users.pop(); return; }
+    SIGNUP = null;
+    go("/bem-vindo?u=" + encodeURIComponent(user.nick));
+  });
+}, { guest: true, bare: true });
+
+route(/^\/bem-vindo$/, (view, _, q) => {
+  const nick = q.get("u") || "";
+  view.innerHTML = `<section class="done no-nav">
+    <div class="done-badge">${ic("check")}</div>
+    <h1 class="disp">Conta criada</h1>
+    <p>Agora é só entrar com <b>@${esc(nick)}</b> e a senha que você acabou de criar.</p>
+    <a class="btn btn-volt btn-block" href="#/login?u=${encodeURIComponent(nick)}">Fazer login ${ic("arrow")}</a>
+  </section>`;
+}, { guest: true, bare: true });
+/* =====================================================================
+   TELAS — feed de corridas
+   ===================================================================== */
+const defaultFilters = () => ({ kms: [], de: "", ate: "", cidade: "", raio: 0, origem: "perfil", gps: null });
+function feedFilters() {
+  const f = Object.assign(defaultFilters(), Prefs.d.filtros || {});
+  f.kms = (Array.isArray(f.kms) ? f.kms : []).map(Number).filter(n => !isNaN(n));
+  delete f.mods;
+  f.raio = Math.max(0, parseInt(f.raio, 10) || 0);
+  return f;
+}
+function saveFilters(f) { Prefs.d.filtros = f; Prefs.save(); }
+function originPoint(f, u) {
+  if (f.origem === "gps" && f.gps) return { lat: f.gps.lat, lon: f.gps.lon, label: "você" };
+  const c = findCity(u && u.end && u.end.cidade);
+  return c ? { lat: c.lat, lon: c.lon, label: c.n } : null;
+}
+function publishedUpcoming() {
+  return DB.races.filter(r => r.status === "publicada" && !isOver(r))
+    .sort((a, b) => startOf(a) - startOf(b) || a.nome.localeCompare(b.nome, "pt-BR"));
+}
+function filterRaces(list, f, o, skipCity = false) {
+  return list.map(r => { const c = findCity(r.cidade); return { r, dist: o && c ? distKm(o, c) : null }; })
+    .filter(({ r, dist }) => {
+      if (f.kms.length && !kmList(r).some(k => f.kms.includes(k))) return false;
+      if (f.de && r.data < f.de) return false;
+      if (f.ate && r.data > f.ate) return false;
+      if (!skipCity && f.cidade && norm(r.cidade) !== norm(f.cidade)) return false;
+      if (f.raio && o && (dist == null || dist > f.raio)) return false;
+      return true;
+    });
+}
+function pagerHTML(p, pages) {
+  if (pages <= 1) return "";
+  let b = `<button type="button" data-page="${p - 1}"${p === 1 ? " disabled" : ""} aria-label="Página anterior">${ic("back")}</button>`;
+  for (let i = 1; i <= pages; i++) b += `<button type="button" data-page="${i}"${i === p ? ' class="on" aria-current="page"' : ""}>${i}</button>`;
+  b += `<button type="button" data-page="${p + 1}"${p === pages ? " disabled" : ""} aria-label="Próxima página"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>`;
+  return `<nav class="pager" aria-label="Páginas do feed">${b}</nav>`;
+}
+
+route(/^\/feed$/, function vFeed(view, _, q, u) {
+  const f = feedFilters(), o = originPoint(f, u);
+  const rows = filterRaces(publishedUpcoming(), f, o);
+  const pages = Math.max(1, Math.ceil(rows.length / POR_PAGINA));
+  const p = Math.min(Math.max(1, parseInt(q.get("p") || "1", 10) || 1), pages);
+  const slice = rows.slice((p - 1) * POR_PAGINA, p * POR_PAGINA);
+  const admin = isAdmin(u);
+
+  const chips = [];
+  f.kms.forEach(k => chips.push(["km:" + k, kmTxt(k) + " km"]));
+  if (f.de || f.ate) chips.push(["data", f.de && f.ate ? `${fmtShort(f.de)} → ${fmtShort(f.ate)}` : f.de ? `a partir de ${fmtShort(f.de)}` : `até ${fmtShort(f.ate)}`]);
+  if (f.cidade) chips.push(["cidade", f.cidade]);
+  if (f.raio) chips.push(["raio", `até ${f.raio} km${o ? " de " + o.label : ""}`]);
+
+  let list = "", lastDay = "";
+  slice.forEach(({ r, dist }) => {
+    if (r.data !== lastDay) {
+      lastDay = r.data;
+      const d = pDate(r.data), n = daysFrom(r.data);
+      list += `<div class="day"><span class="disp dnum num">${pad2(d.getDate())}</span><span class="dtxt"><span class="dname">${DOW_FULL[d.getDay()].replace("-feira", "")}</span><span class="eyebrow">${MON_FULL[d.getMonth()]} ${d.getFullYear()}</span></span><span class="eyebrow rel${n <= 3 ? " soon" : ""}">${relDay(r.data)}</span></div>`;
+    }
+    const card = raceCard(r, u, dist);
+    list += admin
+      ? `<div class="swipe" data-swipe="${r.id}"><div class="under"><button type="button" data-del="${r.id}" aria-label="Excluir ${esc(r.nome)}" tabindex="-1">${ic("trash")}<span>Excluir</span></button></div>${card}</div>`
+      : card;
+  });
+
+  const anyPublished = publishedUpcoming().length > 0;
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <div class="t"><span class="disp logo-sm">Kohe</span></div>
+      <button class="icon-btn" type="button" id="openFilters" aria-label="Filtros${chips.length ? " (" + chips.length + " ativos)" : ""}">${ic("sliders")}${chips.length ? `<span class="dot">${chips.length}</span>` : ""}</button>
+    </div></header>
+    <section class="page${canCreate(u) ? " has-fab" : ""}">
+      <div class="section-title" style="padding-top:0"><h1 class="disp" style="font-size:42px">Próximas largadas</h1></div>
+      <div class="feedsum"><span class="eyebrow num">${rows.length} corrida${rows.length === 1 ? "" : "s"}${pages > 1 ? ` · página ${p} de ${pages}` : ""}</span><span class="eyebrow">@${esc(u.nick)}</span></div>
+      ${chips.length ? `<div class="active-filters">${chips.map(([k, l]) => `<button class="fchip" type="button" data-rm="${esc(k)}" aria-label="Remover filtro ${esc(l)}">${esc(l)}${ic("x")}</button>`).join("")}</div>` : ""}
+      ${f.raio && !o ? `<div class="note">${ic("alert")}<span>A cidade do seu cadastro não está na lista do Kohe, então o raio foi ignorado. Nos filtros, use “Onde estou”.</span></div>` : ""}
+      ${admin && slice.length ? `<p class="eyebrow swipe-hint">${ic("trash")} Arraste um card para a esquerda para excluir</p>` : ""}
+      ${slice.length ? list : !anyPublished
+        ? `<div class="empty"><h3>Nenhuma corrida publicada</h3><p>Quando novas corridas forem aprovadas, elas aparecem aqui em ordem de data.</p></div>`
+        : `<div class="empty"><h3>Nada com esses filtros</h3><p>Tente outra distância, amplie as datas ou aumente o raio.</p><button class="btn btn-sm" type="button" id="clearFilters">Limpar filtros</button></div>`}
+      ${pagerHTML(p, pages)}
+    </section>`;
+
+  const sc = SS.get("kohe.feedScroll");
+  if (sc != null && SS.get("kohe.lastFeed") === location.hash) view.scrollTop = sc;
+  SS.del("kohe.feedScroll");
+
+  $("#openFilters").addEventListener("click", () => openFilters(u));
+  const clr = $("#clearFilters");
+  if (clr) clr.addEventListener("click", () => { saveFilters(defaultFilters()); go("/feed"); });
+  $$("[data-rm]", view).forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.rm, nf = feedFilters();
+    if (k.startsWith("km:")) nf.kms = nf.kms.filter(x => String(x) !== k.slice(3));
+    else if (k === "data") { nf.de = ""; nf.ate = ""; }
+    else if (k === "cidade") nf.cidade = "";
+    else if (k === "raio") nf.raio = 0;
+    saveFilters(nf); go("/feed");
+  }));
+  $$("[data-page]", view).forEach(b => b.addEventListener("click", () => go("/feed?p=" + b.dataset.page)));
+  $$(".rc-link", view).forEach(a => a.addEventListener("click", e => {
+    const c = a.closest(".rc"), w = a.closest(".swipe");
+    if (c.dataset.moved) { e.preventDefault(); return; }
+    if (w && w.classList.contains("open")) { e.preventDefault(); w.classList.remove("open", "dragging"); c.style.transform = ""; return; }
+    SS.set("kohe.feedScroll", view.scrollTop); SS.set("kohe.lastFeed", location.hash);
+  }));
+  if (admin) bindSwipe(view, u);
+}, { tab: "feed", fab: true });
+
+function bindSwipe(view, u) {
+  const OPEN = -92;
+  $$("[data-swipe]", view).forEach(w => {
+    const card = $(".rc", w);
+    let x0 = 0, y0 = 0, dx = 0, down = false, axis = null;
+    const set = x => { card.style.transform = x ? `translateX(${x}px)` : ""; };
+    card.addEventListener("pointerdown", e => {
+      if ((e.pointerType === "mouse" && e.button !== 0) || e.target.closest("[data-fav]")) return;
+      x0 = e.clientX; y0 = e.clientY; dx = 0; down = true; axis = null;
+    });
+    card.addEventListener("pointermove", e => {
+      if (!down) return;
+      const mx = e.clientX - x0, my = e.clientY - y0;
+      if (axis === null && (Math.abs(mx) > 8 || Math.abs(my) > 8)) {
+        axis = Math.abs(mx) > Math.abs(my) ? "x" : "y";
+        if (axis === "x") { card.classList.add("drag"); w.classList.add("dragging"); try { card.setPointerCapture(e.pointerId); } catch (err) {} }
+      }
+      if (axis !== "x") return;
+      dx = mx;
+      const base = w.classList.contains("open") ? OPEN : 0;
+      set(Math.min(0, Math.max(OPEN * 1.35, base + dx)));
+    });
+    const end = () => {
+      if (!down) return; down = false; card.classList.remove("drag");
+      if (axis === "x") {
+        const base = w.classList.contains("open") ? OPEN : 0, open = base + dx < OPEN / 2;
+        $$(".swipe.open", view).forEach(o => { if (o !== w) { o.classList.remove("open", "dragging"); $(".rc", o).style.transform = ""; } });
+        w.classList.toggle("open", open); set(open ? OPEN : 0);
+        $("[data-del]", w).tabIndex = open ? 0 : -1;
+        card.dataset.moved = "1"; setTimeout(() => { delete card.dataset.moved; }, 80);
+        setTimeout(() => { if (!w.classList.contains("open")) w.classList.remove("dragging"); }, 240);
+      }
+      axis = null;
+    };
+    card.addEventListener("pointerup", end);
+    card.addEventListener("pointercancel", end);
+  });
+  $$("[data-del]", view).forEach(b => b.addEventListener("click", async () => {
+    const r = DB.races.find(x => x.id === b.dataset.del); if (!r) return;
+    const w = b.closest(".swipe");
+    const ok = await confirmBox({
+      title: "Excluir corrida?", danger: true, ok: "Excluir",
+      text: `<b>${esc(r.nome)}</b> sai do feed para todos os perfis e fica ${EXCLUIDA_DIAS} dias em Solicitações › Excluídas, onde dá para restaurar.`
+    });
+    if (!ok) { w.classList.remove("open", "dragging"); $(".rc", w).style.transform = ""; return; }
+    excludeRace(r, u, "", "admin");
+    DB.save();
+    const sc = view.scrollTop; render(); view.scrollTop = sc;
+    toast(`Corrida excluída. Dá para restaurar por ${EXCLUIDA_DIAS} dias.`);
+  }));
+}
+
+function openFilters(u) {
+  const f = feedFilters();
+  const kms = [...new Set(publishedUpcoming().flatMap(kmList))];
+  f.kms.forEach(k => { if (!kms.includes(k)) kms.push(k); });
+  kms.sort((a, b) => a - b);
+  const prof = findCity(u.end && u.end.cidade);
+  const sh = openSheet(`
+    <div class="sheet-head"><h2 class="disp">Filtros</h2><button class="icon-btn" type="button" data-close aria-label="Fechar filtros">${ic("x")}</button></div>
+    <div class="field"><span class="label">Distância</span>
+      <div class="pick" id="fKms">${kms.map(k => `<button type="button" data-k="${k}"${f.kms.includes(k) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${kmTxt(k)} km</button>`).join("")}</div>
+      <div class="hint">Corrida e caminhada com a mesma distância contam juntas.</div>
+    </div>
+    <div class="row2">
+      ${F({ id: "fDe", label: "A partir de", type: "date", value: f.de, attrs: `min="${ymd(new Date())}"` })}
+      ${F({ id: "fAte", label: "Até", type: "date", value: f.ate, attrs: `min="${ymd(new Date())}"`, err: "Precisa ser depois de “A partir de”." })}
+    </div>
+    <div class="field"><span class="label" id="fRaioLbl">Raio máximo</span>
+      <div class="radius">
+        <input type="range" class="range" id="fRange" min="5" max="${RAIO_MAX}" step="5" aria-labelledby="fRaioLbl">
+        <div class="maxbox"><label class="eyebrow" for="fMax">Máximo</label><div class="input-wrap km"><input id="fMax" class="input" type="text" inputmode="numeric" autocomplete="off" maxlength="4" placeholder="—"><span class="post">km</span></div></div>
+      </div>
+      <div class="radius-foot"><span class="eyebrow num">5 km</span><button type="button" class="linkbtn" id="fNoLimit">Sem limite</button><span class="eyebrow num">${RAIO_MAX} km</span></div>
+      <div class="choice" id="fOrig">
+        <button type="button" data-o="perfil">${ic("pin")}<span>${prof ? esc(prof.n) : "Minha cidade"}</span></button>
+        <button type="button" data-o="gps">${ic("gps")}<span>Onde estou</span></button>
+      </div>
+      <div class="hint" id="fHint"></div>
+    </div>
+    <div class="field"><label for="fCidade">Cidade</label><div class="select-wrap"><select id="fCidade" class="input"></select></div><div class="hint">Só aparecem cidades com corrida dentro dos filtros acima.</div></div>
+    <div class="btn-row"><button class="btn" type="button" id="fClear">Limpar</button><button class="btn btn-volt" type="button" id="fApply">Ver corridas</button></div>`);
+  const el = sh.el, range = $("#fRange", el), max = $("#fMax", el), sel = $("#fCidade", el);
+  const paint = () => {
+    f.de = $("#fDe", el).value; f.ate = $("#fAte", el).value;
+    const on = f.raio > 0, pos = on ? Math.min(Math.max(f.raio, 5), RAIO_MAX) : RAIO_MAX;
+    range.value = pos; range.classList.toggle("off", !on);
+    range.style.setProperty("--p", ((pos - 5) / (RAIO_MAX - 5)) * 100 + "%");
+    range.setAttribute("aria-valuetext", on ? f.raio + " km" : "Sem limite");
+    if (document.activeElement !== max) max.value = on ? String(f.raio) : "";
+    $("#fNoLimit", el).classList.toggle("on", !on);
+    $("#fOrig", el).hidden = !on;
+    $$("#fOrig button", el).forEach(b => b.classList.toggle("on", b.dataset.o === (f.origem === "gps" && f.gps ? "gps" : "perfil")));
+    let hint = "Sem limite de distância.";
+    if (on) {
+      if (f.origem === "gps" && f.gps) hint = "Distância medida a partir de onde você está agora.";
+      else if (prof) hint = `Distância medida a partir de ${esc(prof.n)}, a cidade do seu cadastro.`;
+      else hint = "A cidade do seu cadastro não está na lista do Kohe. Toque em “Onde estou” para usar o GPS.";
+      hint += " Corridas em cidades fora da lista ficam de fora com o raio ligado.";
+    }
+    $("#fHint", el).innerHTML = hint;
+    const o = originPoint(f, u);
+    const base = filterRaces(publishedUpcoming(), f, o, true), counts = {};
+    base.forEach(({ r }) => { const c = findCity(r.cidade), n = c ? c.n : r.cidade; counts[n] = (counts[n] || 0) + 1; });
+    const names = Object.keys(counts).sort((a, b) => a.localeCompare(b, "pt-BR"));
+    if (f.cidade && !names.includes(f.cidade)) f.cidade = "";
+    sel.innerHTML = `<option value="">Todas as cidades (${base.length})</option>` + names.map(n => `<option value="${esc(n)}"${n === f.cidade ? " selected" : ""}>${esc(n)} (${counts[n]})</option>`).join("");
+    const total = filterRaces(publishedUpcoming(), f, o).length;
+    $("#fApply", el).textContent = total ? `Ver ${total} corrida${total === 1 ? "" : "s"}` : "Nenhuma corrida";
+  };
+  $("#fKms", el).addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const k = +b.dataset.k, on = !f.kms.includes(k);
+    f.kms = on ? [...f.kms, k] : f.kms.filter(x => x !== k);
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); paint();
+  });
+  range.addEventListener("input", () => { f.raio = +range.value; paint(); });
+  max.addEventListener("input", () => { max.value = max.value.replace(/\D/g, "").slice(0, 4); f.raio = parseInt(max.value, 10) || 0; paint(); });
+  max.addEventListener("blur", paint);
+  $("#fNoLimit", el).addEventListener("click", () => { f.raio = 0; max.value = ""; paint(); });
+  $("#fOrig", el).addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    if (b.dataset.o === "perfil") { f.origem = "perfil"; paint(); return; }
+    if (!navigator.geolocation) { toast("Este navegador não libera a localização.", true); return; }
+    $("#fHint", el).textContent = "Buscando sua localização…";
+    navigator.geolocation.getCurrentPosition(
+      pos => { f.origem = "gps"; f.gps = { lat: pos.coords.latitude, lon: pos.coords.longitude }; paint(); },
+      () => { f.origem = "perfil"; paint(); toast("Não deu para acessar a localização. Usando a cidade do cadastro.", true); },
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 600000 });
+  });
+  ["fDe", "fAte"].forEach(id => ["input", "change"].forEach(ev => $("#" + id, el).addEventListener(ev, paint)));
+  sel.addEventListener("change", () => { f.cidade = sel.value; paint(); });
+  $("#fClear", el).addEventListener("click", () => { saveFilters(defaultFilters()); sh.close(); go("/feed"); });
+  $("#fApply", el).addEventListener("click", () => {
+    f.de = $("#fDe", el).value; f.ate = $("#fAte", el).value;
+    if (f.de && f.ate && f.ate < f.de) { bad("fAte"); goFirstBad(el); return; }
+    saveFilters(f); sh.close(); go("/feed");
+  });
+  paint();
+}
+/* =====================================================================
+   TELAS — detalhe da corrida
+   ===================================================================== */
+const fixUrl = v => { v = String(v || "").trim(); if (v && !/^https?:\/\//i.test(v)) v = "https://" + v; return v; };
+const urlOk = v => { try { const x = new URL(v); return /^https?:$/.test(x.protocol) && x.hostname.includes("."); } catch (e) { return false; } };
+const hostOf = v => { try { return new URL(v).hostname.replace(/^www\./, ""); } catch (e) { return v; } };
+
+function ctaHTML(r) {
+  const i = r.insc || {}, link = urlOk(i.url) ? i.url : "";
+  const btn = link
+    ? `<a class="btn btn-volt btn-block" href="${esc(link)}" target="_blank" rel="noopener noreferrer">Inscreva-se ${ic("external")}</a>`
+    : `<button class="btn btn-volt btn-block" type="button" disabled>Inscreva-se</button>`;
+  const note = link && i.exemplo
+    ? `<p class="example-note">${ic("alert")}<span>Link de exemplo: abre o calendário da Correria Campinas, não a página desta corrida.</span></p>`
+    : link ? `<p class="eyebrow" style="text-align:center">Abre ${esc(hostOf(link))}</p>`
+    : `<p class="eyebrow" style="text-align:center">Link de inscrição a confirmar</p>`;
+  const plat = i.plataforma ? `<p class="eyebrow" style="text-align:center">Inscrições oficiais na ${esc(i.plataforma)}</p>` : "";
+  if (i.tipo === "app") return `<div class="cta-card">
+      <span class="eyebrow">Inscrição via app</span>
+      <p><b>Inscrições pelo app ${esc(i.app)}</b></p>
+      <p class="muted" style="font-size:13.5px">Instale o ${esc(i.app)} pela loja do seu celular e procure por “${esc(r.nome)}”.</p>
+      ${link ? btn + note : ""}
+    </div>`;
+  return `<div class="form" style="gap:8px">${btn}${note}${plat}</div>`;
+}
+
+function raceBodyHTML(r, u, opts = {}) {
+  const autor = userById(r.autor), inList = !!findCity(r.cidade), st = raceState(r), d = pDate(r.data);
+  const showFav = !opts.preview && (st === "publicada" || st === "finalizada");
+  return `
+    <div class="form" style="gap:10px">
+      <span class="eyebrow">${fmtLong(r.data)}${!isOver(r) ? " · " + relDay(r.data) : ""}</span>
+      <h1 class="disp">${esc(r.nome)}</h1>
+    </div>
+    ${showFav ? `<div class="fav-row">${favBtn(r.id, u, true)}<span class="muted" data-favtxt="${r.id}">${favWord(favCount(r.id))}</span></div>` : ""}
+    <dl class="dl">
+      <div><dt>${ic("cal")}Data</dt><dd class="num">${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()}</dd></div>
+      <div><dt>${ic("clock")}Largada</dt><dd class="${r.hora ? "num" : "tbd"}">${r.hora || "A confirmar"}</dd></div>
+      <div><dt>${ic("pin")}Cidade</dt><dd>${esc(r.cidade)}${inList ? " · SP" : ""}</dd></div>
+      <div><dt>${ic("flag")}Rua de largada</dt><dd class="${r.rua ? "" : "tbd"}">${r.rua ? esc(r.rua) : "A confirmar"}</dd></div>
+    </dl>
+    <div class="field"><span class="label">Modalidades</span><div class="chips">${r.mods.map(m => `<span class="chip" style="font-size:12px;padding:8px 11px;border-radius:9px">${esc(m)}</span>`).join("")}</div></div>
+    <div class="big-price">${hasPrice(r) ? `<small>A partir de</small><strong class="num">${brl(r.preco)}</strong><small>kit básico</small>` : `<small>Preço do kit básico a confirmar</small>`}</div>
+    ${opts.preview ? "" : ctaHTML(r)}
+    ${r.desc ? `<div class="field"><span class="label">Sobre a corrida</span><p class="prose">${esc(r.desc)}</p></div>` : ""}
+    ${r.cupom ? `<div class="coupon"><div class="form" style="gap:3px"><span class="eyebrow">Cupom de desconto</span><code>${esc(r.cupom)}</code></div><button class="btn btn-sm" type="button" data-copy="${esc(r.cupom)}">${ic("copy")} Copiar</button></div>` : ""}
+    ${opts.preview ? `<div class="field"><span class="label">Botão de inscrição</span>${ctaHTML(r)}</div>` : ""}
+    <div class="byline">${avatarHTML(autor, "mini-av")}<span>${r.status === "pendente" ? "Solicitada" : "Publicada"} por <b>@${esc(autor ? autor.nick : "conta excluída")}</b></span></div>`;
+}
+
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) {
+    const ta = document.createElement("textarea"); ta.value = t; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand("copy"); } catch (err) {}
+    ta.remove(); return ok;
+  }
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-copy]"); if (!b) return;
+  toast(await copyText(b.dataset.copy) ? `Cupom ${b.dataset.copy} copiado.` : "Não deu para copiar. Segure o código para copiar manualmente.");
+});
+
+function notFoundHTML(title, text, href, label) {
+  return `<section class="done"><h1 class="disp">${title}</h1><p>${text}</p><a class="btn btn-volt btn-block" href="${href}">${label}</a></section>`;
+}
+
+route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
+  const r = DB.races.find(x => x.id === id);
+  const st = r && raceState(r);
+  if (!r || !(st === "publicada" || st === "finalizada" || r.autor === u.id || isAdmin(u))) {
+    view.innerHTML = notFoundHTML("Corrida fora do feed", "Ela pode ter sido excluída ou ainda não foi aprovada.", "#/feed", "Voltar ao feed");
+    return;
+  }
+  const from = q.get("de");
+  if (from === "perfil" || (from === "sol" && canCreate(u))) renderChrome({ tab: from }, u);
+  const back = from === "sol" ? "#/solicitacoes" : from === "perfil" ? "#/perfil" : (SS.get("kohe.lastFeed") || "#/feed");
+  view.innerHTML = `
+    <div class="cover top">${bibHTML(r, true)}
+      <div class="cover-bar"><a class="glassbtn" href="${esc(back)}" aria-label="Voltar">${ic("back")}</a>${st !== "publicada" ? stPill(st) : ""}</div>
+    </div>
+    <article class="detail">${raceBodyHTML(r, u)}</article>`;
+}, { tab: "feed" });
+
+/* =====================================================================
+   TELAS — cadastro de corrida → conferência → enviada
+   ===================================================================== */
+const MOD_PRESETS = ["3 km", "5 km", "6 km", "7 km", "8 km", "10 km", "15 km", "21 km", "42 km"];
+const normMod = s => {
+  s = String(s).trim().replace(/\s+/g, " "); if (!s) return "";
+  const m = s.match(/^(\d+(?:[.,]\d+)?)\s*(k|km)?$/i);
+  if (m) return m[1].replace(".", ",") + " km";
+  s = s.replace(/(\d)\s*(k|km)\b/gi, "$1 km");
+  return s.charAt(0).toUpperCase() + s.slice(1);
+};
+const parseBRL = v => { const n = parseFloat(String(v).replace(/[^\d,.-]/g, "").replace(/\.(?=\d{3}(\D|$))/g, "").replace(",", ".")); return isNaN(n) ? null : Math.round(n * 100) / 100; };
+function draftFromRace(r) {
+  return {
+    id: r.id, tmpId: r.id, nome: r.nome, cidade: r.cidade, rua: r.rua || "", data: r.data, hora: r.hora || "",
+    mods: [...r.mods], preco: hasPrice(r) ? String(r.preco).replace(".", ",") : "",
+    inscTipo: (r.insc && r.insc.tipo) || "site", url: (r.insc && r.insc.url) || "", app: (r.insc && r.insc.app) || "",
+    desc: r.desc || "", cupom: r.cupom || "", arte: r.arte || null
+  };
+}
+function fieldsFromDraft(d) {
+  const c = findCity(d.cidade);
+  return {
+    nome: d.nome, cidade: c ? c.n : d.cidade, rua: d.rua, data: d.data, hora: d.hora, mods: [...d.mods],
+    preco: parseBRL(d.preco), insc: { tipo: d.inscTipo, url: d.url, app: d.inscTipo === "app" ? d.app : "", plataforma: "" },
+    desc: d.desc, cupom: (d.cupom || "").toUpperCase(), arte: d.arte || null
+  };
+}
+
+route(/^\/nova$/, function vRaceForm(view, _, q, u) {
+  const editId = q.get("editar"), admin = isAdmin(u);
+  let d = SS.get("kohe.draft"), orig = null;
+  if (editId) {
+    orig = DB.races.find(x => x.id === editId && x.autor === u.id && x.status === "negada");
+    if (!orig || orig.envios >= MAX_ENVIOS) return redirect("/solicitacoes");
+    if (!d || d.id !== editId) d = draftFromRace(orig);
+  } else if (!d || d.id) d = { tmpId: uid("r"), mods: [], inscTipo: "site" };
+  const saveDraft = () => SS.set("kohe.draft", d);
+  const collect = () => {
+    ["nome", "data", "hora", "cidade", "rua", "preco", "url", "app", "desc", "cupom"].forEach(k => { const el = document.getElementById("rf_" + k); if (el) d[k] = el.value.trim(); });
+  };
+  const allMods = [...MOD_PRESETS, ...d.mods.filter(m => !MOD_PRESETS.includes(m))];
+  const pricePreview = () => { const n = parseBRL(d.preco); return n != null && n >= 0 ? `No feed: <b>A partir de ${brl(n)}</b>` : "No feed aparece como “A partir de R$ …”. Ex.: 5 para kit só com medalha."; };
+  const left = orig ? MAX_ENVIOS - orig.envios : 0;
+
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="#/${editId ? "solicitacoes" : "feed"}" aria-label="Cancelar">${ic("x")}</a>
+      <div class="t"><span class="eyebrow">${admin ? "Publicação direta" : editId ? `Reenvio · ${left} restante${left === 1 ? "" : "s"}` : "Solicitação de corrida"}</span><h1 class="disp" style="font-size:30px">${editId ? "Editar corrida" : "Nova corrida"}</h1></div>
+      <span class="eyebrow num">1/2</span>
+    </div></header>
+    <section class="page">
+      ${orig && orig.motivo ? `<div class="reason"><b>Motivo da negativa</b>${esc(orig.motivo)}</div>` : ""}
+      <form class="form" id="rf" novalidate>
+        ${F({ id: "rf_nome", label: "Nome da corrida", value: d.nome, ph: "Ex.: Corrida do Coração – Jundiaí", attrs: 'maxlength="90" autocapitalize="words"', err: "Dê um nome para a corrida." })}
+        <div class="row2">
+          ${F({ id: "rf_data", label: "Data", type: "date", value: d.data, attrs: `min="${ymd(new Date())}"`, err: "Escolha a data." })}
+          ${F({ id: "rf_hora", label: "Horário", type: "time", value: d.hora, err: "Informe o horário." })}
+        </div>
+        ${F({ id: "rf_cidade", label: "Cidade", value: d.cidade, wrap: "city", ph: "Comece a digitar", hint: "Escolha na lista para a corrida entrar no filtro de raio.", err: "Informe a cidade." })}
+        ${F({ id: "rf_rua", label: "Rua de largada", value: d.rua, ph: "Ex.: Av. 9 de Julho, em frente ao parque", err: "Informe a rua de largada." })}
+        <div class="field" id="f-rf_mods">
+          <span class="label">Modalidades</span>
+          <div class="pick" id="modPick">${allMods.map(m => `<button type="button" data-m="${esc(m)}"${d.mods.includes(m) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${d.mods.includes(m) ? ic("check") : ""}${esc(m)}</button>`).join("")}</div>
+          <div class="input-wrap"><input id="modOther" class="input" placeholder="Outra: ex. Caminhada 3 km" autocomplete="off"><button type="button" class="suffix" id="modAdd" aria-label="Adicionar modalidade">${ic("plus")}</button></div>
+          <div class="msg">${ic("alert")}<span>Escolha pelo menos uma modalidade.</span></div>
+        </div>
+        ${F({ id: "rf_preco", label: "Preço do kit básico", value: d.preco, pre: "R$", ph: "0,00", attrs: 'inputmode="decimal" autocomplete="off"', hint: `<span id="pricePrev">${pricePreview()}</span>`, err: "Informe o preço do kit mais básico." })}
+        <div class="field" id="f-rf_insc">
+          <span class="label">Onde se inscrever</span>
+          <div class="choice" id="inscTipo">
+            <button type="button" data-t="site"${d.inscTipo !== "app" ? ' class="on"' : ""}>${ic("external")} Site</button>
+            <button type="button" data-t="app"${d.inscTipo === "app" ? ' class="on"' : ""}>${ic("phone")} App</button>
+          </div>
+        </div>
+        <div id="inscFields" class="form">
+          ${d.inscTipo === "app"
+            ? F({ id: "rf_app", label: "Nome do app", value: d.app, ph: "Ex.: TF Sports", err: "Informe o nome do app de inscrição." })
+              + F({ id: "rf_url", label: "Link do app", type: "url", value: d.url, opt: true, ph: "https://", attrs: 'autocapitalize="off" spellcheck="false" inputmode="url"', err: "Esse link não parece válido." })
+            : F({ id: "rf_url", label: "Link para comprar a inscrição", type: "url", value: d.url, ph: "https://", attrs: 'autocapitalize="off" spellcheck="false" inputmode="url"', err: "Informe o link do site de inscrição." })}
+        </div>
+        ${F({ id: "rf_desc", label: "Descrição breve", type: "textarea", value: d.desc, ph: "Percurso, kit, horários de retirada…", attrs: 'maxlength="500"', err: "Escreva uma descrição breve (mínimo 10 caracteres)." })}
+        ${F({ id: "rf_cupom", label: "Cupom de desconto", value: d.cupom, opt: true, ph: "Ex.: CORRERIA10", attrs: 'autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="30"' })}
+        <div class="field" id="f-rf_arte">
+          <span class="label">Arte da corrida <span class="opt">(opcional)</span></span>
+          <label class="drop">
+            <span class="thumb">${d.arte ? `<img class="art" src="${d.arte}" alt="Arte enviada">` : ic("image")}</span>
+            <span class="txt"><b>${d.arte ? "Trocar imagem" : "Enviar imagem"}</b><span>Sem arte, o Kohe cria uma capa com as distâncias.</span></span>
+            <input type="file" id="arteIn" accept="image/*">
+          </label>
+          ${d.arte ? `<button type="button" class="linkbtn" id="arteRm" style="align-self:flex-start">Remover imagem</button>` : ""}
+        </div>
+        <button class="btn btn-volt btn-block" type="submit">Revisar dados ${ic("arrow")}</button>
+      </form>
+    </section>`;
+
+  const rerender = () => { collect(); saveDraft(); const sc = view.scrollTop; vRaceForm(view, _, q, u); view.scrollTop = sc; };
+  bindCity($("#rf_cidade"));
+  $("#rf").addEventListener("input", () => { clearTimeout(vRaceForm.t); vRaceForm.t = setTimeout(() => { collect(); saveDraft(); }, 250); });
+  $("#rf_preco").addEventListener("input", () => { d.preco = val("rf_preco"); $("#pricePrev").innerHTML = pricePreview(); });
+  $("#modPick").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const m = b.dataset.m, on = !d.mods.includes(m);
+    d.mods = on ? [...d.mods, m] : d.mods.filter(x => x !== m);
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.innerHTML = (on ? ic("check") : "") + esc(m);
+    $("#f-rf_mods").classList.remove("bad"); saveDraft();
+  });
+  const addMod = () => {
+    const m = normMod($("#modOther").value); if (!m) return;
+    if (!d.mods.includes(m)) d.mods.push(m);
+    rerender(); toast(`Modalidade “${m}” adicionada.`);
+  };
+  $("#modAdd").addEventListener("click", addMod);
+  $("#modOther").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); addMod(); } });
+  $("#inscTipo").addEventListener("click", e => { const b = e.target.closest("button"); if (!b || b.dataset.t === d.inscTipo) return; collect(); d.inscTipo = b.dataset.t; rerender(); });
+  $("#arteIn").addEventListener("change", async e => {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    try { d.arte = await compressImage(file); rerender(); toast("Arte adicionada."); }
+    catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
+  });
+  const rm = $("#arteRm"); if (rm) rm.addEventListener("click", () => { d.arte = null; rerender(); });
+
+  $("#rf").addEventListener("submit", e => {
+    e.preventDefault(); collect();
+    if (!d.nome || d.nome.length < 3) bad("rf_nome");
+    const now = new Date();
+    if (!d.data) bad("rf_data");
+    else if (d.data < ymd(now)) bad("rf_data", "Essa data já passou.");
+    if (!d.hora) bad("rf_hora");
+    else if (d.data === ymd(now) && d.hora <= `${pad2(now.getHours())}:${pad2(now.getMinutes())}`) bad("rf_hora", "Esse horário já passou.");
+    if (!d.cidade) bad("rf_cidade");
+    if (!d.rua) bad("rf_rua");
+    if (!d.mods.length) bad("rf_mods");
+    const p = parseBRL(d.preco);
+    if (!d.preco) bad("rf_preco"); else if (p == null || p < 0) bad("rf_preco", "Use só números. Ex.: 5 ou 89,90");
+    if (d.inscTipo === "app") {
+      if (!d.app) bad("rf_app");
+      if (d.url) { d.url = fixUrl(d.url); if (!urlOk(d.url)) bad("rf_url"); }
+    } else {
+      if (!d.url) bad("rf_url");
+      else { d.url = fixUrl(d.url); if (!urlOk(d.url)) bad("rf_url", "Esse link não parece válido. Ex.: https://site.com/inscricao"); }
+    }
+    if (!d.desc) bad("rf_desc"); else if (d.desc.length < 10) bad("rf_desc", "Escreva pelo menos 10 caracteres.");
+    if (goFirstBad(view)) return;
+    saveDraft();
+    go("/revisao");
+  });
+}, { tab: "sol", roles: ["organizador", "admin"] });
+
+route(/^\/revisao$/, function vReview(view, _, q, u) {
+  const d = SS.get("kohe.draft");
+  if (!d || !d.nome) return redirect("/nova");
+  const admin = isAdmin(u), editHref = "#/nova" + (d.id ? "?editar=" + d.id : "");
+  const r = Object.assign({ id: d.tmpId, autor: u.id, status: admin ? "publicada" : "pendente" }, fieldsFromDraft(d));
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="${editHref}" aria-label="Voltar e editar">${ic("back")}</a>
+      <div class="t"><span class="eyebrow">Conferência</span><h1 class="disp" style="font-size:30px">Confira os dados</h1></div>
+      <span class="eyebrow num">2/2</span>
+    </div></header>
+    <section class="page" style="gap:18px">
+      <div class="review-banner">${ic("alert")}<p>É assim que a corrida vai aparecer no feed${admin ? "" : " depois de aprovada"}. Viu algo errado? Volte e edite antes de ${admin ? "publicar" : "enviar"}.</p></div>
+      <div class="cover" style="border-radius:var(--r-lg);height:280px">${bibHTML(r, true)}</div>
+      ${raceBodyHTML(r, u, { preview: true })}
+      <div class="actionbar">
+        <button class="btn btn-volt btn-block" type="button" id="send">${admin ? "Publicar corrida" : d.id ? "Reenviar para aprovação" : "Enviar para aprovação"} ${ic("send")}</button>
+        <a class="btn btn-block" href="${editHref}">${ic("edit")} Voltar e editar</a>
+      </div>
+    </section>`;
+  $("#send").addEventListener("click", () => {
+    const t = new Date().toISOString(); let id;
+    if (d.id) {
+      const o = DB.races.find(x => x.id === d.id);
+      if (!o || o.status !== "negada" || o.envios >= MAX_ENVIOS) { toast("Essa corrida não pode mais ser reenviada.", true); return go("/solicitacoes"); }
+      const backup = JSON.stringify(o);
+      Object.assign(o, fieldsFromDraft(d), { status: "pendente", envios: o.envios + 1 });
+      o.hist.push({ t, acao: "reenviada", por: u.id });
+      if (!DB.save()) { Object.assign(o, JSON.parse(backup)); return; }
+      id = o.id;
+    } else {
+      const race = Object.assign({ id: d.tmpId, autor: u.id, criado: t, envios: 1, motivo: "", status: admin ? "publicada" : "pendente", hist: [{ t, acao: admin ? "publicada" : "enviada", por: u.id }] }, fieldsFromDraft(d));
+      DB.races.push(race);
+      if (!DB.save()) { DB.races.pop(); return; }
+      id = race.id;
+    }
+    SS.del("kohe.draft");
+    go("/enviada/" + id);
+  });
+}, { tab: "sol", roles: ["organizador", "admin"] });
+
+route(/^\/enviada\/([\w-]+)$/, function vSent(view, [id]) {
+  const r = DB.races.find(x => x.id === id);
+  if (!r) return redirect("/feed");
+  const pub = r.status === "publicada";
+  view.innerHTML = `<section class="done">
+    <div class="done-badge">${ic(pub ? "bolt" : "send")}</div>
+    <h1 class="disp">${pub ? "No ar!" : "Enviada!"}</h1>
+    <p>${pub ? `<b>${esc(r.nome)}</b> já aparece no feed para todos os perfis.` : `<b>${esc(r.nome)}</b> entrou na fila de aprovação. Acompanhe o status em Solicitações.`}</p>
+    <div class="form">
+      <a class="btn btn-volt btn-block" href="${pub ? "#/corrida/" + r.id : "#/solicitacoes"}">${pub ? "Ver corrida" : "Ver solicitações"} ${ic("arrow")}</a>
+      <a class="btn btn-block" href="#/feed">Voltar ao feed</a>
+    </div>
+  </section>`;
+}, { tab: "sol", roles: ["organizador", "admin"] });
+/* =====================================================================
+   TELAS — solicitações (organizador) e aprovações (admin)
+   ===================================================================== */
+async function askDeletion(r, u) {
+  const motivo = await confirmBox({
+    title: "Pedir exclusão", ok: "Enviar pedido", danger: true,
+    text: `A administração decide se <b>${esc(r.nome)}</b> sai do Kohe. Até lá, nada muda para quem vê a corrida.`,
+    reason: { label: "Por que excluir?", min: MIN_JUST, placeholder: "Ex.: a organização cancelou a prova." }
+  });
+  if (!motivo) return;
+  const t = new Date().toISOString();
+  r.pedidoExclusao = { t, por: u.id, motivo, status: "pendente" };
+  r.hist.push({ t, acao: "exclusao-pedida", por: u.id, obs: motivo });
+  DB.save(); render(); toast("Pedido de exclusão enviado para a administração.");
+}
+const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
+
+function myReqCard(r, admin) {
+  const st = raceState(r), left = MAX_ENVIOS - r.envios, pe = r.pedidoExclusao;
+  const sent = lastEvent(r, "enviada", "reenviada", "publicada");
+  let foot = "";
+  if (st === "pendente") foot = `${r.envios}º envio · ${sent ? fmtStamp(sent.t) : ""}`;
+  else if (st === "publicada") foot = `No feed · largada ${relDay(r.data)}`;
+  else if (st === "finalizada") foot = "Saiu do feed: a data já passou";
+  else if (st === "negada") foot = left > 0 ? `${plural(left, "reenvio restante", "reenvios restantes")}` : "Limite de reenvios atingido";
+  else if (st === "excluida") foot = `Excluída · some em ${plural(diasRestantes(r), "dia", "dias")}`;
+  const delWaiting = pe && pe.status === "pendente" && st !== "excluida";
+  const canAskDel = !admin && (st === "publicada" || st === "pendente") && !delWaiting;
+  return `<article class="req">
+    <div class="req-top"><div class="form" style="gap:5px;min-width:0"><span class="meta">${fmtShort(r.data)} · ${r.hora || "hora a confirmar"} · ${esc(r.cidade)}</span><h3>${esc(r.nome)}</h3></div>${stPill(st)}</div>
+    ${st === "negada" && r.motivo ? `<div class="reason"><b>Motivo da negativa</b>${esc(r.motivo)}</div>` : ""}
+    ${delWaiting ? `<div class="reason warn"><b>Exclusão solicitada · aguardando</b>${esc(pe.motivo)}</div>` : ""}
+    ${pe && pe.status === "negado" && st !== "excluida" ? `<p class="eyebrow">Pedido de exclusão recusado em ${fmtStamp(pe.decidido)}</p>` : ""}
+    ${st === "excluida" && r.exclusao.motivo ? `<div class="reason"><b>Motivo da exclusão</b>${esc(r.exclusao.motivo)}</div>` : ""}
+    <div class="req-top" style="align-items:center">
+      <span class="eyebrow">${foot}</span>
+      <div class="btn-row" style="flex:none">
+        <a class="btn btn-sm" href="#/corrida/${r.id}?de=sol">Ver</a>
+        ${st === "negada" && left > 0 ? `<a class="btn btn-sm btn-volt" href="#/nova?editar=${r.id}">${ic("edit")} Editar e reenviar</a>` : ""}
+      </div>
+    </div>
+    ${canAskDel ? `<button class="linkbtn" type="button" data-askdel="${r.id}" style="align-self:flex-start;font-size:13px;color:var(--danger)">${ic("trash")} Pedir exclusão desta corrida</button>` : ""}
+  </article>`;
+}
+
+function excludedCard(r) {
+  const by = userById(r.exclusao.por), pe = r.pedidoExclusao, asker = pe && userById(pe.por);
+  return `<article class="req">
+    <div class="req-top"><div class="form" style="gap:5px;min-width:0"><span class="meta">${fmtShort(r.data)} · ${r.hora || "hora a confirmar"} · ${esc(r.cidade)}</span><h3>${esc(r.nome)}</h3></div>${stPill("excluida")}</div>
+    <p class="eyebrow">Excluída ${fmtStamp(r.exclusao.t)} por @${esc(by ? by.nick : "?")}${r.exclusao.via === "pedido" && asker ? ` a pedido de @${esc(asker.nick)}` : ""}</p>
+    ${r.exclusao.motivo ? `<div class="reason"><b>Justificativa</b>${esc(r.exclusao.motivo)}</div>` : ""}
+    <div class="req-top" style="align-items:center">
+      <span class="eyebrow">Some em ${plural(diasRestantes(r), "dia", "dias")}</span>
+      <div class="btn-row" style="flex:none"><a class="btn btn-sm" href="#/corrida/${r.id}?de=sol">Ver</a><button class="btn btn-sm btn-volt" type="button" data-restore="${r.id}">${ic("refresh")} Restaurar</button></div>
+    </div>
+  </article>`;
+}
+
+route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
+  purgeExcluded();
+  const admin = isAdmin(u), nPend = pendingCount();
+  const nEx = DB.races.filter(r => r.status === "excluida").length;
+  const MODES = ["aprovar", "minhas", "excluidas"];
+  const mode = admin ? (MODES.includes(q.get("ver")) ? q.get("ver") : (nPend ? "aprovar" : "minhas")) : "minhas";
+  const evT = (r, ...a) => (lastEvent(r, ...a) || (r.hist || [])[0] || { t: r.criado || "" }).t;
+  let body = "";
+
+  if (mode === "minhas") {
+    const G = { pendente: [], publicada: [], finalizada: [], negada: [], excluida: [] };
+    DB.races.filter(r => r.autor === u.id).forEach(r => { const s = raceState(r); if (G[s]) G[s].push(r); });
+    G.pendente.sort((a, b) => evT(b, "enviada", "reenviada").localeCompare(evT(a, "enviada", "reenviada")));
+    G.publicada.sort((a, b) => startOf(a) - startOf(b));
+    G.finalizada.sort((a, b) => startOf(b) - startOf(a));
+    G.negada.sort((a, b) => evT(b, "negada").localeCompare(evT(a, "negada")));
+    G.excluida.sort((a, b) => b.exclusao.t.localeCompare(a.exclusao.t));
+    const TABS = [["pendente", "Aguardando"], ["publicada", "Publicadas"], ["finalizada", "Finalizadas"], ["negada", "Negadas"]];
+    if (!admin && G.excluida.length) TABS.push(["excluida", "Excluídas"]);
+    const aba = TABS.some(([k]) => k === q.get("aba")) ? q.get("aba") : (TABS.find(([k]) => G[k].length) || TABS[0])[0];
+    const EMPTY = {
+      pendente: ["Nada na fila", "Corridas que você enviar ficam aqui até a administração decidir."],
+      publicada: ["Nenhuma no feed", "Quando uma corrida sua for aprovada, ela aparece aqui e no feed."],
+      finalizada: ["Nenhuma finalizada", "Corridas publicadas vêm para cá depois que a data passa."],
+      negada: ["Nenhuma negada", "Se uma corrida for negada, você vê o motivo aqui e pode editar e reenviar."],
+      excluida: ["Nenhuma excluída", ""]
+    };
+    body = `
+      <div class="seg" role="tablist">${TABS.map(([k, l]) => `<button type="button" role="tab" data-aba="${k}"${k === aba ? ' class="on" aria-selected="true"' : ""}>${l}<span class="ct num">${G[k].length}</span></button>`).join("")}</div>
+      ${G[aba].length ? G[aba].map(r => myReqCard(r, admin)).join("")
+        : `<div class="empty"><h3>${EMPTY[aba][0]}</h3><p>${EMPTY[aba][1]}</p>${aba === "pendente" ? `<a class="btn btn-sm btn-volt" href="#/nova">${ic("plus")} ${admin ? "Cadastrar corrida" : "Solicitar corrida"}</a>` : ""}</div>`}`;
+  } else if (mode === "aprovar") {
+    const races = DB.races.filter(r => r.status === "pendente").sort((a, b) => evT(a, "enviada", "reenviada").localeCompare(evT(b, "enviada", "reenviada")));
+    const dels = DB.races.filter(delPending).sort((a, b) => a.pedidoExclusao.t.localeCompare(b.pedidoExclusao.t));
+    const ups = DB.ups.filter(x => x.status === "pendente").sort((a, b) => a.criado.localeCompare(b.criado));
+    body = `
+      <div class="section-title"><h2 class="disp">Corridas</h2><span class="eyebrow num">${races.length} na fila</span></div>
+      ${races.length ? races.map(r => {
+        const a = userById(r.autor), sent = lastEvent(r, "enviada", "reenviada");
+        return `<article class="req">
+          <div class="req-top"><div class="form" style="gap:5px;min-width:0"><span class="meta">${fmtShort(r.data)} · ${r.hora || "hora a confirmar"} · ${esc(r.cidade)}</span><h3>${esc(r.nome)}</h3></div><span class="st st-pend">${r.envios > 1 ? r.envios + "º envio" : "Novo"}</span></div>
+          <div class="byline">${avatarHTML(a, "mini-av")}<span><b>@${esc(a ? a.nick : "conta excluída")}</b> · ${sent ? fmtStamp(sent.t) : ""}</span></div>
+          <a class="btn btn-sm btn-volt btn-block" href="#/aprovar/${r.id}">Conferir e decidir ${ic("arrow")}</a>
+        </article>`;
+      }).join("") : `<div class="empty sm"><h3>Fila zerada</h3><p>Nenhuma corrida esperando aprovação agora.</p></div>`}
+      <div class="section-title"><h2 class="disp">Exclusões</h2><span class="eyebrow num">${plural(dels.length, "pedido", "pedidos")}</span></div>
+      ${dels.length ? dels.map(r => {
+        const a = userById(r.pedidoExclusao.por);
+        return `<article class="req">
+          <div class="req-top"><div class="form" style="gap:5px;min-width:0"><span class="meta">${fmtShort(r.data)} · ${r.hora || "hora a confirmar"} · ${esc(r.cidade)}</span><h3>${esc(r.nome)}</h3></div>${stPill(raceState(r))}</div>
+          <div class="byline">${avatarHTML(a, "mini-av")}<span><b>@${esc(a ? a.nick : "conta excluída")}</b> · ${fmtStamp(r.pedidoExclusao.t)}</span></div>
+          <div class="reason warn"><b>Justificativa</b>${esc(r.pedidoExclusao.motivo)}</div>
+          <div class="btn-row"><a class="btn btn-sm" href="#/corrida/${r.id}?de=sol">Ver</a><button class="btn btn-sm" type="button" data-dkeep="${r.id}">Manter</button><button class="btn btn-sm btn-danger" type="button" data-dok="${r.id}">Excluir</button></div>
+        </article>`;
+      }).join("") : `<div class="empty sm"><h3>Sem pedidos</h3><p>Pedidos de exclusão feitos por organizadores aparecem aqui.</p></div>`}
+      <div class="section-title"><h2 class="disp">Perfis</h2><span class="eyebrow num">${plural(ups.length, "pedido", "pedidos")}</span></div>
+      ${ups.length ? ups.map(x => {
+        const p = userById(x.uid);
+        return `<article class="req">
+          <div class="person">${avatarHTML(p, "avatar", "width:48px;height:48px;border-radius:15px;font-size:22px")}<div class="who"><b>${esc(p ? p.nome : "Conta excluída")}</b><span>@${esc(p ? p.nick : "?")} · ${esc(p ? p.email : "")}</span></div></div>
+          <div class="arrow-roles"><span class="role usuario">${ROLE_LABEL[x.de]}</span>${ic("arrow")}<span class="role">${ROLE_LABEL[x.para]}</span></div>
+          <p class="eyebrow">Pedido em ${fmtStamp(x.criado)}${p && p.end ? " · " + esc(p.end.cidade) : ""}</p>
+          <div class="btn-row"><button class="btn btn-sm btn-outline-danger" type="button" data-updeny="${x.id}">Negar</button><button class="btn btn-sm btn-volt" type="button" data-upok="${x.id}">${ic("check")} Aprovar</button></div>
+        </article>`;
+      }).join("") : `<div class="empty sm"><h3>Sem pedidos</h3><p>Pedidos de upgrade para organizador ou administrador aparecem aqui.</p></div>`}`;
+  } else {
+    const ex = DB.races.filter(r => r.status === "excluida").sort((a, b) => b.exclusao.t.localeCompare(a.exclusao.t));
+    body = `
+      <p class="muted" style="font-size:13.5px">Corridas excluídas ficam aqui por ${EXCLUIDA_DIAS} dias. Depois disso, somem de vez.</p>
+      ${ex.length ? ex.map(excludedCard).join("") : `<div class="empty"><h3>Nada excluído</h3><p>Corridas excluídas do feed aparecem aqui e podem ser restauradas.</p></div>`}`;
+  }
+
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in"><div class="t"><span class="eyebrow">${admin ? "Administração" : "Organizador"}</span><h1 class="disp" style="font-size:30px">Solicitações</h1></div></div></header>
+    <section class="page">
+      ${admin ? `<div class="modes three" role="tablist">
+        <button type="button" role="tab" data-mode="aprovar"${mode === "aprovar" ? ' class="on" aria-selected="true"' : ""}>Aprovar${nPend ? `<span class="badge">${nPend}</span>` : ""}</button>
+        <button type="button" role="tab" data-mode="minhas"${mode === "minhas" ? ' class="on" aria-selected="true"' : ""}>Minhas</button>
+        <button type="button" role="tab" data-mode="excluidas"${mode === "excluidas" ? ' class="on" aria-selected="true"' : ""}>Excluídas${nEx ? ` (${nEx})` : ""}</button>
+      </div>` : ""}
+      ${body}
+    </section>`;
+
+  $$("[data-mode]", view).forEach(b => b.addEventListener("click", () => redirect("/solicitacoes?ver=" + b.dataset.mode)));
+  $$("[data-aba]", view).forEach(b => b.addEventListener("click", () => redirect(`/solicitacoes?ver=minhas&aba=${b.dataset.aba}`)));
+  $$("[data-askdel]", view).forEach(b => b.addEventListener("click", () => { const r = DB.races.find(x => x.id === b.dataset.askdel); if (r) askDeletion(r, u); }));
+  $$("[data-restore]", view).forEach(b => b.addEventListener("click", async () => {
+    const r = DB.races.find(x => x.id === b.dataset.restore); if (!r) return;
+    const ok = await confirmBox({ title: "Restaurar corrida?", ok: "Restaurar", text: `<b>${esc(r.nome)}</b> volta para ${r.exclusao && r.exclusao.antes === "pendente" ? "a fila de aprovação" : "o feed"}.` });
+    if (!ok) return;
+    restoreRace(r, u); DB.save(); render(); toast("Corrida restaurada.");
+  }));
+  $$("[data-dok]", view).forEach(b => b.addEventListener("click", async () => {
+    const r = DB.races.find(x => x.id === b.dataset.dok); if (!r || !delPending(r)) return;
+    const ok = await confirmBox({ title: "Excluir corrida?", ok: "Excluir", danger: true, text: `<b>${esc(r.nome)}</b> sai do Kohe e fica ${EXCLUIDA_DIAS} dias em Excluídas, onde dá para restaurar.` });
+    if (!ok) return;
+    excludeRace(r, u, r.pedidoExclusao.motivo, "pedido"); DB.save(); render(); toast("Corrida excluída.");
+  }));
+  $$("[data-dkeep]", view).forEach(b => b.addEventListener("click", async () => {
+    const r = DB.races.find(x => x.id === b.dataset.dkeep); if (!r || !delPending(r)) return;
+    const ok = await confirmBox({ title: "Manter corrida?", ok: "Manter", text: `O pedido de exclusão é recusado e <b>${esc(r.nome)}</b> continua no Kohe.` });
+    if (!ok) return;
+    const t = new Date().toISOString();
+    Object.assign(r.pedidoExclusao, { status: "negado", decidido: t, decididoPor: u.id });
+    r.hist.push({ t, acao: "exclusao-recusada", por: u.id });
+    DB.save(); render(); toast("Pedido recusado. A corrida continua no Kohe.");
+  }));
+  $$("[data-upok]", view).forEach(b => b.addEventListener("click", async () => {
+    const x = DB.ups.find(y => y.id === b.dataset.upok), p = x && userById(x.uid);
+    if (!x) return;
+    const ok = await confirmBox({ title: "Aprovar pedido?", ok: "Aprovar", text: p ? `<b>@${esc(p.nick)}</b> passa a ser <b>${ROLE_LABEL[x.para]}</b>.` : "A conta foi excluída; o pedido será encerrado." });
+    if (!ok) return;
+    x.decidido = new Date().toISOString(); x.por = u.id;
+    if (p && p.role === x.de) { p.role = x.para; x.status = "aprovada"; } else x.status = "cancelada";
+    DB.save(); render(); toast(x.status === "aprovada" ? `@${p.nick} agora é ${ROLE_LABEL[x.para]}.` : "Pedido encerrado.");
+  }));
+  $$("[data-updeny]", view).forEach(b => b.addEventListener("click", async () => {
+    const x = DB.ups.find(y => y.id === b.dataset.updeny), p = x && userById(x.uid);
+    if (!x) return;
+    const ok = await confirmBox({ title: "Negar pedido?", ok: "Negar", danger: true, text: `${p ? `<b>@${esc(p.nick)}</b> continua como ${ROLE_LABEL[x.de]}` : "O pedido será encerrado"} e pode pedir de novo depois.` });
+    if (!ok) return;
+    x.status = "negada"; x.decidido = new Date().toISOString(); x.por = u.id;
+    DB.save(); render(); toast("Pedido negado.");
+  }));
+}, { tab: "sol", roles: ["organizador", "admin"] });
+
+route(/^\/aprovar\/([\w-]+)$/, function vApprove(view, [id], q, u) {
+  const r = DB.races.find(x => x.id === id && x.status === "pendente");
+  if (!r) { view.innerHTML = notFoundHTML("Nada para decidir", "Essa solicitação já foi decidida ou não existe mais.", "#/solicitacoes?ver=aprovar", "Voltar às solicitações"); return; }
+  const a = userById(r.autor), prevDeny = lastEvent(r, "negada"), left = MAX_ENVIOS - r.envios;
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="#/solicitacoes?ver=aprovar" aria-label="Voltar">${ic("back")}</a>
+      <div class="t"><span class="eyebrow">${r.envios}º envio de ${MAX_ENVIOS}</span><h1 class="disp" style="font-size:30px">Conferir corrida</h1></div>
+    </div></header>
+    <section class="page" style="gap:18px">
+      ${isOver(r) ? `<div class="note">${ic("alert")}<span>A data dessa corrida já passou. Se aprovar, ela vai direto para Finalizadas.</span></div>` : ""}
+      ${prevDeny ? `<div class="reason"><b>Negada antes por este motivo</b>${esc(prevDeny.obs || "")}</div>` : ""}
+      <div class="cover" style="border-radius:var(--r-lg);height:280px">${bibHTML(r, true)}</div>
+      ${raceBodyHTML(r, u, { preview: true })}
+      <div class="group">
+        <span class="eyebrow">Quem solicitou</span>
+        <div class="person">${avatarHTML(a, "avatar", "width:48px;height:48px;border-radius:15px;font-size:22px")}<div class="who"><b>${esc(a ? a.nome : "Conta excluída")}</b><span>@${esc(a ? a.nick : "?")}${a ? " · " + esc(a.email) : ""}</span>${a ? `<span>${esc(a.tel)}</span>` : ""}</div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-outline-danger" type="button" id="deny">${ic("x")} Negar</button>
+        <button class="btn btn-volt" type="button" id="approve">${ic("check")} Aprovar</button>
+      </div>
+    </section>`;
+  $("#approve").addEventListener("click", async () => {
+    const ok = await confirmBox({ title: "Aprovar corrida?", ok: "Aprovar", text: `<b>${esc(r.nome)}</b> entra no feed para todos os perfis.` });
+    if (!ok) return;
+    r.status = "publicada"; r.motivo = "";
+    r.hist.push({ t: new Date().toISOString(), acao: "aprovada", por: u.id });
+    DB.save(); toast("Corrida aprovada e publicada no feed."); go("/solicitacoes?ver=aprovar");
+  });
+  $("#deny").addEventListener("click", async () => {
+    const motivo = await confirmBox({
+      title: "Negar corrida", ok: "Negar", danger: true,
+      text: `Diga ao organizador o que precisa ser corrigido. ${left > 0 ? `Ele ainda pode reenviar ${left} vez${left === 1 ? "" : "es"}.` : "Este foi o último envio permitido."}`,
+      reason: { label: "Motivo da negativa", min: MIN_MOTIVO, placeholder: "Ex.: o link de inscrição não abre e o horário está diferente do site oficial." }
+    });
+    if (!motivo) return;
+    r.status = "negada"; r.motivo = motivo;
+    r.hist.push({ t: new Date().toISOString(), acao: "negada", por: u.id, obs: motivo });
+    DB.save(); toast("Corrida negada. O organizador vai ver o motivo."); go("/solicitacoes?ver=aprovar");
+  });
+}, { tab: "sol", roles: ["admin"] });
+/* =====================================================================
+   TELAS — perfil e configurações
+   ===================================================================== */
+const UPGRADE_COPY = {
+  organizador: "Organizadores solicitam o cadastro de corridas no Kohe.",
+  admin: "Administradores aprovam corridas e pedidos de perfil, e podem excluir corridas do feed."
+};
+route(/^\/perfil$/, function vProfile(view, _, q, u) {
+  const next = NEXT_ROLE[u.role];
+  const last = DB.ups.filter(x => x.uid === u.id).sort((a, b) => b.criado.localeCompare(a.criado))[0];
+  const pend = last && last.status === "pendente" ? last : null;
+  const e = u.end || {};
+  const favRaces = favsOf(u).map(id => DB.races.find(r => r.id === id)).filter(r => r && r.status === "publicada");
+  const favList = [
+    ...favRaces.filter(r => !isOver(r)).sort((a, b) => startOf(a) - startOf(b)),
+    ...favRaces.filter(isOver).sort((a, b) => startOf(b) - startOf(a))
+  ];
+  let upgrade = "";
+  if (pend) upgrade = `<div class="upgrade">
+      <span class="eyebrow">Pedido enviado ${fmtStamp(pend.criado)}</span>
+      <h2 class="disp">Aguardando aprovação</h2>
+      <p>Seu pedido para virar ${ROLE_LABEL[pend.para]} está com a administração. Enquanto isso, o app segue igual para você.</p>
+      <button class="btn btn-sm btn-plain" type="button" id="cancelUp" style="align-self:flex-start">Cancelar pedido</button>
+    </div>`;
+  else if (next) upgrade = `<div class="upgrade">
+      <span class="eyebrow">${last && last.status === "negada" ? `Último pedido negado em ${fmtStamp(last.decidido)}` : "Upgrade de perfil"}</span>
+      <h2 class="disp">Quero ser ${ROLE_LABEL[next]}</h2>
+      <p>${UPGRADE_COPY[next]}</p>
+      <button class="btn btn-ink btn-block" type="button" id="askUp">Solicitar upgrade ${ic("arrow")}</button>
+    </div>`;
+
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <div class="t"><span class="eyebrow">Configurações</span><h1 class="disp" style="font-size:30px">Perfil</h1></div>
+      <button class="icon-btn" type="button" id="logout" aria-label="Sair da conta">${ic("logout")}</button>
+    </div></header>
+    <section class="page">
+      <div class="me">
+        <label class="av-edit">${avatarHTML(u)}<span class="av-cam">${ic("camera")}</span><input type="file" id="fotoIn" accept="image/*" aria-label="${u.foto ? "Trocar foto de perfil" : "Adicionar foto de perfil"}"></label>
+        <div class="who">
+          <h1 class="disp">@${esc(u.nick)}</h1>
+          <span class="role ${u.role}">${ic(u.role === "admin" ? "shield" : u.role === "organizador" ? "flag" : "user")}${ROLE_LABEL[u.role]}</span>
+          ${u.foto ? `<button class="linkbtn" type="button" id="fotoRm" style="font-size:13px;min-height:32px;align-self:flex-start">Remover foto</button>` : ""}
+        </div>
+      </div>
+      <div class="group slim">
+        <div class="setting sm">
+          <span class="txt"><b>Modo noturno</b></span>
+          <label class="switch sm"><input type="checkbox" role="switch" id="darkSw"${isDark() ? " checked" : ""} aria-label="Modo noturno"><i></i></label>
+        </div>
+      </div>
+      <div class="section-title"><h2 class="disp">Favoritas</h2><span class="eyebrow num">${favList.length}</span></div>
+      ${favList.length ? favList.map(r => raceCard(r, u, null, { date: true, from: "perfil" })).join("")
+        : `<div class="empty sm"><p>Toque no ${ic("heart")} de uma corrida para guardar aqui.</p></div>`}
+      <div class="group">
+        <h2 class="disp">Seus dados</h2>
+        <form class="form" id="pf" novalidate>
+          <div class="field"><label for="pfNick">Nickname</label><input id="pfNick" class="input" value="@${esc(u.nick)}" readonly><span class="lock">${ic("lock")} Não é possível alterar</span></div>
+          <div class="field"><label for="pfEmail">E-mail</label><input id="pfEmail" class="input" value="${esc(u.email)}" readonly><span class="lock">${ic("lock")} Não é possível alterar</span></div>
+          ${F({ id: "pf_nome", label: "Nome", value: u.nome, attrs: 'autocomplete="name"', err: "Informe seu nome." })}
+          ${F({ id: "pf_tel", label: "Celular com DDD", type: "tel", value: u.tel, attrs: 'autocomplete="tel" inputmode="tel"', err: "Informe o celular com DDD." })}
+          ${F({ id: "pf_nasc", label: "Data de nascimento", type: "date", value: u.nasc, attrs: `max="${ymd(new Date())}"`, err: "Informe sua data de nascimento." })}
+          <div class="row-num">${F({ id: "pf_rua", label: "Rua", value: e.rua, err: "Informe a rua." })}${F({ id: "pf_num", label: "Número", value: e.num, attrs: 'inputmode="numeric"', err: "Informe o nº." })}</div>
+          ${F({ id: "pf_bairro", label: "Bairro", value: e.bairro, err: "Informe o bairro." })}
+          ${F({ id: "pf_cidade", label: "Cidade", value: e.cidade, wrap: "city", err: "Informe a cidade." })}
+          <button class="btn btn-volt btn-block" type="submit">Salvar alterações</button>
+        </form>
+      </div>
+      <div class="group">
+        <h2 class="disp">Senha</h2>
+        <form class="form" id="pwf" novalidate>
+          ${F({ id: "pw_old", label: "Senha atual", type: "password", wrap: "eye", attrs: 'autocomplete="current-password"', err: "Informe a senha atual." })}
+          ${F({ id: "pw_new", label: "Nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Crie a nova senha." })}
+          <ul class="rules" id="pwRules">${rulesHTML("")}</ul>
+          ${F({ id: "pw_new2", label: "Confirme a nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Repita a nova senha." })}
+          <button class="btn btn-block" type="submit">${ic("key")} Trocar senha</button>
+        </form>
+      </div>
+      <div class="group danger-zone">
+        <h2 class="disp">Conta</h2>
+        <button class="btn btn-block" type="button" id="logout2">${ic("logout")} Sair</button>
+        <button class="btn btn-outline-danger btn-block" type="button" id="delAcc">${ic("trash")} Excluir minha conta</button>
+      </div>
+      ${isAdmin(u) ? `<div class="group">
+        <h2 class="disp">Fase de testes</h2>
+        <p class="muted" style="font-size:13.5px">Tudo fica salvo só neste aparelho. Restaurar volta às 3 contas de teste e às corridas iniciais.</p>
+        <button class="btn btn-block" type="button" id="reset">${ic("refresh")} Restaurar dados iniciais</button>
+      </div>` : ""}
+      ${upgrade}
+    </section>`;
+
+  bindPhone($("#pf_tel")); bindCity($("#pf_cidade"));
+  $("#darkSw").addEventListener("change", ev => setMode(ev.target.checked));
+  const logout = () => { Session.clear(); SS.del("kohe.draft"); toast("Você saiu da conta."); go("/login"); };
+  $("#logout").addEventListener("click", logout); $("#logout2").addEventListener("click", logout);
+  const rs = $("#reset"); if (rs) rs.addEventListener("click", resetAll);
+
+  $("#fotoIn").addEventListener("change", async ev => {
+    const file = ev.target.files && ev.target.files[0]; if (!file) return;
+    try {
+      const foto = await compressImage(file, { max: 320, q: 0.8, square: true }), old = u.foto;
+      u.foto = foto;
+      if (!DB.save()) { u.foto = old; return; }
+      render(); toast("Foto atualizada.");
+    } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
+  });
+  const fotoRm = $("#fotoRm");
+  if (fotoRm) fotoRm.addEventListener("click", () => { u.foto = null; DB.save(); render(); toast("Foto removida."); });
+
+  const ask = $("#askUp");
+  if (ask) ask.addEventListener("click", async () => {
+    const ok = await confirmBox({ title: `Virar ${ROLE_LABEL[next]}?`, ok: "Enviar pedido", text: "O pedido vai para a administração do Kohe. Você continua usando o app normalmente enquanto espera." });
+    if (!ok) return;
+    DB.ups.push({ id: uid("up"), uid: u.id, de: u.role, para: next, status: "pendente", criado: new Date().toISOString() });
+    DB.save(); render(); toast("Pedido de upgrade enviado.");
+  });
+  const cancel = $("#cancelUp");
+  if (cancel) cancel.addEventListener("click", async () => {
+    const ok = await confirmBox({ title: "Cancelar pedido?", ok: "Cancelar pedido", cancel: "Manter", danger: true, text: "Você pode pedir de novo quando quiser." });
+    if (!ok) return;
+    DB.ups = DB.ups.filter(x => x.id !== pend.id); DB.save(); render(); toast("Pedido cancelado.");
+  });
+
+  $("#pf").addEventListener("submit", ev => {
+    ev.preventDefault();
+    const d = {}; ["nome", "tel", "nasc", "rua", "num", "bairro", "cidade"].forEach(k => { d[k] = val("pf_" + k); });
+    if (!d.nome || d.nome.length < 2) bad("pf_nome");
+    if (!phoneOk(d.tel)) bad("pf_tel", "Informe o celular com DDD. Formato: +55 (19) 99876-5432");
+    if (!d.nasc) bad("pf_nasc"); else if (ageOf(d.nasc) < MIN_IDADE) bad("pf_nasc", "É preciso ter 18 anos ou mais.");
+    ["rua", "num", "bairro", "cidade"].forEach(k => { if (!d[k]) bad("pf_" + k); });
+    if (goFirstBad(view)) return;
+    const c = findCity(d.cidade);
+    Object.assign(u, { nome: d.nome, tel: d.tel, nasc: d.nasc, end: { rua: d.rua, num: d.num, bairro: d.bairro, cidade: c ? c.n : d.cidade } });
+    DB.save(); toast("Dados salvos.");
+  });
+
+  $("#pw_new").addEventListener("input", ev => { $("#pwRules").innerHTML = rulesHTML(ev.target.value); });
+  $("#pwf").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const old = $("#pw_old").value, nw = $("#pw_new").value, nw2 = $("#pw_new2").value;
+    if (!old) bad("pw_old");
+    else if ((await hashPass(old, u.salt)) !== u.hash) bad("pw_old", "A senha atual não confere.");
+    if (!nw) bad("pw_new"); else if (!passOk(nw)) bad("pw_new", "A nova senha ainda não cumpre todas as regras.");
+    if (!nw2) bad("pw_new2"); else if (nw2 !== nw) bad("pw_new2", "As senhas não são iguais.");
+    if (goFirstBad(view)) return;
+    u.salt = uid("s"); u.hash = await hashPass(nw, u.salt);
+    DB.save(); ["pw_old", "pw_new", "pw_new2"].forEach(id => { $("#" + id).value = ""; });
+    $("#pwRules").innerHTML = rulesHTML(""); toast("Senha trocada.");
+  });
+
+  $("#delAcc").addEventListener("click", async () => {
+    if (isAdmin(u) && DB.users.filter(x => x.role === "admin").length === 1) {
+      toast("Você é o único administrador. Aprove outro admin antes de excluir a conta.", true); return;
+    }
+    const ok = await confirmBox({
+      title: "Excluir conta?", danger: true, ok: "Excluir conta", typeToConfirm: u.nick,
+      text: "Seu cadastro sai deste aparelho e não dá para desfazer. Pedidos pendentes são cancelados; corridas já publicadas continuam no feed."
+    });
+    if (!ok) return;
+    DB.users = DB.users.filter(x => x.id !== u.id);
+    DB.ups = DB.ups.filter(x => x.uid !== u.id);
+    DB.races = DB.races.filter(r => !(r.autor === u.id && (r.status === "pendente" || r.status === "negada")));
+    DB.save(); Session.clear(); SS.del("kohe.draft");
+    go("/login"); toast("Conta excluída.");
+  });
+}, { tab: "perfil" });
+
+/* =====================================================================
+   INÍCIO
+   ===================================================================== */
+function installAppIcon() {
+  const draw = size => {
+    const c = document.createElement("canvas"); c.width = c.height = size;
+    const x = c.getContext("2d"), s = size / 64;
+    x.fillStyle = "#C4FF2E"; x.fillRect(0, 0, size, size);
+    x.fillStyle = "#0D0F0B"; x.beginPath();
+    [[19, 50], [26, 14], [34, 14], [30.6, 31.5], [45, 14], [55, 14], [37.5, 33], [47, 50], [37.5, 50], [31.3, 37.5], [28.8, 40], [27, 50]]
+      .forEach(([px, py], i) => i ? x.lineTo(px * s, py * s) : x.moveTo(px * s, py * s));
+    x.closePath(); x.fill();
+    return c.toDataURL("image/png");
+  };
+  try {
+    const i180 = draw(180), i512 = draw(512), start = location.href.split("#")[0];
+    const touch = document.createElement("link"); touch.rel = "apple-touch-icon"; touch.href = i180; document.head.appendChild(touch);
+    const manifest = {
+      name: "Kohe", short_name: "Kohe", start_url: start, scope: start.replace(/[^/]*$/, ""),
+      display: "standalone", orientation: "portrait", background_color: "#090A08", theme_color: "#090A08",
+      icons: [{ src: i512, sizes: "512x512", type: "image/png", purpose: "any" }, { src: i180, sizes: "180x180", type: "image/png" }]
+    };
+    const m = document.createElement("link"); m.rel = "manifest";
+    m.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
+    document.head.appendChild(m);
+  } catch (e) {}
+}
+
+function maybeInstallTip() {
+  let show = false;
+  try {
+    const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+    show = !Prefs.d.dicaTela && !standalone && window.self === window.top && matchMedia("(pointer: coarse)").matches;
+  } catch (e) { show = false; }
+  if (!show) return;
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  setTimeout(() => {
+    if ($(".scrim")) return;
+    const sh = openSheet(`
+      <div class="sheet-head"><h2 class="disp">Abra como app</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+      <p class="lead">Coloque o Kohe na tela inicial para abrir em tela cheia, sem a barra do navegador. Não precisa instalar nada da loja.</p>
+      <ol class="steps">${ios
+        ? `<li>Toque em <b>Compartilhar</b> ${ic("share")} na barra do Safari.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li>`
+        : `<li>Toque no menu ${ic("dots")} do navegador.</li><li>Escolha <b>Adicionar à tela inicial</b>.</li>`}<li>Abra o Kohe pelo ícone verde.</li></ol>
+      <button class="btn btn-volt btn-block" type="button" data-close>Entendi</button>`);
+    sh.el.addEventListener("click", ev => { if (ev.target.closest("[data-close]")) { Prefs.d.dicaTela = true; Prefs.save(); } });
+  }, 1200);
+}
+
+(async function boot() {
+  Prefs.load(); applyTheme();
+  if (!DB.load()) await seedDB();
+  purgeExcluded();
+  $("#fab").addEventListener("click", () => { SS.del("kohe.draft"); go("/nova"); });
+  window.addEventListener("storage", ev => {
+    if (ev.key === DB_KEY) { DB.load(); if (!$(".scrim")) render(); }
+    else if (ev.key === "kohe.prefs") { Prefs.load(); applyTheme(); }
+  });
+  render();
+  installAppIcon();
+  maybeInstallTip();
+})();
+</script>
+</body>
+</html>
