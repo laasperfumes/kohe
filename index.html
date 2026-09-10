@@ -2,7 +2,7 @@
 <html lang="pt-BR" data-mode="dark">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -616,7 +616,7 @@ ol.steps .i{width:18px;height:18px;vertical-align:-4px}
 .bubble.me{align-self:flex-end;background:var(--volt);color:var(--on-volt);border-bottom-right-radius:6px}
 .bubble.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
 .chat-empty{align-self:center;margin-top:28px;text-align:center;font-size:14px;color:var(--ink-2)}
-.composer{position:fixed;z-index:39;left:50%;bottom:calc(var(--nav-h) + 22px);transform:translateX(-50%);width:min(560px,calc(100% - 28px));display:flex;align-items:flex-end;gap:8px;padding:6px;border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--glass-line);box-shadow:var(--shade)}
+.composer{position:absolute;z-index:39;left:50%;bottom:calc(var(--nav-h) + 22px);transform:translateX(-50%);width:min(560px,calc(100% - 28px));display:flex;align-items:flex-end;gap:8px;padding:6px;border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--glass-line);box-shadow:var(--shade)}
 .composer textarea.input{height:46px;min-height:46px;max-height:120px;padding:12px 14px;border-radius:18px;resize:none;line-height:1.3}
 .composer .send{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--volt);color:var(--on-volt)}
 .composer .send .i{width:20px;height:20px}
@@ -633,6 +633,38 @@ ol.steps .i{width:18px;height:18px;vertical-align:-4px}
 .perks .soon{margin-left:4px;padding:2px 6px;font-size:9.5px;vertical-align:1px}
 .pix-card{display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--r-lg);border:1.5px dashed var(--line-2);background:var(--surface)}
 .pix-card p{font-size:19px;font-weight:700;line-height:1.35}
+
+/* ---------- perfil: atalhos, konexões ---------- */
+.kon-chip{position:relative;display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:7px;border:1.5px solid var(--line-2);color:var(--ink);text-decoration:none;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.kon-chip::after{content:"";position:absolute;inset:-9px -4px}
+.kon-chip:hover{color:var(--ink);border-color:var(--ink)}
+.kon-chip .i{width:13px;height:13px;stroke-width:2.4}
+.quick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.qtile{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:96px;padding:14px;border-radius:var(--r-lg);background:var(--surface);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+.qtile:hover{color:var(--ink)}
+.qtile>.i{width:22px;height:22px;color:var(--volt-text)}
+.qtile b{font-size:16px}
+.qtile .ct{font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;color:var(--ink-2)}
+.qtile .badge-num{position:absolute;top:12px;right:12px}
+.qtile.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:62px;gap:12px}
+.qtile.wide .ct{flex:1;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qtile.wide .chev{width:18px;height:18px;flex:none}
+.premium-tile{background:var(--volt);color:var(--on-volt);border-color:var(--volt-deep)}
+.premium-tile:hover{color:var(--on-volt)}
+.premium-tile>.i,.premium-tile .ct,.premium-tile .chev{color:var(--on-volt)}
+.premium-tile.is-premium{background:#0D0F0B;color:#C8FF3A;border-color:#C8FF3A}
+.premium-tile.is-premium:hover{color:#C8FF3A}
+.premium-tile.is-premium>.i,.premium-tile.is-premium .ct,.premium-tile.is-premium .chev{color:#C8FF3A}
+
+/* ---------- teclado aberto: o app acompanha a área visível ---------- */
+html.kb-open #app{top:var(--vvtop,0px);bottom:auto;height:var(--vvh,100%)}
+html.kb-open #tabbar,html.kb-open #fab{display:none!important}
+html.kb-open .composer{bottom:10px}
+html.kb-open .chat{padding-bottom:84px}
+
+/* ---------- Finder: a próxima corrida entra por trás ---------- */
+.fcard.back.enter{animation:backIn .38s cubic-bezier(.2,.8,.2,1) both}
+@keyframes backIn{from{transform:translateY(46px) scale(.86);opacity:0}}
 </style>
 </head>
 <body>
@@ -2363,6 +2395,8 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
   const last = DB.ups.filter(x => x.uid === u.id).sort((a, b) => b.criado.localeCompare(a.criado))[0];
   const pend = last && last.status === "pendente" ? last : null;
   const e = u.end || {}, nUnread = notifCount(u), nMsgs = unreadMsgs(u);
+  const nKon = konexoesOf(u.id).length, nFav = favRacesOf(u).length;
+  const konChip = `<a class="kon-chip" href="#/perfil/konexoes">${ic("link")}${nKon} ${nKon === 1 ? "Konexão" : "Konexões"}</a>`;
   let upgrade = "";
   if (pend) upgrade = `<div class="upgrade">
       <span class="eyebrow">Pedido enviado ${fmtStamp(pend.criado)}</span>
@@ -2388,16 +2422,15 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
         <label class="av-edit">${avatarHTML(u)}<span class="av-cam">${ic("camera")}</span><input type="file" id="fotoIn" accept="image/*" aria-label="${u.foto ? "Trocar foto de perfil" : "Adicionar foto de perfil"}"></label>
         <div class="who">
           <h1 class="disp">@${esc(u.nick)}</h1>
-          ${roleChipsHTML(u)}
+          ${roleChipsHTML(u, konChip)}
           ${klanLineHTML(u, "perfil")}
           ${u.foto ? `<button class="linkbtn" type="button" id="fotoRm" style="font-size:13px;min-height:32px;align-self:flex-start">Remover foto</button>` : ""}
         </div>
       </div>
-      <nav class="rows" aria-label="Suas listas">
-        <a class="rowlink" href="#/perfil/favoritas">${ic("heart")}<span class="grow">Favoritas</span><span class="ct num">${favRacesOf(u).length}</span>${ic("chev", "chev")}</a>
-        <a class="rowlink" href="#/perfil/konexoes">${ic("link")}<span class="grow">Konexões</span><span class="ct num">${konexoesOf(u.id).length}</span>${ic("chev", "chev")}</a>
-        <a class="rowlink" href="#/mensagens">${ic("chat")}<span class="grow">Mensagens</span>${nMsgs ? `<span class="badge-num">${nMsgs}</span>` : ""}${ic("chev", "chev")}</a>
-        <a class="rowlink" href="#/premium?de=perfil">${ic("bolt")}<span class="grow">Kohe Premium</span><span class="ct">${u.premium ? "ativo" : "slides ilimitados"}</span>${ic("chev", "chev")}</a>
+      <nav class="quick" aria-label="Seu conteúdo">
+        <a class="qtile" href="#/perfil/favoritas">${ic("heart")}<b>Favoritos</b><span class="ct num">${nFav} ${nFav === 1 ? "corrida" : "corridas"}</span></a>
+        <a class="qtile" href="#/mensagens">${ic("chat")}<b>Mensagens</b><span class="ct">${nMsgs ? `${nMsgs} nova${nMsgs === 1 ? "" : "s"}` : "Suas conversas"}</span>${nMsgs ? `<span class="badge-num">${nMsgs}</span>` : ""}</a>
+        <a class="qtile wide premium-tile${u.premium ? " is-premium" : ""}" href="#/premium?de=perfil">${ic("bolt")}<b>${u.premium ? "Você é Premium" : "Seja Premium"}</b><span class="ct">${u.premium ? "Ativo" : "Slides ilimitados"}</span>${ic("chev", "chev")}</a>
       </nav>
       <div class="group slim">
         <div class="setting sm">
@@ -2547,10 +2580,10 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
 
 route(/^\/perfil\/favoritas$/, function vFavs(view, _, q, u) {
   const list = favRacesOf(u);
-  view.innerHTML = `${subHead("Favoritas", "#/perfil", "Perfil")}
+  view.innerHTML = `${subHead("Favoritos", "#/perfil", "Perfil")}
     <section class="page">
       ${list.length ? list.map(r => raceCard(r, u, null, { date: true, from: "fav" })).join("")
-        : `<div class="empty"><h3>Nenhuma favorita</h3><p>Toque no ${ic("heart")} de uma corrida para guardar aqui.</p><a class="btn btn-sm btn-volt" href="#/feed">Ver corridas</a></div>`}
+        : `<div class="empty"><h3>Nenhum favorito</h3><p>Toque no ${ic("heart")} de uma corrida para guardar aqui.</p><a class="btn btn-sm btn-volt" href="#/feed">Ver corridas</a></div>`}
     </section>`;
 }, { tab: "perfil" });
 
@@ -2600,8 +2633,8 @@ route(/^\/perfil\/notificacoes$/, function vNotifs(view, _, q, u) {
 /* =====================================================================
    TELAS — perfil de outra pessoa, busca e Tinder
    ===================================================================== */
-function roleChipsHTML(u) {
-  return `<span class="chips-row"><span class="role ${u.role}">${ic(ROLE_ICON[u.role] || "user")}${ROLE_LABEL[u.role]}</span>${u.modKlans && u.role !== "moderador" ? `<span class="role">${ic("users")}Moderador</span>` : ""}${u.premium ? `<span class="role premium">${ic("bolt")}Premium</span>` : ""}</span>`;
+function roleChipsHTML(u, extra = "") {
+  return `<span class="chips-row"><span class="role ${u.role}">${ic(ROLE_ICON[u.role] || "user")}${ROLE_LABEL[u.role]}</span>${u.modKlans && u.role !== "moderador" ? `<span class="role">${ic("users")}Moderador</span>` : ""}${u.premium ? `<span class="role premium">${ic("bolt")}Premium</span>` : ""}${extra}</span>`;
 }
 // toda konexão precisa de aprovação, com perfil público ou privado
 function askKonexao(u, p) {
@@ -2643,7 +2676,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
       ${see ? `
         <div class="section-title"><h2 class="disp">Konexões</h2><span class="eyebrow num">${kons.length}</span></div>
         ${kons.length ? `<div class="rows">${kons.map(x => personRow(x, x.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(x.nick) + "?de=busca")).join("")}</div>` : `<div class="empty sm"><p>@${esc(p.nick)} ainda não tem Konexões.</p></div>`}
-        <div class="section-title"><h2 class="disp">Favoritas</h2><span class="eyebrow num">${favs.length}</span></div>
+        <div class="section-title"><h2 class="disp">Favoritos</h2><span class="eyebrow num">${favs.length}</span></div>
         ${favs.length ? favs.map(r => raceCard(r, u, null, { date: true, from: "u:" + p.nick })).join("") : `<div class="empty sm"><p>Nenhuma corrida favoritada.</p></div>`}`
       : `<div class="lock-card">${ic("lock")}<span>Perfil privado. Só as Konexões de @${esc(p.nick)} veem as corridas favoritas e as Konexões.</span></div>`}
     </section>`;
@@ -2717,6 +2750,7 @@ route(/^\/buscar$/, function vSearch(view, _, q, u) {
 
 /* ---------- Finder: desativado = novidades em breve; ativado = deslizar corridas ---------- */
 const reducedMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+let FINDER_ENTER = false;   // depois de um slide, a corrida seguinte entra por trás
 function emberBurst(host) {
   if (reducedMotion()) return;
   host.classList.remove("puff"); void host.offsetWidth; host.classList.add("puff");
@@ -2776,6 +2810,7 @@ function favToast(r) {
 route(/^\/finder$/, function vFinder(view, _, q, u) {
   if (!DB.config.finder) return finderSoon(view);
   const st = finderState(u), premium = !!u.premium;
+  const entering = FINDER_ENTER; FINDER_ENTER = false;
   const queue = publishedUpcoming().filter(r => !st.vistas.includes(r.id) && !isFav(u, r.id));
   const left = Math.max(0, SLIDES_GRATIS - st.usados);
   const r = queue[0], nextR = queue[1];
@@ -2789,7 +2824,7 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
       </div>
       ${r ? `
         <div class="deck">
-          ${nextR ? `<article class="fcard back" aria-hidden="true">${finderCardInner(nextR)}</article>` : ""}
+          ${nextR ? `<article class="fcard back${entering ? " enter" : ""}" aria-hidden="true">${finderCardInner(nextR)}</article>` : ""}
           <article class="fcard" id="fcard" aria-label="${esc(r.nome)}. Arraste para a direita para favoritar ou para a esquerda para jogar na lixeira.">${finderCardInner(r)}<span class="stamp like">${ic("heart")}Favoritar</span><span class="stamp nope">${ic("trash")}Lixeira</span></article>
         </div>
         <div class="fbtns">
@@ -2804,11 +2839,19 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
   const card = $("#fcard");
   if (!card) return;
   let x0 = 0, y0 = 0, dx = 0, dy = 0, down = false, moved = false, busy = false;
+  const back = $(".fcard.back", view);
   const setT = (x, y, anim) => {
     card.style.transition = anim ? "transform .3s cubic-bezier(.2,.8,.2,1)" : "none";
     card.style.transform = x || y ? `translate(${x}px, ${y}px) rotate(${x / 16}deg)` : "";
     card.style.setProperty("--like", Math.max(0, Math.min(1, x / 90)).toFixed(2));
     card.style.setProperty("--nope", Math.max(0, Math.min(1, -x / 90)).toFixed(2));
+    if (back) {   // a próxima corrida vem chegando conforme o card sai
+      const k = Math.max(0, Math.min(1, Math.abs(x) / (card.offsetWidth * 0.6 || 1)));
+      back.classList.remove("enter");
+      back.style.transition = anim ? "transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s ease" : "none";
+      back.style.transform = `translateY(${(14 * (1 - k)).toFixed(1)}px) scale(${(0.95 + 0.05 * k).toFixed(3)})`;
+      back.style.opacity = (0.6 + 0.4 * k).toFixed(2);
+    }
   };
   const decide = dir => {
     if (busy) return;
@@ -2820,7 +2863,7 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
     s.vistas = [...new Set([...s.vistas, r.id])];
     if (dir > 0 && !isFav(u, r.id)) u.favs = [...favsOf(u), r.id];
     DB.save();
-    const done = () => { render(); if (dir > 0) favToast(r); };
+    const done = () => { FINDER_ENTER = true; render(); if (dir > 0) favToast(r); };
     if (document.hidden || reducedMotion()) return done();
     setT(dir * (card.getBoundingClientRect().width + 160), dy, true);
     let fired = false;
@@ -3095,7 +3138,7 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
     const again = $("#chatIn"); if (again) again.focus();
   });
 }, { tab: "perfil" });
-function installAppIcon() {
+function installAppIcon(onlyTouch = false) {
   const draw = size => {
     const c = document.createElement("canvas"); c.width = c.height = size;
     const x = c.getContext("2d"), s = size / 64;
@@ -3114,11 +3157,36 @@ function installAppIcon() {
       display: "standalone", orientation: "portrait", background_color: "#090A08", theme_color: "#090A08",
       icons: [{ src: i512, sizes: "512x512", type: "image/png", purpose: "any" }, { src: i180, sizes: "180x180", type: "image/png" }]
     };
+    if (onlyTouch) return;
     const m = document.createElement("link"); m.rel = "manifest";
     m.href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifest));
     document.head.appendChild(m);
   } catch (e) {}
 }
+
+/* ---------- instalar na tela inicial (iPhone e Android) ---------- */
+// No site publicado (GitHub Pages), usa manifesto, ícones e service worker em arquivos de verdade:
+// é o que o Chrome do Android exige para abrir o Kohe em tela cheia. No link do Claude e no
+// arquivo local esses arquivos não existem, e o manifesto continua sendo gerado por código.
+async function setupInstall() {
+  const web = /^https?:$/.test(location.protocol) && window.self === window.top;
+  const exists = async url => { try { return (await fetch(url, { method: "HEAD", cache: "no-store" })).ok; } catch (e) { return false; } };
+  if (web && await exists("manifest.webmanifest")) {
+    const lk = document.createElement("link"); lk.rel = "manifest"; lk.href = "manifest.webmanifest"; document.head.appendChild(lk);
+    if (await exists("apple-touch-icon.png")) {
+      const ap = document.createElement("link"); ap.rel = "apple-touch-icon"; ap.href = "apple-touch-icon.png"; document.head.appendChild(ap);
+    } else installAppIcon(true);
+    if ("serviceWorker" in navigator && await exists("sw.js")) navigator.serviceWorker.register("sw.js").catch(() => {});
+    return;
+  }
+  installAppIcon();
+}
+let INSTALL_EVT = null;   // Chrome/Android: pedido de instalação guardado para o botão da dica
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault(); INSTALL_EVT = e;
+  const b = document.getElementById("tipInstall"); if (b) b.hidden = false;
+});
+window.addEventListener("appinstalled", () => { INSTALL_EVT = null; Prefs.d.dicaTela = true; Prefs.save(); });
 
 function maybeInstallTip() {
   let show = false;
@@ -3135,10 +3203,40 @@ function maybeInstallTip() {
       <p class="lead">Coloque o Kohe na tela inicial para abrir em tela cheia, sem a barra do navegador. Não precisa instalar nada da loja.</p>
       <ol class="steps">${ios
         ? `<li>Toque em <b>Compartilhar</b> ${ic("share")} na barra do Safari.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li>`
-        : `<li>Toque no menu ${ic("dots")} do navegador.</li><li>Escolha <b>Adicionar à tela inicial</b>.</li>`}<li>Abra o Kohe pelo ícone verde.</li></ol>
-      <button class="btn btn-volt btn-block" type="button" data-close>Entendi</button>`);
+        : `<li>Toque no menu ${ic("dots")} do Chrome.</li><li>Escolha <b>Adicionar à tela inicial</b> (ou <b>Instalar app</b>) e confirme.</li>`}<li>Abra o Kohe pelo ícone verde.</li></ol>
+      ${ios ? "" : `<button class="btn btn-volt btn-block" type="button" id="tipInstall"${INSTALL_EVT ? "" : " hidden"}>${ic("plus")} Adicionar à tela inicial</button>`}
+      <button class="btn${ios ? " btn-volt" : ""} btn-block" type="button" data-close>Entendi</button>`);
     sh.el.addEventListener("click", ev => { if (ev.target.closest("[data-close]")) { Prefs.d.dicaTela = true; Prefs.save(); } });
+    const tipBtn = $("#tipInstall", sh.el);
+    if (tipBtn) tipBtn.addEventListener("click", async () => {
+      if (!INSTALL_EVT) return;
+      INSTALL_EVT.prompt();
+      try { await INSTALL_EVT.userChoice; } catch (err) {}
+      INSTALL_EVT = null; Prefs.d.dicaTela = true; Prefs.save(); sh.close();
+    });
   }, 1200);
+}
+
+/* ---------- teclado no celular: o app acompanha a área visível (cabeçalho fixo no chat) ---------- */
+let BASE_VH = 0;
+function syncViewport() {
+  const vv = window.visualViewport; if (!vv) return;
+  const root = document.documentElement;
+  const touch = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
+  const layoutH = root.clientHeight || window.innerHeight;
+  BASE_VH = Math.max(BASE_VH, vv.height);
+  const kb = Math.max(0, layoutH - vv.height - vv.offsetTop);
+  const open = touch && (kb > 80 || vv.height < BASE_VH - 150);
+  root.style.setProperty("--vvh", Math.round(vv.height) + "px");
+  root.style.setProperty("--vvtop", Math.round(vv.offsetTop) + "px");
+  const was = root.classList.contains("kb-open");
+  root.classList.toggle("kb-open", open);
+  if (open && !was && location.hash.startsWith("#/chat/")) { const v = $("#view"); v.scrollTop = v.scrollHeight; }
+}
+if (window.visualViewport) {
+  visualViewport.addEventListener("resize", syncViewport);
+  visualViewport.addEventListener("scroll", syncViewport);
+  window.addEventListener("orientationchange", () => { BASE_VH = 0; setTimeout(syncViewport, 400); });
 }
 
 (async function boot() {
@@ -3151,7 +3249,7 @@ function maybeInstallTip() {
     else if (ev.key === "kohe.prefs") { Prefs.load(); applyTheme(); }
   });
   render();
-  installAppIcon();
+  setupInstall();
   maybeInstallTip();
 })();
 </script>
