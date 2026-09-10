@@ -345,7 +345,7 @@ textarea.input{height:auto;min-height:112px;padding:14px 16px;resize:vertical;li
 .coupon code{font-family:var(--mono);font-weight:700;font-size:15px;letter-spacing:.05em;overflow-wrap:anywhere}
 .cta-card{display:flex;flex-direction:column;gap:10px;padding:16px;border-radius:var(--r-lg);background:var(--sunken)}
 .byline{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--ink-2)}
-.mini-av{width:34px;height:34px;border-radius:11px;background:var(--ink);color:var(--volt);display:grid;place-items:center;font-family:var(--display);font-stretch:70%;font-style:italic;font-weight:900;font-size:16px;flex:none}
+.mini-av{width:34px;height:34px;border-radius:11px;background:var(--volt);color:var(--on-volt);display:grid;place-items:center;font-family:var(--display);font-stretch:70%;font-style:italic;font-weight:900;font-size:16px;flex:none}
 .review-banner{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:var(--r-lg);background:var(--volt);color:var(--on-volt)}
 .review-banner .i{width:22px;height:22px;flex:none}
 .review-banner p{font-size:14px;font-weight:600}
@@ -383,7 +383,7 @@ textarea.input{height:auto;min-height:112px;padding:14px 16px;resize:vertical;li
 
 /* ---------- profile ---------- */
 .me{display:flex;align-items:center;gap:14px;padding:6px 0}
-.avatar{width:72px;height:72px;border-radius:22px;background:var(--ink);color:var(--volt);display:grid;place-items:center;font-family:var(--display);font-stretch:66%;font-style:italic;font-weight:900;font-size:36px;flex:none}
+.avatar{width:72px;height:72px;border-radius:22px;background:var(--volt);color:var(--on-volt);display:grid;place-items:center;font-family:var(--display);font-stretch:66%;font-style:italic;font-weight:900;font-size:36px;flex:none}
 .me .who{display:flex;flex-direction:column;gap:6px;min-width:0}
 .me .who h1{font-size:34px;overflow-wrap:anywhere}
 .role{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:5px 9px;border-radius:7px;background:var(--volt);color:var(--on-volt)}
@@ -452,7 +452,7 @@ select.input option{background:var(--surface);color:var(--ink)}
 .avatar img,.mini-av img{width:100%;height:100%;object-fit:cover;display:block}
 .av-edit{position:relative;flex:none;cursor:pointer;border-radius:22px}
 .av-edit input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
-.av-cam{position:absolute;right:-6px;bottom:-6px;width:32px;height:32px;border-radius:50%;background:var(--volt);color:var(--on-volt);border:3px solid var(--ground);display:grid;place-items:center;pointer-events:none}
+.av-cam{position:absolute;right:-6px;bottom:-6px;width:32px;height:32px;border-radius:50%;background:var(--ink);color:var(--ground);border:3px solid var(--ground);display:grid;place-items:center;pointer-events:none}
 .av-cam .i{width:16px;height:16px;stroke-width:2.4}
 .group.slim{padding:3px 14px;gap:0}
 .setting.sm{min-height:50px}
@@ -555,6 +555,84 @@ ol.steps .i{width:18px;height:18px;vertical-align:-4px}
 .klan-hero .klan-logo.brc{font-size:40px;box-shadow:none}
 .klan-logo.brc.av-sm{font-size:13px}
 .klan-hero .klan-logo:has(img){box-shadow:none}
+
+/* ---------- Finder, chat e Premium ---------- */
+.chips-row{display:flex;flex-wrap:wrap;gap:6px}
+.role.premium{background:#0D0F0B;color:#C8FF3A;box-shadow:inset 0 0 0 1.5px #C8FF3A}
+.badge-num{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:var(--volt);color:var(--on-volt);font-family:var(--mono);font-size:11px;font-weight:700;display:grid;place-items:center;flex:none}
+.tinder .flame{position:relative;overflow:visible;border:0;padding:0;cursor:pointer}
+.tinder .flame.puff{animation:puff .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes puff{0%,100%{transform:rotate(-6deg) scale(1)}40%{transform:rotate(-6deg) scale(1.1)}}
+.ember{position:absolute;left:50%;top:40%;width:28px;height:28px;margin:-14px 0 0 -14px;color:var(--volt);pointer-events:none;animation:ember .8s cubic-bezier(.2,.7,.3,1) var(--d,0s) both}
+.tinder .flame .ember .i{width:28px;height:28px;fill:currentColor;stroke:var(--ground);stroke-width:1.4}
+@keyframes ember{0%{transform:translate(0,10px) scale(var(--s,1));opacity:0}18%{opacity:1}100%{transform:translate(var(--x,0),calc(var(--h,140px) * -1)) scale(calc(var(--s,1) * .35));opacity:0}}
+.finder{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;gap:14px;padding:calc(12px + env(safe-area-inset-top)) 16px calc(var(--nav-h) + 30px)}
+.finder-top{display:flex;align-items:center;gap:10px;min-height:28px}
+.slidebar{flex:1;height:5px;border-radius:99px;background:var(--raised);overflow:hidden}
+.slidebar i{display:block;height:100%;border-radius:99px;background:var(--volt);transition:width .35s ease}
+.deck{position:relative;flex:1;min-height:400px}
+.fcard{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;border-radius:26px;overflow:hidden;background:var(--surface);border:1px solid var(--line);box-shadow:var(--shade);touch-action:none;-webkit-user-select:none;user-select:none;cursor:grab;will-change:transform}
+.fcard.back{z-index:1;transform:translateY(14px) scale(.95);opacity:.6;pointer-events:none}
+.fcover{position:relative;flex:1;min-height:180px}
+.fbody{display:flex;flex-direction:column;gap:8px;padding:16px 18px 18px}
+.fbody h2{font-size:30px;line-height:.92}
+.fcount{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--ink-2)}
+.fcount .i{width:16px;height:16px;color:var(--heart);fill:currentColor}
+.stamp{position:absolute;z-index:4;top:22px;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border:3px solid;border-radius:12px;background:rgba(13,15,11,.6);font-family:var(--display);font-stretch:80%;font-style:italic;font-weight:900;font-size:24px;text-transform:uppercase;pointer-events:none}
+.stamp .i{width:22px;height:22px;stroke-width:2.6}
+.stamp.like{left:18px;color:#C8FF3A;border-color:#C8FF3A;transform:rotate(-10deg);opacity:var(--like,0)}
+.stamp.nope{right:18px;color:#FF5E52;border-color:#FF5E52;transform:rotate(10deg);opacity:var(--nope,0)}
+.fcard.hinting{animation:hintCard 2.8s ease-in-out .6s both}
+.fcard.hinting .stamp.like{animation:hintLike 2.8s ease-in-out .6s both}
+.fcard.hinting .stamp.nope{animation:hintNope 2.8s ease-in-out .6s both}
+@keyframes hintCard{0%,100%{transform:none}22%{transform:translateX(64px) rotate(5deg)}42%{transform:none}64%{transform:translateX(-64px) rotate(-5deg)}84%{transform:none}}
+@keyframes hintLike{0%,10%,42%,100%{opacity:0}22%{opacity:1}}
+@keyframes hintNope{0%,52%,84%,100%{opacity:0}64%{opacity:1}}
+.fbtns{display:flex;justify-content:center;gap:32px}
+.fbtn{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1.5px solid var(--line-2);box-shadow:0 4px 0 var(--line-2);transition:transform .08s,box-shadow .08s}
+.fbtn .i{width:28px;height:28px;stroke-width:2.4}
+.fbtn.nope{color:var(--danger)}
+.fbtn.like{background:var(--volt);color:var(--on-volt);border-color:var(--volt-deep);box-shadow:0 4px 0 var(--volt-deep)}
+.fbtn.like .i{fill:currentColor}
+.fbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line-2)}
+.fav-toast{position:fixed;z-index:45;left:50%;bottom:calc(var(--nav-h) + 24px);width:min(420px,calc(100% - 28px));transform:translateX(-50%);padding:14px;border-radius:20px;background:var(--ink);color:var(--ground);box-shadow:var(--shade);animation:toastUp .28s cubic-bezier(.2,.8,.2,1)}
+@keyframes toastUp{from{transform:translate(-50%,24px);opacity:0}}
+.ft-in{display:flex;flex-direction:column;gap:12px}
+.ft-in>p{display:flex;align-items:center;gap:8px;font-size:14px}
+.ft-in>p .i{width:18px;height:18px;flex:none;color:var(--volt-deep);fill:currentColor}
+.ft-in .btn{margin-bottom:0}
+.ft-timer{display:block;height:3px;border-radius:2px;background:var(--volt);animation:ftShrink 5s linear forwards}
+@keyframes ftShrink{from{width:100%}to{width:0}}
+.chat-who{display:flex;align-items:center;gap:10px;flex:1;min-width:0;color:var(--ink);text-decoration:none}
+.chat-who:hover{color:var(--ink)}
+.chat-who>span{display:flex;flex-direction:column;min-width:0}
+.chat-who b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av-xs{width:38px;height:38px;border-radius:12px;font-size:17px}
+.chat{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:6px;padding:12px 16px calc(var(--nav-h) + 120px)}
+.chat-day{align-self:center;padding:10px 0 4px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3)}
+.bubble{max-width:80%;display:flex;flex-direction:column;gap:2px;padding:9px 12px 6px;border-radius:18px}
+.bubble p{white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;line-height:1.35}
+.bubble time{align-self:flex-end;font-family:var(--mono);font-size:9.5px;opacity:.62}
+.bubble.me{align-self:flex-end;background:var(--volt);color:var(--on-volt);border-bottom-right-radius:6px}
+.bubble.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.chat-empty{align-self:center;margin-top:28px;text-align:center;font-size:14px;color:var(--ink-2)}
+.composer{position:fixed;z-index:39;left:50%;bottom:calc(var(--nav-h) + 22px);transform:translateX(-50%);width:min(560px,calc(100% - 28px));display:flex;align-items:flex-end;gap:8px;padding:6px;border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);border:1px solid var(--glass-line);box-shadow:var(--shade)}
+.composer textarea.input{height:46px;min-height:46px;max-height:120px;padding:12px 14px;border-radius:18px;resize:none;line-height:1.3}
+.composer .send{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--volt);color:var(--on-volt)}
+.composer .send .i{width:20px;height:20px}
+.composer.off{align-items:center;justify-content:center;gap:8px;padding:14px;font-size:13px;color:var(--ink-2)}
+.composer.off .i{width:18px;height:18px}
+.premium-hero{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:20px 18px;border-radius:var(--r-lg);background:var(--volt);color:var(--on-volt)}
+.premium-hero>.i{width:40px;height:40px;stroke-width:2.2}
+.premium-hero h1{font-size:50px}
+.premium-hero p{font-size:15px;font-weight:600}
+.premium-hero .eyebrow{color:inherit;opacity:.72}
+.perks{list-style:none;display:flex;flex-direction:column;gap:14px;padding:4px 2px}
+.perks li{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.4}
+.perks li>.i{width:22px;height:22px;flex:none;margin-top:1px;color:var(--volt-text)}
+.perks .soon{margin-left:4px;padding:2px 6px;font-size:9.5px;vertical-align:1px}
+.pix-card{display:flex;flex-direction:column;gap:8px;padding:18px;border-radius:var(--r-lg);border:1.5px dashed var(--line-2);background:var(--surface)}
+.pix-card p{font-size:19px;font-weight:700;line-height:1.35}
 </style>
 </head>
 <body>
@@ -587,6 +665,8 @@ const MIN_IDADE = 18;
 const EXCLUIDA_DIAS = 7;         // corridas excluídas ficam 7 dias com opção de restaurar
 const RAIO_MAX = 300;            // fim da régua de raio (o campo aceita mais)
 const EXAMPLE_URL = "https://correriacampinas.com.br/calendario/";
+const MAIN_KMS = [5, 10, 21, 42];    // distâncias principais do filtro (o resto fica em "Outros")
+const SLIDES_GRATIS = 10;            // slides grátis por dia no Finder (Premium = ilimitado)
 const CODIGO_TESTE = "123456";   // fase offline: não há e-mail de verdade
 const MAX_BUSCAS = 10;           // histórico de busca por conta
 
@@ -633,7 +713,8 @@ const ICONS = {
   chev: '<path d="M9 5l7 7-7 7"/>',
   link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/>',
   history: '<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4M12 8v4.5l3 2"/>',
-  down: '<path d="M6 9l6 6 6-6"/>'
+  down: '<path d="M6 9l6 6 6-6"/>',
+  chat: '<path d="M20 12a8 8 0 0 1-11.3 7.3L4 20.5l1.3-4.3A8 8 0 1 1 20 12z"/>'
 };
 const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
 
@@ -699,11 +780,11 @@ const brl = n => Number(n).toLocaleString("pt-BR", { style: "currency", currency
 
 /* ---------- papéis ---------- */
 const ROLE_LABEL = { usuario: "Usuário", organizador: "Organizador", moderador: "Moderador", admin: "Administrador" };
-const NEXT_ROLE = { usuario: "organizador", organizador: "admin" };
+const NEXT_ROLE = { usuario: "organizador", moderador: "organizador", organizador: "admin" };
 const ROLE_ICON = { usuario: "user", organizador: "flag", moderador: "users", admin: "shield" };
 const canCreate = u => !!u && (u.role === "organizador" || u.role === "admin");
 const isAdmin = u => !!u && u.role === "admin";
-const canModKlans = u => !!u && (u.role === "moderador" || u.role === "admin");   // edita qualquer Klan e remove membros
+const canModKlans = u => !!u && (u.role === "moderador" || u.role === "admin" || u.modKlans === true);   // edita qualquer Klan e remove membros
 
 /* ---------- contas de teste (ordem da tela de login) ---------- */
 const TEST_ACCOUNTS = [
@@ -782,13 +863,14 @@ const SS = {
 };
 const DB_KEY = "kohe.db.v1";
 const DB = {
-  users: [], races: [], ups: [], klans: [], conns: [], notifs: [], v: 3,
+  users: [], races: [], ups: [], klans: [], conns: [], notifs: [], msgs: [], config: { finder: false }, v: 4,
   load() {
     try {
       const o = JSON.parse(LS.get(DB_KEY));
       if (o && o.users) {
         this.users = o.users; this.races = o.races || []; this.ups = o.ups || [];
         this.klans = o.klans || []; this.conns = o.conns || []; this.notifs = o.notifs || [];
+        this.msgs = o.msgs || []; this.config = Object.assign({ finder: false }, o.config || {});
         this.v = o.v || 1;
         return true;
       }
@@ -796,7 +878,7 @@ const DB = {
     return false;
   },
   save() {
-    const ok = LS.set(DB_KEY, JSON.stringify({ v: 3, users: this.users, races: this.races, ups: this.ups, klans: this.klans, conns: this.conns, notifs: this.notifs }));
+    const ok = LS.set(DB_KEY, JSON.stringify({ v: 4, users: this.users, races: this.races, ups: this.ups, klans: this.klans, conns: this.conns, notifs: this.notifs, msgs: this.msgs, config: this.config }));
     if (!ok) toast("O aparelho ficou sem espaço para salvar. Use imagens menores.", true);
     return ok;
   }
@@ -832,19 +914,19 @@ async function makeTestUser(a) {
     id: a.id, nome: a.nome, nick: a.nick, email: a.email, tel: "+55 (19) 90000-0000", nasc: "1990-01-01",
     end: { rua: "Conta de teste", num: "0", bairro: "Centro", cidade: "Campinas" },
     role: a.role, salt, hash: await hashPass(a.pass, salt), criado: "2026-09-01T12:00:00.000Z", teste: true,
-    favs: [], foto: null, privado: false, klan: a.klan || null, buscas: []
+    favs: [], foto: null, privado: false, klan: a.klan || null, buscas: [], premium: false, modKlans: a.role === "moderador", finder: null
   };
 }
 async function seedDB() {
   DB.users = await Promise.all(TEST_ACCOUNTS.map(makeTestUser));
   DB.races = JSON.parse(JSON.stringify(SEED_RACES));
   DB.klans = JSON.parse(JSON.stringify(SEED_KLANS));
-  DB.ups = []; DB.conns = []; DB.notifs = [];
-  DB.v = 3;
+  DB.ups = []; DB.conns = []; DB.notifs = []; DB.msgs = []; DB.config = { finder: false };
+  DB.v = 4;
   DB.save();
 }
 async function migrateDB() {
-  if (DB.v >= 3) return;
+  if (DB.v >= 4) return;
   if (DB.v < 2) {   // dados gravados pela 1ª versão do protótipo
     const seedIds = new Set(SEED_RACES.map(r => r.id));
     DB.races.forEach(r => {
@@ -865,7 +947,15 @@ async function migrateDB() {
   SEED_KLANS.forEach(k => { if (!DB.klans.some(x => x.id === k.id)) DB.klans.push(JSON.parse(JSON.stringify(k))); });
   const mod = TEST_ACCOUNTS.find(a => a.id === "u-mod");
   if (!DB.users.some(u => u.id === mod.id || u.nick === mod.nick || u.email === mod.email)) DB.users.push(await makeTestUser(mod));
-  DB.v = 3;
+  // v4: Finder, Premium, chat e moderação de Klans que continua depois do upgrade
+  DB.users.forEach(u => {
+    if (u.premium === undefined) u.premium = false;
+    if (u.modKlans === undefined) u.modKlans = u.role === "moderador";
+    if (u.finder === undefined) u.finder = null;
+  });
+  if (!Array.isArray(DB.msgs)) DB.msgs = [];
+  if (!DB.config) DB.config = { finder: false };
+  DB.v = 4;
   DB.save();
 }
 /* ---------- tema (padrão: escuro) ---------- */
@@ -1038,7 +1128,7 @@ const kmTxt = n => String(n).replace(".", ",");
 function kmRange(r) { const l = kmList(r); return l.length ? { min: Math.min(...l), max: Math.max(...l) } : null; }
 // cor pela MAIOR distância: até 5 km branco · até 10 km escuro · acima de 10 km verde
 const kmTone = k => !k ? "dark" : k.max <= 5 ? "white" : k.max <= 10 ? "dark" : "green";
-function bibHTML(r, big = false) {
+function bibHTML(r, big = false, withName = big) {
   const k = kmRange(r), tone = kmTone(k);
   if (r.arte) return `<img class="art" src="${r.arte}" alt="Arte da corrida">${k ? `<span class="kmtag t-${tone}">${kmTxt(k.min)} km${k.max > k.min ? " · até " + kmTxt(k.max) : ""}</span>` : ""}`;
   const h = hashNum(r.id || r.nome), n = k ? kmTxt(k.min) : "K";
@@ -1046,7 +1136,7 @@ function bibHTML(r, big = false) {
   const side = k
     ? `<span class="side"><span class="u">km</span>${k.max > k.min ? `<span class="upto">até<br> ${kmTxt(k.max)} km</span>` : ""}</span>`
     : `<span class="side"><span class="u">kohe</span></span>`;
-  return `<div class="bib t-${tone}${big ? " big" : ""}" style="--rot:${-(8 + (h >> 2) % 9)}deg;--y:${12 + (h >> 4) % 30}%;--ns:${ns}px" aria-hidden="true"><i class="pin"></i><i class="pin"></i><i class="pin"></i><i class="pin"></i><div class="row"><span class="n">${esc(n)}</span>${side}</div>${big ? `<div class="nm">${esc(r.nome)}</div>` : ""}</div>`;
+  return `<div class="bib t-${tone}${big ? " big" : ""}" style="--rot:${-(8 + (h >> 2) % 9)}deg;--y:${12 + (h >> 4) % 30}%;--ns:${ns}px" aria-hidden="true"><i class="pin"></i><i class="pin"></i><i class="pin"></i><i class="pin"></i><div class="row"><span class="n">${esc(n)}</span>${side}</div>${big && withName ? `<div class="nm">${esc(r.nome)}</div>` : ""}</div>`;
 }
 
 /* ---------- favoritos ---------- */
@@ -1139,13 +1229,13 @@ function redirect(path) {
   try { history.replaceState(null, "", "#" + path); } catch (e) { location.hash = path; return; }
   render();
 }
-function unreadCount(u) {
-  return u ? DB.conns.filter(c => c.status === "pendente" && c.para === u.id).length + DB.notifs.filter(n => n.para === u.id && !n.lida).length : 0;
-}
+const notifCount = u => u ? DB.conns.filter(c => c.status === "pendente" && c.para === u.id).length + DB.notifs.filter(n => n.para === u.id && !n.lida).length : 0;
+const unreadMsgs = u => u ? DB.msgs.filter(m => m.para === u.id && !m.lida).length : 0;
+function unreadCount(u) { return notifCount(u) + unreadMsgs(u); }
 function renderChrome(rt, u) {
   const bar = $("#tabbar"), fab = $("#fab");
   if (!u || rt.bare) { bar.hidden = true; fab.hidden = true; return; }
-  const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0], ["tinder", "#/tinder", "fire", "Tinder", 0]];
+  const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0], ["finder", "#/finder", "fire", "Finder", 0]];
   if (canCreate(u)) tabs.push(["sol", "#/solicitacoes", "list", "Solicitações", isAdmin(u) ? pendingCount() : 0]);
   tabs.push(["perfil", "#/perfil", "user", "Perfil", unreadCount(u)]);
   bar.innerHTML = tabs.map(([k, href, icn, label, badge]) =>
@@ -1587,14 +1677,19 @@ function bindSwipe(view, u) {
 
 function openFilters(u) {
   const f = feedFilters();
-  const kms = [...new Set(publishedUpcoming().flatMap(kmList))];
-  f.kms.forEach(k => { if (!kms.includes(k)) kms.push(k); });
-  kms.sort((a, b) => a - b);
+  const others = [...new Set(publishedUpcoming().flatMap(kmList))].filter(k => !MAIN_KMS.includes(k));
+  f.kms.forEach(k => { if (!MAIN_KMS.includes(k) && !others.includes(k)) others.push(k); });
+  others.sort((a, b) => a - b);
   const prof = findCity(u.end && u.end.cidade);
   const sh = openSheet(`
     <div class="sheet-head"><h2 class="disp">Filtros</h2><button class="icon-btn" type="button" data-close aria-label="Fechar filtros">${ic("x")}</button></div>
-    <div class="field"><span class="label">Distância</span>
-      <div class="pick" id="fKms">${kms.map(k => `<button type="button" data-k="${k}"${f.kms.includes(k) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${kmTxt(k)} km</button>`).join("")}</div>
+    <div class="field"><span class="label" id="fKmLbl">Distância</span>
+      <div class="pick" id="fKms">${MAIN_KMS.map(k => `<button type="button" data-k="${k}"${f.kms.includes(k) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${kmTxt(k)} km</button>`).join("")}<button type="button" id="fOthBtn" aria-expanded="false" aria-controls="fOthPanel">Outros</button></div>
+      <div class="msel-panel" id="fOthPanel" hidden>
+        <div class="msel-list" role="group" aria-labelledby="fKmLbl">${others.length
+          ? others.map(k => `<label class="msel-opt"><input type="checkbox" value="${k}"${f.kms.includes(k) ? " checked" : ""}><span>${kmTxt(k)} km</span></label>`).join("")
+          : `<div class="msel-empty">Nenhuma outra distância nas corridas publicadas.</div>`}</div>
+      </div>
     </div>
     <div class="field date-group"><span class="label">Data</span>
       <div class="row2">
@@ -1655,12 +1750,25 @@ function openFilters(u) {
     const total = filterRaces(publishedUpcoming(), f, o).length;
     $("#fApply", el).textContent = total ? `Ver ${total} corrida${total === 1 ? "" : "s"}` : "Nenhuma corrida";
   };
+  const paintOthers = () => {
+    const n = f.kms.filter(k => !MAIN_KMS.includes(k)).length, b = $("#fOthBtn", el);
+    b.classList.toggle("on", n > 0);
+    b.innerHTML = `Outros${n ? ` (${n})` : ""}${ic("down")}`;
+  };
   $("#fKms", el).addEventListener("click", e => {
     const b = e.target.closest("button"); if (!b) return;
+    if (b.id === "fOthBtn") { const p = $("#fOthPanel", el), open = p.hidden; p.hidden = !open; b.setAttribute("aria-expanded", open); return; }
     const k = +b.dataset.k, on = !f.kms.includes(k);
     f.kms = on ? [...f.kms, k] : f.kms.filter(x => x !== k);
     b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); paint();
   });
+  $("#fOthPanel", el).addEventListener("change", e => {
+    const cb = e.target.closest("input[type=checkbox]"); if (!cb) return;
+    const k = +cb.value;
+    f.kms = cb.checked ? [...new Set([...f.kms, k])] : f.kms.filter(x => x !== k);
+    paintOthers(); paint();
+  });
+  paintOthers();
   range.addEventListener("input", () => { f.raio = +range.value; paint(); });
   max.addEventListener("input", () => { max.value = max.value.replace(/\D/g, "").slice(0, 4); f.raio = parseInt(max.value, 10) || 0; paint(); });
   max.addEventListener("blur", paint);
@@ -1770,7 +1878,7 @@ route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
     return;
   }
   const from = q.get("de") || "";
-  const BACK = { sol: ["#/solicitacoes", "sol"], perfil: ["#/perfil", "perfil"], fav: ["#/perfil/favoritas", "perfil"] };
+  const BACK = { sol: ["#/solicitacoes", "sol"], perfil: ["#/perfil", "perfil"], fav: ["#/perfil/favoritas", "perfil"], finder: ["#/finder", "finder"] };
   let back = SS.get("kohe.lastFeed") || "#/feed", tab = "feed";
   if (BACK[from]) [back, tab] = BACK[from];
   else if (from.startsWith("u:")) { back = "#/u/" + encodeURIComponent(from.slice(2)); tab = "buscar"; }
@@ -2254,7 +2362,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
   const next = NEXT_ROLE[u.role];
   const last = DB.ups.filter(x => x.uid === u.id).sort((a, b) => b.criado.localeCompare(a.criado))[0];
   const pend = last && last.status === "pendente" ? last : null;
-  const e = u.end || {}, nUnread = unreadCount(u);
+  const e = u.end || {}, nUnread = notifCount(u), nMsgs = unreadMsgs(u);
   let upgrade = "";
   if (pend) upgrade = `<div class="upgrade">
       <span class="eyebrow">Pedido enviado ${fmtStamp(pend.criado)}</span>
@@ -2280,7 +2388,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
         <label class="av-edit">${avatarHTML(u)}<span class="av-cam">${ic("camera")}</span><input type="file" id="fotoIn" accept="image/*" aria-label="${u.foto ? "Trocar foto de perfil" : "Adicionar foto de perfil"}"></label>
         <div class="who">
           <h1 class="disp">@${esc(u.nick)}</h1>
-          <span class="role ${u.role}">${ic(ROLE_ICON[u.role] || "user")}${ROLE_LABEL[u.role]}</span>
+          ${roleChipsHTML(u)}
           ${klanLineHTML(u, "perfil")}
           ${u.foto ? `<button class="linkbtn" type="button" id="fotoRm" style="font-size:13px;min-height:32px;align-self:flex-start">Remover foto</button>` : ""}
         </div>
@@ -2288,6 +2396,8 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
       <nav class="rows" aria-label="Suas listas">
         <a class="rowlink" href="#/perfil/favoritas">${ic("heart")}<span class="grow">Favoritas</span><span class="ct num">${favRacesOf(u).length}</span>${ic("chev", "chev")}</a>
         <a class="rowlink" href="#/perfil/konexoes">${ic("link")}<span class="grow">Konexões</span><span class="ct num">${konexoesOf(u.id).length}</span>${ic("chev", "chev")}</a>
+        <a class="rowlink" href="#/mensagens">${ic("chat")}<span class="grow">Mensagens</span>${nMsgs ? `<span class="badge-num">${nMsgs}</span>` : ""}${ic("chev", "chev")}</a>
+        <a class="rowlink" href="#/premium?de=perfil">${ic("bolt")}<span class="grow">Kohe Premium</span><span class="ct">${u.premium ? "ativo" : "slides ilimitados"}</span>${ic("chev", "chev")}</a>
       </nav>
       <div class="group slim">
         <div class="setting sm">
@@ -2296,9 +2406,8 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
         </div>
         <div class="setting sm" style="border-top:1px solid var(--line)">
           <span class="txt"><b>Perfil privado</b></span>
-          <label class="switch sm"><input type="checkbox" role="switch" id="privSw"${u.privado ? " checked" : ""} aria-label="Perfil privado" aria-describedby="privTxt"><i></i></label>
+          <label class="switch sm"><input type="checkbox" role="switch" id="privSw"${u.privado ? " checked" : ""} aria-label="Perfil privado"><i></i></label>
         </div>
-        <p class="privacy-note" id="privTxt" style="padding-bottom:12px">Com o perfil privado, outras pessoas veem só sua foto, nickname e nome. Suas corridas, Konexões e Klan ficam visíveis apenas para quem você aprovar como konexão.</p>
       </div>
       <div class="group">
         <h2 class="disp">Seus dados</h2>
@@ -2337,18 +2446,30 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
       </div>` : ""}
       ${upgrade}
       <a class="linkbtn small-link" href="#/klan/novo">${ic("plus")} Criar Klan</a>
+      ${isAdmin(u) ? `<button class="linkbtn small-link" type="button" id="finderToggle" style="margin-top:-14px">${ic("fire")} Finder ${DB.config.finder ? "ativado · desativar" : "desativado · ativar"}</button>` : ""}
     </section>`;
 
   bindPhone($("#pf_tel")); bindCity($("#pf_cidade"));
   $("#darkSw").addEventListener("change", ev => setMode(ev.target.checked));
   $("#privSw").addEventListener("change", ev => {
     u.privado = ev.target.checked; DB.save();
-    toast(u.privado ? "Perfil privado: novas konexões precisam da sua aprovação." : "Perfil público: qualquer pessoa pode se konectar.");
+    toast(u.privado ? "Perfil privado: só suas Konexões veem suas favoritas e Konexões." : "Perfil público: todo mundo vê suas favoritas e Konexões.");
   });
   const logout = () => { Session.clear(); SS.del("kohe.draft"); toast("Você saiu da conta."); go("/login"); };
   $("#logout").addEventListener("click", logout); $("#logout2").addEventListener("click", logout);
   const rs = $("#reset"); if (rs) rs.addEventListener("click", resetAll);
   $("#pwForgot").addEventListener("click", () => { RECOVERY = { uid: u.id, step: "enviar", from: "perfil" }; go("/recuperar"); });
+  const ft = $("#finderToggle");
+  if (ft) ft.addEventListener("click", async () => {
+    if (!isAdmin(u)) return;
+    const on = !DB.config.finder;
+    const ok = await confirmBox({
+      title: on ? "Ativar o Finder?" : "Desativar o Finder?", ok: on ? "Ativar" : "Desativar", danger: !on,
+      text: on ? "Todos os perfis deste aparelho passam a deslizar corridas na aba Finder." : "A aba Finder volta a mostrar “Novidades em breve” para todos os perfis."
+    });
+    if (!ok) return;
+    DB.config.finder = on; DB.save(); render(); toast(on ? "Finder ativado para todos." : "Finder desativado para todos.");
+  });
 
   $("#fotoIn").addEventListener("change", async ev => {
     const file = ev.target.files && ev.target.files[0]; if (!file) return;
@@ -2417,6 +2538,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
     DB.races = DB.races.filter(r => !(r.autor === u.id && (r.status === "pendente" || r.status === "negada")));
     DB.conns = DB.conns.filter(c => c.de !== u.id && c.para !== u.id);
     DB.notifs = DB.notifs.filter(n => n.para !== u.id && n.de !== u.id);
+    DB.msgs = DB.msgs.filter(m => m.de !== u.id && m.para !== u.id);
     DB.klans.forEach(k => { if (k.dono === u.id) k.dono = null; });
     DB.save(); Session.clear(); SS.del("kohe.draft");
     go("/login"); toast("Conta excluída.");
@@ -2478,22 +2600,34 @@ route(/^\/perfil\/notificacoes$/, function vNotifs(view, _, q, u) {
 /* =====================================================================
    TELAS — perfil de outra pessoa, busca e Tinder
    ===================================================================== */
+function roleChipsHTML(u) {
+  return `<span class="chips-row"><span class="role ${u.role}">${ic(ROLE_ICON[u.role] || "user")}${ROLE_LABEL[u.role]}</span>${u.modKlans && u.role !== "moderador" ? `<span class="role">${ic("users")}Moderador</span>` : ""}${u.premium ? `<span class="role premium">${ic("bolt")}Premium</span>` : ""}</span>`;
+}
+// toda konexão precisa de aprovação, com perfil público ou privado
+function askKonexao(u, p) {
+  if (!p || p.id === u.id || connBetween(u.id, p.id)) return false;
+  DB.conns.push({ id: uid("c"), de: u.id, para: p.id, status: "pendente", t: new Date().toISOString() });
+  DB.save(); toast(`Pedido enviado. @${p.nick} precisa aprovar.`);
+  return true;
+}
+
 route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
   const p = DB.users.find(x => x.nick === decodeURIComponent(nickEnc).toLowerCase());
   if (!p) { view.innerHTML = notFoundHTML("Perfil não encontrado", "Essa conta pode ter sido excluída.", "#/buscar", "Voltar à busca"); return; }
   if (p.id === u.id) return redirect("/perfil");
   const from = q.get("de") || "";
-  const BACKS = { konexoes: ["#/perfil/konexoes", "perfil"], notif: ["#/perfil/notificacoes", "perfil"], busca: ["#/buscar", "buscar"] };
+  const BACKS = { konexoes: ["#/perfil/konexoes", "perfil"], notif: ["#/perfil/notificacoes", "perfil"], busca: ["#/buscar", "buscar"], mensagens: ["#/mensagens", "perfil"] };
   let back = "#/buscar", tab = "buscar";
   if (BACKS[from]) [back, tab] = BACKS[from];
   else if (from.startsWith("klan:")) back = "#/klan/" + encodeURIComponent(from.slice(5));
+  else if (from.startsWith("koh:")) { back = "#/kohedores/" + encodeURIComponent(from.slice(4)); tab = "finder"; }
   if (tab !== "buscar") renderChrome({ tab }, u);
   const c = connBetween(u.id, p.id), see = canSeeProfile(u, p);
   let action;
-  if (c && c.status === "ativa") action = `<div class="state-ok">${ic("check")} Vocês estão konectados</div><button class="linkbtn" type="button" id="kUndo" style="align-self:center;font-size:13px;color:var(--danger)">Desfazer konexão</button>`;
+  if (c && c.status === "ativa") action = `<a class="btn btn-volt btn-block" href="#/chat/${encodeURIComponent(p.nick)}?de=u">${ic("chat")} Mandar mensagem</a><div class="state-ok">${ic("check")} Vocês estão konectados</div><button class="linkbtn" type="button" id="kUndo" style="align-self:center;font-size:13px;color:var(--danger)">Desfazer konexão</button>`;
   else if (c && c.de === u.id) action = `<div class="state-ok" style="border-color:var(--line-2);color:var(--ink-2)">${ic("clock")} Pedido enviado. @${esc(p.nick)} precisa aprovar</div><button class="linkbtn" type="button" id="kCancel" style="align-self:center;font-size:13px">Cancelar pedido</button>`;
   else if (c) action = `<p class="muted" style="text-align:center">@${esc(p.nick)} quer se konectar com você.</p><div class="btn-row"><button class="btn" type="button" id="kDeny">Recusar</button><button class="btn btn-volt" type="button" id="kAccept">${ic("check")} Aceitar</button></div>`;
-  else action = `<button class="btn btn-volt btn-block" type="button" id="kGo">${ic("link")} Konectar</button>${p.privado ? `<p class="eyebrow" style="text-align:center">Perfil privado: @${esc(p.nick)} precisa aprovar</p>` : ""}`;
+  else action = `<button class="btn btn-volt btn-block" type="button" id="kGo">${ic("link")} Konectar</button><p class="eyebrow" style="text-align:center">@${esc(p.nick)} precisa aprovar o pedido</p>`;
   const kons = see ? konexoesOf(p.id).sort((a, b) => a.nick.localeCompare(b.nick)) : [];
   const favs = see ? favRacesOf(p) : [];
   view.innerHTML = `
@@ -2503,7 +2637,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
         ${avatarHTML(p)}
         <h1 class="disp">@${esc(p.nick)}</h1>
         <span class="nome">${esc(p.nome)}</span>
-        ${see ? klanLineHTML(p, "u:" + p.nick) : ""}
+        ${klanLineHTML(p, "u:" + p.nick)}
       </div>
       ${action}
       ${see ? `
@@ -2511,14 +2645,10 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
         ${kons.length ? `<div class="rows">${kons.map(x => personRow(x, x.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(x.nick) + "?de=busca")).join("")}</div>` : `<div class="empty sm"><p>@${esc(p.nick)} ainda não tem Konexões.</p></div>`}
         <div class="section-title"><h2 class="disp">Favoritas</h2><span class="eyebrow num">${favs.length}</span></div>
         ${favs.length ? favs.map(r => raceCard(r, u, null, { date: true, from: "u:" + p.nick })).join("") : `<div class="empty sm"><p>Nenhuma corrida favoritada.</p></div>`}`
-      : `<div class="lock-card">${ic("lock")}<span>Perfil privado. Konecte-se para ver as corridas, as Konexões e o Klan de @${esc(p.nick)}.</span></div>`}
+      : `<div class="lock-card">${ic("lock")}<span>Perfil privado. Só as Konexões de @${esc(p.nick)} veem as corridas favoritas e as Konexões.</span></div>`}
     </section>`;
   const on = (id, fn) => { const b = document.getElementById(id); if (b) b.addEventListener("click", fn); };
-  on("kGo", () => {
-    const t = new Date().toISOString();
-    if (p.privado) { DB.conns.push({ id: uid("c"), de: u.id, para: p.id, status: "pendente", t }); DB.save(); render(); toast(`Pedido enviado. @${p.nick} precisa aprovar.`); }
-    else { DB.conns.push({ id: uid("c"), de: u.id, para: p.id, status: "ativa", t, t2: t }); DB.save(); render(); toast(`Konectado com @${p.nick}.`); }
-  });
+  on("kGo", () => { if (askKonexao(u, p)) render(); });
   on("kCancel", () => { removeConn(c); render(); toast("Pedido cancelado."); });
   on("kAccept", () => { acceptConn(c, u); render(); toast(`Konectado com @${p.nick}.`); });
   on("kDeny", () => { removeConn(c); render(); toast("Pedido recusado."); });
@@ -2585,14 +2715,145 @@ route(/^\/buscar$/, function vSearch(view, _, q, u) {
   paint();
 }, { tab: "buscar" });
 
-route(/^\/tinder$/, function vTinder(view) {
+/* ---------- Finder: desativado = novidades em breve; ativado = deslizar corridas ---------- */
+const reducedMotion = () => !!(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+function emberBurst(host) {
+  if (reducedMotion()) return;
+  host.classList.remove("puff"); void host.offsetWidth; host.classList.add("puff");
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement("span");
+    s.className = "ember"; s.innerHTML = ic("fire");
+    s.style.setProperty("--x", Math.round(Math.random() * 140 - 70) + "px");
+    s.style.setProperty("--h", Math.round(110 + Math.random() * 90) + "px");
+    s.style.setProperty("--s", (0.45 + Math.random() * 0.6).toFixed(2));
+    s.style.setProperty("--d", (Math.random() * 0.2).toFixed(2) + "s");
+    s.addEventListener("animationend", () => s.remove());
+    setTimeout(() => s.remove(), 1600);
+    host.appendChild(s);
+  }
+}
+function finderSoon(view) {
   view.innerHTML = `<section class="tinder">
-    <div class="flame">${ic("fire")}</div>
-    <span class="soon">${ic("clock")} Em testes</span>
-    <h1 class="disp">Tinder</h1>
-    <p>Essa parte ainda está em testes. Vai ser o jeito mais rápido de koher com os outros: deslizar pelas corridas, achar quem vai no mesmo pace e se konectar.</p>
+    <button class="flame" type="button" id="flame" aria-label="Soltar foguinhos">${ic("fire")}</button>
+    <span class="soon">${ic("clock")} Novidades em breve</span>
+    <h1 class="disp">Finder</h1>
+    <p>Left, right, side to side. O jeito mais rápido de koher com outros.</p>
   </section>`;
-}, { tab: "tinder" });
+  const fl = $("#flame");
+  fl.addEventListener("click", () => emberBurst(fl));
+  emberBurst(fl);
+}
+function finderState(u) {
+  const hoje = ymd(new Date());
+  if (!u.finder || typeof u.finder !== "object") u.finder = { dia: hoje, usados: 0, vistas: [], hint: false };
+  if (u.finder.dia !== hoje) { u.finder.dia = hoje; u.finder.usados = 0; }
+  if (!Array.isArray(u.finder.vistas)) u.finder.vistas = [];
+  return u.finder;
+}
+function finderCardInner(r) {
+  return `<div class="fcover">${bibHTML(r, true, false)}</div>
+    <div class="fbody">
+      <span class="eyebrow">${fmtShort(r.data)} · ${r.hora || "hora a confirmar"} · ${esc(r.cidade)}</span>
+      <h2 class="disp">${esc(r.nome)}</h2>
+      <div class="chips">${r.mods.map(m => `<span class="chip">${esc(m)}</span>`).join("")}</div>
+      <span class="fcount">${ic("heart")}${favWord(favCount(r.id))}</span>
+    </div>`;
+}
+function slidesOverPopup() {
+  confirmBox({
+    title: "Slides grátis acabaram", ok: "Conhecer o Premium", cancel: "Agora não",
+    text: `Você usou os ${SLIDES_GRATIS} slides grátis de hoje. Eles voltam amanhã, ou dá para deslizar sem limite com o <b>Kohe Premium</b>.`
+  }).then(ok => { if (ok) go("/premium?de=finder"); });
+}
+function favToast(r) {
+  const el = $("#favToast"); if (!el) return;
+  el.innerHTML = `<div class="ft-in"><p>${ic("heart")}<span><b>Favoritada!</b> ${esc(r.nome)}</span></p><div class="btn-row"><a class="btn btn-sm" href="#/corrida/${r.id}?de=finder">Saber mais</a><a class="btn btn-sm btn-volt" href="#/kohedores/${r.id}">Ver kohedores</a></div><i class="ft-timer"></i></div>`;
+  el.hidden = false;
+  clearTimeout(favToast.t);
+  favToast.t = setTimeout(() => { if (el.isConnected) el.hidden = true; }, 5000);
+}
+
+route(/^\/finder$/, function vFinder(view, _, q, u) {
+  if (!DB.config.finder) return finderSoon(view);
+  const st = finderState(u), premium = !!u.premium;
+  const queue = publishedUpcoming().filter(r => !st.vistas.includes(r.id) && !isFav(u, r.id));
+  const left = Math.max(0, SLIDES_GRATIS - st.usados);
+  const r = queue[0], nextR = queue[1];
+  const passadas = st.vistas.filter(id => { const x = DB.races.find(y => y.id === id); return x && x.status === "publicada" && !isOver(x) && !isFav(u, id); }).length;
+  view.innerHTML = `
+    <section class="finder">
+      <div class="finder-top">
+        ${premium
+          ? `<span class="role premium">${ic("bolt")}Premium · slides ilimitados</span>`
+          : `<div class="slidebar" role="progressbar" aria-label="Slides grátis de hoje" aria-valuemin="0" aria-valuemax="${SLIDES_GRATIS}" aria-valuenow="${left}"><i style="width:${(left / SLIDES_GRATIS) * 100}%"></i></div><span class="eyebrow num">${left}/${SLIDES_GRATIS}</span>`}
+      </div>
+      ${r ? `
+        <div class="deck">
+          ${nextR ? `<article class="fcard back" aria-hidden="true">${finderCardInner(nextR)}</article>` : ""}
+          <article class="fcard" id="fcard" aria-label="${esc(r.nome)}. Arraste para a direita para favoritar ou para a esquerda para jogar na lixeira.">${finderCardInner(r)}<span class="stamp like">${ic("heart")}Favoritar</span><span class="stamp nope">${ic("trash")}Lixeira</span></article>
+        </div>
+        <div class="fbtns">
+          <button class="fbtn nope" type="button" id="fNope" aria-label="Jogar na lixeira">${ic("trash")}</button>
+          <button class="fbtn like" type="button" id="fLike" aria-label="Favoritar corrida">${ic("heart")}</button>
+        </div>`
+      : `<div class="empty"><h3>Você viu tudo</h3><p>Não tem corrida nova para deslizar agora.</p>${passadas ? `<button class="btn btn-sm btn-volt" type="button" id="fRedo">Rever as ${passadas} que passei</button>` : `<a class="btn btn-sm" href="#/perfil/favoritas">Ver favoritas</a>`}</div>`}
+      <div class="fav-toast" id="favToast" hidden></div>
+    </section>`;
+  const redo = $("#fRedo");
+  if (redo) redo.addEventListener("click", () => { st.vistas = []; DB.save(); render(); });
+  const card = $("#fcard");
+  if (!card) return;
+  let x0 = 0, y0 = 0, dx = 0, dy = 0, down = false, moved = false, busy = false;
+  const setT = (x, y, anim) => {
+    card.style.transition = anim ? "transform .3s cubic-bezier(.2,.8,.2,1)" : "none";
+    card.style.transform = x || y ? `translate(${x}px, ${y}px) rotate(${x / 16}deg)` : "";
+    card.style.setProperty("--like", Math.max(0, Math.min(1, x / 90)).toFixed(2));
+    card.style.setProperty("--nope", Math.max(0, Math.min(1, -x / 90)).toFixed(2));
+  };
+  const decide = dir => {
+    if (busy) return;
+    card.classList.remove("hinting");
+    if (!premium && finderState(u).usados >= SLIDES_GRATIS) { setT(0, 0, true); slidesOverPopup(); return; }
+    busy = true;
+    const s = finderState(u);
+    if (!premium) s.usados++;
+    s.vistas = [...new Set([...s.vistas, r.id])];
+    if (dir > 0 && !isFav(u, r.id)) u.favs = [...favsOf(u), r.id];
+    DB.save();
+    const done = () => { render(); if (dir > 0) favToast(r); };
+    if (document.hidden || reducedMotion()) return done();
+    setT(dir * (card.getBoundingClientRect().width + 160), dy, true);
+    let fired = false;
+    const fin = () => { if (!fired) { fired = true; done(); } };
+    card.addEventListener("transitionend", fin, { once: true });
+    setTimeout(fin, 450);
+  };
+  card.addEventListener("pointerdown", e => {
+    if (busy || (e.pointerType === "mouse" && e.button !== 0)) return;
+    card.classList.remove("hinting");
+    down = true; moved = false; x0 = e.clientX; y0 = e.clientY; dx = dy = 0;
+    try { card.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  card.addEventListener("pointermove", e => {
+    if (!down) return;
+    dx = e.clientX - x0; dy = (e.clientY - y0) * 0.25;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
+    setT(dx, dy, false);
+  });
+  card.addEventListener("pointerup", () => {
+    if (!down) return; down = false;
+    if (!moved) { setT(0, 0, false); go("/corrida/" + r.id + "?de=finder"); return; }
+    if (Math.abs(dx) > card.getBoundingClientRect().width * 0.28) decide(dx > 0 ? 1 : -1);
+    else setT(0, 0, true);
+  });
+  card.addEventListener("pointercancel", () => { down = false; setT(0, 0, true); });
+  $("#fLike").addEventListener("click", () => decide(1));
+  $("#fNope").addEventListener("click", () => decide(-1));
+  if (!st.hint) {   // primeira vez: mostra o gesto sem executar nada
+    st.hint = true; DB.save();
+    if (!reducedMotion()) card.classList.add("hinting");
+  }
+}, { tab: "finder" });
 /* =====================================================================
    TELAS — Klans
    ===================================================================== */
@@ -2719,6 +2980,121 @@ route(/^\/klan\/([\w-]+)$/, function vKlan(view, [id], q, u) {
     p.klan = null; DB.save(); render(); toast(`@${p.nick} saiu do Klan.`);
   }));
 }, { tab: "buscar" });
+/* =====================================================================
+   TELAS — kohedores e Kohe Premium
+   ===================================================================== */
+route(/^\/kohedores\/([\w-]+)$/, function vKohedores(view, [id], q, u) {
+  const r = DB.races.find(x => x.id === id);
+  if (!r) { view.innerHTML = notFoundHTML("Corrida não encontrada", "Ela pode ter sido excluída.", "#/finder", "Voltar ao Finder"); return; }
+  const people = DB.users.filter(x => x.id !== u.id && favsOf(x).includes(r.id)).sort((a, b) => a.nick.localeCompare(b.nick));
+  view.innerHTML = `${subHead("Kohedores", "#/finder", esc(r.nome))}
+    <section class="page">
+      ${people.length ? `<p class="muted" style="font-size:14px">${plural(people.length, "pessoa favoritou", "pessoas favoritaram")} essa corrida. Konecte-se para combinar o corre.</p>
+        <div class="rows">${people.map(p => {
+          const c = connBetween(u.id, p.id), k = klanById(p.klan);
+          const act = !c ? `<button class="btn btn-sm btn-volt" type="button" data-kon="${p.id}">Konectar</button>`
+            : c.status === "ativa" ? `<a class="btn btn-sm" href="#/chat/${encodeURIComponent(p.nick)}?de=koh:${r.id}" aria-label="Mandar mensagem para @${esc(p.nick)}">${ic("chat")}</a>`
+            : c.de === u.id ? `<span class="eyebrow">Pedido enviado</span>`
+            : `<a class="btn btn-sm" href="#/u/${encodeURIComponent(p.nick)}?de=koh:${r.id}">Responder</a>`;
+          return `<div class="person-row">${avatarHTML(p, "avatar av-sm")}<a class="who" href="#/u/${encodeURIComponent(p.nick)}?de=koh:${r.id}" style="color:inherit;text-decoration:none"><b>@${esc(p.nick)}</b><span>${esc(p.nome)}${k ? " · " + esc(klanTag(k)) : ""}</span></a>${act}</div>`;
+        }).join("")}</div>`
+        : `<div class="empty"><h3>Ninguém ainda</h3><p>Ninguém mais favoritou essa corrida por enquanto. Quem favoritar aparece aqui.</p><a class="btn btn-sm" href="#/corrida/${r.id}?de=finder">Saber mais da corrida</a></div>`}
+    </section>`;
+  $$("[data-kon]", view).forEach(b => b.addEventListener("click", () => { if (askKonexao(u, userById(b.dataset.kon))) render(); }));
+}, { tab: "finder" });
+
+route(/^\/premium$/, function vPremium(view, _, q, u) {
+  const from = q.get("de") === "finder" ? "finder" : "perfil";
+  if (from === "finder") renderChrome({ tab: "finder" }, u);
+  const pagar = q.get("passo") === "pagar" && !u.premium;
+  const back = pagar ? `#/premium?de=${from}` : from === "finder" ? "#/finder" : "#/perfil";
+  let body;
+  if (u.premium) body = `
+    <div class="premium-hero">${ic("bolt")}<span class="eyebrow">Kohe Premium</span><h1 class="disp">Você é Premium</h1><p>Slides ilimitados no Finder já estão liberados.</p></div>
+    <a class="btn btn-volt btn-block" href="#/finder">${ic("fire")} Ir para o Finder</a>
+    <button class="linkbtn small-link" type="button" id="prOff">Voltar ao plano grátis (teste)</button>`;
+  else if (pagar) body = `
+    <div class="step-title"><span class="eyebrow">Pagamento · simulação de teste</span><h1 class="disp">Quase lá</h1></div>
+    <div class="pix-card"><span class="eyebrow">Pix</span><p>Para fazer upgrade, fazer pix pro miguelzao kkkk paga nois Mene</p></div>
+    <p class="muted" style="font-size:13.5px">Fase de testes: nada é cobrado e nenhum dado é pedido. Pode seguir sem pagar.</p>
+    <button class="btn btn-volt btn-block" type="button" id="prGo">Seguir ${ic("arrow")}</button>`;
+  else body = `
+    <div class="premium-hero">${ic("bolt")}<span class="eyebrow">Kohe Premium</span><h1 class="disp">Koher sem limite</h1></div>
+    <ul class="perks">
+      <li>${ic("fire")}<span><b>Slides ilimitados</b> no Finder, sem esperar o dia seguinte.</span></li>
+      <li>${ic("link")}<span><b>Konexão de monte</b> com quem favorita as mesmas corridas.</span></li>
+      <li>${ic("clock")}<span><b>Pace da galera:</b> veja o ritmo que o pessoal costuma fazer. <span class="soon">em breve</span></span></li>
+    </ul>
+    <a class="btn btn-volt btn-block" href="#/premium?de=${from}&passo=pagar">Quero ser Premium ${ic("arrow")}</a>`;
+  view.innerHTML = `${subHead("Premium", back, "Kohe")}<section class="page">${body}</section>`;
+  const goP = $("#prGo");
+  if (goP) goP.addEventListener("click", () => { u.premium = true; DB.save(); go("/premium?de=" + from); toast("Pronto: agora você é Premium."); });
+  const off = $("#prOff");
+  if (off) off.addEventListener("click", () => { u.premium = false; DB.save(); render(); toast("Plano grátis de volta (teste)."); });
+}, { tab: "perfil" });
+/* =====================================================================
+   TELAS — mensagens entre Konexões
+   ===================================================================== */
+const pairMsgs = (a, b) => DB.msgs.filter(m => (m.de === a && m.para === b) || (m.de === b && m.para === a)).sort((x, y) => x.t.localeCompare(y.t));
+function shortStamp(iso) { const d = new Date(iso); return ymd(d) === ymd(new Date()) ? `${pad2(d.getHours())}:${pad2(d.getMinutes())}` : `${d.getDate()} ${MON[d.getMonth()]}`; }
+
+route(/^\/mensagens$/, function vInbox(view, _, q, u) {
+  const ids = new Set(konexoesOf(u.id).map(p => p.id));
+  DB.msgs.forEach(m => { if (m.de === u.id) ids.add(m.para); else if (m.para === u.id) ids.add(m.de); });
+  const rows = [...ids].map(id => userById(id)).filter(Boolean).map(p => {
+    const ms = pairMsgs(u.id, p.id);
+    return { p, last: ms[ms.length - 1], unread: ms.filter(m => m.para === u.id && !m.lida).length };
+  }).sort((a, b) => (b.last ? b.last.t : "").localeCompare(a.last ? a.last.t : "") || a.p.nick.localeCompare(b.p.nick));
+  view.innerHTML = `${subHead("Mensagens", "#/perfil", "Perfil")}
+    <section class="page">
+      ${rows.length ? `<div class="rows">${rows.map(({ p, last, unread }) => `<a class="person-row" href="#/chat/${encodeURIComponent(p.nick)}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p.nick)}</b><span>${last ? (last.de === u.id ? "Você: " : "") + esc(last.texto) : "Mande o primeiro oi"}</span></span>${unread ? `<span class="badge-num">${unread}</span>` : last ? `<span class="eyebrow">${shortStamp(last.t)}</span>` : ""}</a>`).join("")}</div>`
+        : `<div class="empty"><h3>Nenhuma conversa</h3><p>Konecte-se com alguém para trocar mensagens. No Finder, veja quem favoritou as mesmas corridas.</p><a class="btn btn-sm btn-volt" href="#/buscar">${ic("search")} Buscar pessoas</a></div>`}
+    </section>`;
+}, { tab: "perfil" });
+
+route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
+  const p = DB.users.find(x => x.nick === decodeURIComponent(nickEnc).toLowerCase());
+  if (!p || p.id === u.id) return redirect("/mensagens");
+  const from = q.get("de") || "";
+  const back = from === "u" ? "#/u/" + encodeURIComponent(p.nick) : from.startsWith("koh:") ? "#/kohedores/" + from.slice(4) : "#/mensagens";
+  const connected = isConnected(u.id, p.id), ms = pairMsgs(u.id, p.id), key = "kohe.chat." + p.id;
+  let lastDay = "", log = "";
+  ms.forEach(m => {
+    const d = new Date(m.t), day = ymd(d);
+    if (day !== lastDay) { lastDay = day; log += `<div class="chat-day">${day === ymd(new Date()) ? "Hoje" : fmtShort(day)}</div>`; }
+    log += `<div class="bubble ${m.de === u.id ? "me" : "them"}"><p>${esc(m.texto)}</p><time>${pad2(d.getHours())}:${pad2(d.getMinutes())}</time></div>`;
+  });
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a>
+      <a class="chat-who" href="#/u/${encodeURIComponent(p.nick)}?de=mensagens">${avatarHTML(p, "avatar av-xs")}<span><b>@${esc(p.nick)}</b><span class="eyebrow">${esc(p.nome)}</span></span></a>
+    </div></header>
+    <section class="chat" id="chatLog" aria-live="polite">${log || `<p class="chat-empty">${connected ? "Vocês estão konectados. Mande o primeiro oi." : "Nenhuma mensagem."}</p>`}</section>
+    ${connected
+      ? `<form class="composer" id="chatForm"><textarea id="chatIn" class="input" rows="1" maxlength="1000" placeholder="Mensagem para @${esc(p.nick)}" aria-label="Mensagem para @${esc(p.nick)}"></textarea><button class="send" type="submit" aria-label="Enviar">${ic("send")}</button></form>`
+      : `<div class="composer off">${ic("lock")}<span>Vocês não estão konectados. Konecte-se para conversar.</span></div>`}`;
+  view.scrollTop = view.scrollHeight;
+  let changed = false;
+  DB.msgs.forEach(m => { if (m.de === p.id && m.para === u.id && !m.lida) { m.lida = true; changed = true; } });
+  if (changed) { DB.save(); renderChrome({ tab: "perfil" }, u); }
+  const form = $("#chatForm");
+  if (!form) return;
+  const inp = $("#chatIn");
+  const grow = () => { inp.style.height = "auto"; inp.style.height = Math.min(120, Math.max(46, inp.scrollHeight)) + "px"; };
+  inp.value = SS.get(key) || ""; grow();
+  inp.addEventListener("input", () => { SS.set(key, inp.value); grow(); });
+  inp.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event("submit", { cancelable: true })); }
+  });
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    const texto = inp.value.trim(); if (!texto) return;
+    if (!isConnected(u.id, p.id)) { toast("Vocês não estão mais konectados.", true); render(); return; }
+    DB.msgs.push({ id: uid("m"), de: u.id, para: p.id, texto, t: new Date().toISOString(), lida: false });
+    DB.save(); SS.del(key); render();
+    const again = $("#chatIn"); if (again) again.focus();
+  });
+}, { tab: "perfil" });
 function installAppIcon() {
   const draw = size => {
     const c = document.createElement("canvas"); c.width = c.height = size;
@@ -2781,4 +3157,3 @@ function maybeInstallTip() {
 </script>
 </body>
 </html>
-<!-- redeploy -->
