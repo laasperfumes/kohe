@@ -277,7 +277,10 @@ textarea.input{height:auto;min-height:112px;padding:14px 16px;resize:vertical;li
 .swipe-hint{display:flex;align-items:center;gap:8px}
 /* linha de conversa arrastável: precisa de fundo próprio, senão o vermelho de
    baixo aparece através dela enquanto desliza */
-.swipe .person-row{touch-action:pan-y;transition:transform .22s cubic-bezier(.2,.8,.2,1);background:var(--surface);border-top:1px solid var(--line)}
+/* position:relative é o que põe a linha ACIMA da camada vermelha. Sem isso ela
+   fica por baixo e a camada, mesmo invisível, engole o clique e o arrasto.
+   É assim que o card de corrida sempre funcionou. */
+.swipe .person-row{position:relative;z-index:1;touch-action:pan-y;transition:transform .22s cubic-bezier(.2,.8,.2,1);background:var(--surface);border-top:1px solid var(--line)}
 .swipe .person-row.drag{transition:none}
 .rows .swipe{border-radius:0}
 .rows>.swipe:first-child .person-row,.rows>.person-row:first-child{border-top:0}
