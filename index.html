@@ -993,7 +993,7 @@ async function carregarPerfil() {
 
   Object.assign(local, {
     nome: p.nome, nick: p.nick, email: session.user.email,
-    role: p.role, privado: p.privado,
+    role: p.role, privado: p.privado, komunidade: p.komunidade_id || null,
     tel: pv ? (pv.tel || "") : "", nasc: pv ? (pv.nasc || "") : "",
     end: pv ? { rua: pv.end_rua || "", num: pv.end_num || "", bairro: pv.end_bairro || "", cidade: pv.end_cidade || "" } : {}
   });
@@ -1044,14 +1044,14 @@ async function makeTestUser(a) {
 async function carregarPessoas() {
   if (!sb || !CURRENT) return;
   const { data, error } = await sb.from("profiles")
-    .select("id, nome, nick, privado, role, criado_em");
+    .select("id, nome, nick, privado, role, komunidade_id, criado_em");
   if (error || !data) return;
   data.forEach(p => {
     let local = DB.users.find(x => x.id === p.id);
     if (!local) { local = { id: p.id, favs: [], buscas: [], finder: null, komunidade: null, premium: false, foto: null }; DB.users.push(local); }
     Object.assign(local, {
       nome: p.nome, nick: p.nick, privado: p.privado,
-      role: p.role, criado: p.criado_em
+      role: p.role, komunidade: p.komunidade_id || null, criado: p.criado_em
     });
   });
   const vivos = new Set(data.map(p => p.id));
@@ -1101,6 +1101,32 @@ async function carregarCorridas() {
   DB.save();
 }
 
+/* ---------- Komunidades e favoritas (KM 5) ----------
+   Favoritas voltam para dentro de cada pessoa (u.favs), que é como o app
+   sempre leu: assim o contador "X pessoas favoritaram", a lista de kohedores
+   e o Finder continuam funcionando sem nenhuma alteração.                   */
+async function carregarKomunidades() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("komunidades").select("*");
+  if (error || !data) return;
+  DB.komunidades = data.map(k => ({
+    id: k.id, nome: k.nome, sigla: k.sigla || "", cidade: k.cidade,
+    local: k.local || "", horario: k.horario || "", desde: k.desde || "",
+    dono: k.dono_id, foto: k.foto_url || null, criado: k.criado_em
+  }));
+  DB.save();
+}
+
+async function carregarFavoritas() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("favorites").select("user_id, race_id");
+  if (error || !data) return;
+  const porPessoa = {};
+  data.forEach(f => { (porPessoa[f.user_id] = porPessoa[f.user_id] || []).push(f.race_id); });
+  DB.users.forEach(x => { x.favs = porPessoa[x.id] || []; });
+  DB.save();
+}
+
 async function salvarEvento(race_id, acao, obs) {
   await sb.from("race_events").insert({ race_id, acao, por: CURRENT ? CURRENT.id : null, obs: obs || null });
 }
@@ -1108,7 +1134,7 @@ async function salvarEvento(race_id, acao, obs) {
 async function seedDB() {
   DB.users = [];   // desde o KM 3 as contas vêm do Supabase, não de semente local
   DB.races = [];   // desde o KM 4 as corridas vêm do Supabase, não de semente local
-  DB.komunidades = JSON.parse(JSON.stringify(SEED_KOMUNIDADES));
+  DB.komunidades = [];   // desde o KM 5 as Komunidades vêm do Supabase
   DB.ups = []; DB.conns = []; DB.notifs = []; DB.msgs = []; DB.config = { finder: false };
   DB.v = 4;
   DB.save();
@@ -1132,7 +1158,7 @@ async function migrateDB() {
     if (u.komunidade === undefined) u.komunidade = null;
     if (!Array.isArray(u.buscas)) u.buscas = [];
   });
-  SEED_KOMUNIDADES.forEach(k => { if (!DB.komunidades.some(x => x.id === k.id)) DB.komunidades.push(JSON.parse(JSON.stringify(k))); });
+  // (desde o KM 5 nenhuma Komunidade é criada localmente: elas vêm do Supabase)
   // (desde o KM 3 nenhuma conta é criada localmente: elas vêm do Supabase)
   // v4: Finder, Premium, chat e moderação de Komunidades que continua depois do upgrade
   DB.users.forEach(u => {
@@ -1336,14 +1362,7 @@ function favBtn(id, u, big = false) {
   const inner = big ? `<span class="fl">${on ? "Favorita" : "Favoritar"}</span>` : `<span class="fc num">${favCount(id)}</span>`;
   return `<button class="fav${big ? " big" : ""}${on ? " on" : ""}" type="button" data-fav="${id}" aria-pressed="${on}" aria-label="${on ? "Remover dos favoritos" : "Favoritar"}">${ic("heart")}${inner}</button>`;
 }
-document.addEventListener("click", e => {
-  const b = e.target.closest && e.target.closest("[data-fav]"); if (!b) return;
-  e.preventDefault(); e.stopPropagation();
-  const card = b.closest(".rc"); if (card && card.dataset.moved) return;
-  const u = me(); if (!u) return;
-  const id = b.dataset.fav, on = !isFav(u, id);
-  u.favs = on ? [...favsOf(u), id] : favsOf(u).filter(x => x !== id);
-  DB.save();
+function pintaFav(id, on, b) {
   const n = favCount(id);
   $$(`[data-fav="${id}"]`).forEach(x => {
     x.classList.toggle("on", on); x.setAttribute("aria-pressed", on);
@@ -1352,7 +1371,27 @@ document.addEventListener("click", e => {
     const l = $(".fl", x); if (l) l.textContent = on ? "Favorita" : "Favoritar";
   });
   $$(`[data-favtxt="${id}"]`).forEach(x => { x.textContent = favWord(n); });
-  if (on) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); toast("Salva nos favoritos do seu perfil."); }
+  if (on && b) { b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); toast("Salva nos favoritos do seu perfil."); }
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest && e.target.closest("[data-fav]"); if (!b) return;
+  e.preventDefault(); e.stopPropagation();
+  const card = b.closest(".rc"); if (card && card.dataset.moved) return;
+  const u = me(); if (!u) return;
+  const id = b.dataset.fav, on = !isFav(u, id), antes = favsOf(u);
+  /* Muda na hora para o toque parecer instantâneo e só depois grava. Se o
+     servidor recusar, volta atrás e avisa — nada de coração aceso mentindo. */
+  u.favs = on ? [...antes, id] : antes.filter(x => x !== id);
+  pintaFav(id, on, b);
+  const { error } = on
+    ? await sb.from("favorites").insert({ user_id: u.id, race_id: id })
+    : await sb.from("favorites").delete().eq("user_id", u.id).eq("race_id", id);
+  if (error) {
+    u.favs = antes; pintaFav(id, !on);
+    toast("Não deu para salvar a favorita. Tente de novo.", true);
+    return;
+  }
+  DB.save();
 }, true);
 
 /* ---------- card de corrida ---------- */
@@ -1471,7 +1510,8 @@ async function resetAll() {
   });
   if (!ok) return;
   await seedDB(); SS.del("kohe.draft"); SIGNUP = null; RECOVERY = null;
-  await carregarPerfil(); await carregarPessoas(); await carregarCorridas();
+  await carregarPerfil(); await carregarPessoas(); await carregarKomunidades();
+  await carregarCorridas(); await carregarFavoritas();
   toast("Dados iniciais restaurados."); go("/feed");
 }
 
@@ -3093,7 +3133,13 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
     const s = finderState(u);
     if (!premium) s.usados++;
     s.vistas = [...new Set([...s.vistas, r.id])];
-    if (dir > 0 && !isFav(u, r.id)) u.favs = [...favsOf(u), r.id];
+    if (dir > 0 && !isFav(u, r.id)) {
+      u.favs = [...favsOf(u), r.id];
+      /* sem await: o card não pode travar esperando a rede no meio do gesto */
+      sb.from("favorites").insert({ user_id: u.id, race_id: r.id }).then(({ error }) => {
+        if (error) { u.favs = favsOf(u).filter(x => x !== r.id); DB.save(); toast("Não deu para salvar a favorita.", true); }
+      });
+    }
     DB.save();
     const done = () => { FINDER_ENTER = true; render(); if (dir > 0) favToast(r); };
     if (document.hidden || reducedMotion()) return done();
@@ -3187,14 +3233,24 @@ function komunidadeForm(view, u, k) {
     if (v.desde && !validDesde(v.desde)) bad("kf_desde");
     if (goFirstBad(view)) return;
     const c = findCity(v.cidade); v.cidade = c ? c.n : v.cidade;
-    if (editing) { Object.assign(k, v); DB.save(); go("/komunidade/" + k.id); toast("Komunidade atualizada."); return; }
+    const campos = { nome: v.nome, cidade: v.cidade, sigla: v.sigla || null, local: v.local, horario: v.horario, desde: v.desde };
+    if (editing) {
+      const { error } = await sb.from("komunidades").update(campos).eq("id", k.id);
+      if (error) { toast("Não deu para salvar: " + error.message, true); return; }
+      await carregarKomunidades();
+      go("/komunidade/" + k.id); toast("Komunidade atualizada."); return;
+    }
     if (current) {
       const ok = await confirmBox({ title: "Trocar de Komunidade?", ok: "Criar e trocar", text: `Você sai da <b>${esc(komunidadeTag(current))}</b> e passa a koher com a Komunidade nova.` });
       if (!ok) return;
     }
-    const nk = Object.assign({ id: uid("k"), dono: u.id, criado: new Date().toISOString() }, v);
-    DB.komunidades.push(nk); u.komunidade = nk.id; DB.save();
-    go("/komunidade/" + nk.id); toast(`Komunidade criada. Você já está kohendo com ${komunidadeTag(nk)}.`);
+    const { data, error } = await sb.from("komunidades").insert(Object.assign({ dono_id: u.id }, campos)).select("id").single();
+    if (error) { toast("Não deu para criar: " + error.message, true); return; }
+    const entrou = await sb.from("profiles").update({ komunidade_id: data.id }).eq("id", u.id);
+    if (!entrou.error) u.komunidade = data.id;
+    await carregarKomunidades(); DB.save();
+    go("/komunidade/" + data.id);
+    toast(entrou.error ? "Komunidade criada, mas não deu para entrar nela." : `Komunidade criada. Você já está kohendo com ${komunidadeTag(komunidadeById(data.id) || v)}.`);
   });
 }
 route(/^\/komunidade\/novo$/, (view, _, q, u) => komunidadeForm(view, u, null), { tab: "perfil" });
@@ -3240,18 +3296,26 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
       const ok = await confirmBox({ title: `Koher com ${komunidadeTag(k)}?`, ok: "Koher junto", text: `Você sai da <b>${esc(komunidadeTag(other))}</b> e entra na <b>${esc(komunidadeTag(k))}</b>. Dá para estar em uma Komunidade por vez.` });
       if (!ok) return;
     }
+    const { error } = await sb.from("profiles").update({ komunidade_id: k.id }).eq("id", u.id);
+    if (error) { toast("Não deu para entrar agora. Tente de novo.", true); return; }
     u.komunidade = k.id; DB.save(); render(); toast(`Agora você está kohendo com ${komunidadeTag(k)}.`);
   });
   const leave = $("#kLeave");
   if (leave) leave.addEventListener("click", async () => {
     const ok = await confirmBox({ title: "Sair da Komunidade?", ok: "Sair", danger: true, text: `Você deixa de aparecer entre os membros da <b>${esc(komunidadeTag(k))}</b>.` });
     if (!ok) return;
+    const { error } = await sb.from("profiles").update({ komunidade_id: null }).eq("id", u.id);
+    if (error) { toast("Não deu para sair agora. Tente de novo.", true); return; }
     u.komunidade = null; DB.save(); render(); toast("Você saiu da Komunidade.");
   });
   $$("[data-kick]", view).forEach(b => b.addEventListener("click", async () => {
     const p = userById(b.dataset.kick); if (!p) return;
     const ok = await confirmBox({ title: "Remover membro?", ok: "Remover", danger: true, text: `<b>@${esc(p.nick)}</b> deixa de fazer parte do <b>${esc(komunidadeTag(k))}</b>.` });
     if (!ok) return;
+    /* Via função do servidor: a Komunidade de alguém fica no perfil DELE, e a
+       regra de segurança só deixa cada um editar o próprio perfil.          */
+    const { error } = await sb.rpc("remover_da_komunidade", { p_user: p.id });
+    if (error) { toast(error.message, true); return; }
     p.komunidade = null; DB.save(); render(); toast(`@${p.nick} saiu da Komunidade.`);
   }));
 }, { tab: "buscar" });
@@ -3489,7 +3553,9 @@ if (window.visualViewport) {
      se a pessoa cai no login ou no feed.                                     */
   await carregarPerfil();
   await carregarPessoas();
+  await carregarKomunidades();
   await carregarCorridas();
+  await carregarFavoritas();   // depois de carregarPessoas: preenche u.favs de cada um
   purgeExcluded();
   render();
 
@@ -3500,7 +3566,9 @@ if (window.visualViewport) {
     if (primeiro) { primeiro = false; return; }
     await carregarPerfil();
     await carregarPessoas();
+    await carregarKomunidades();
     await carregarCorridas();
+    await carregarFavoritas();
     if (!$(".scrim")) render();
   });
 
