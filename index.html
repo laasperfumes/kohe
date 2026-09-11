@@ -760,24 +760,68 @@ button.state-ok{width:100%;background:none;font:inherit;font-weight:800;cursor:p
 .mudanca .depois{background:var(--ok-bg)}
 .mudanca .prose{font-size:13.5px}
 .mini-arte{width:56px;height:70px;object-fit:cover;border-radius:8px;display:block}
-#rotate{display:none}
-@media (orientation:landscape) and (max-height:520px){
-  #app,#tabbar,#fab,#toastHost{display:none!important}
-  #rotate{position:fixed;inset:0;z-index:9999;background:var(--ground);color:var(--ink);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:16px;padding:12px 16px 22px;text-align:center}
-  #rotate .giro-svg{height:min(72vh,290px);width:auto;aspect-ratio:1;overflow:visible}
-  #rotate .giro{transform-box:view-box;transform-origin:50% 50%;animation:girar 9s linear infinite}
-  #rotate .seta{fill:none;stroke:var(--volt);stroke-width:30}
-  #rotate .ponta{fill:var(--volt)}
-  #rotate .guia{fill:none;stroke:none}
-  #rotate text{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;fill:var(--on-volt)}
-  #rotate .cel{fill:none;stroke:var(--ink);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
-  /* em destaque, com a faixa neon do logo por baixo */
-  #rotate b{position:relative;z-index:0;padding:0 6px;font-family:var(--display);font-stretch:68%;font-style:italic;font-weight:850;text-transform:uppercase;font-size:34px;line-height:.9}
-  #rotate b::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:9px;background:var(--volt);transform:skewX(-18deg);z-index:-1}
-}
-@keyframes girar{to{transform:rotate(360deg)}}
+/* ---------- imagem do kit ---------- */
+.kit-foto{display:flex;align-items:center;gap:12px;width:100%;padding:8px 12px 8px 8px;border-radius:var(--r);border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left}
+.kit-foto img{width:60px;height:60px;object-fit:cover;border-radius:10px;flex:none}
+.kit-foto>span{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.kit-foto b{font-size:14.5px}
+.kit-foto>span>span{font-size:12.5px;color:var(--ink-2)}
+.kit-foto .chev{width:18px;height:18px;color:var(--ink-3)}
+.kit-grande{width:100%;border-radius:var(--r);display:block}
+/* ---------- treino: entrada automática e pilha de pedidos ---------- */
+.chip-auto{display:inline-flex;align-items:center;gap:4px;background:var(--volt);color:var(--on-volt)}
+.chip-auto .i{width:11px;height:11px;stroke-width:2.6}
+.pilha-pedidos{flex:none;min-height:250px}
+.pbody{height:100%;overflow:hidden;padding:18px}
+.pbody .prose{font-size:14.5px}
+.pilha-dica{text-align:center;margin-top:2px}
+.pilha-acoes .fbtn.like .i{fill:none}
+.desfazer .ft-in>p{justify-content:flex-start}
+.desfazer .ft-in>p .i{fill:none;color:var(--volt)}
+.desfazer .ft-in>p .btn{margin:0 0 0 auto}
+.desfazer .btn{--bg:transparent;--fg:var(--ground);--edge:color-mix(in srgb,var(--ground) 35%,transparent);--depth:transparent;box-shadow:none}
+/* ---------- chat em grupo ---------- */
+.gmsg{display:flex;align-items:flex-end;gap:8px;max-width:88%;align-self:flex-start}
+.gmsg.inicio{margin-top:6px}
+.av-xxs{width:28px;height:28px;border-radius:9px;font-size:13px}
+.gav-vazio{width:28px;flex:none}
+.gcol{display:flex;flex-direction:column;gap:3px;min-width:0}
+.gnick{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;padding-left:4px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink-2)}
+.gnick em{font-style:normal;font-size:9.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--warn);background:var(--warn-bg);padding:1px 6px;border-radius:5px}
+.gmsg .bubble{max-width:100%}
+.icon-btn.discreto{background:none;border-color:transparent;color:var(--ink-3)}
+.rows.grupos .chev{width:18px;height:18px;flex:none;color:var(--ink-3)}
+/* ---------- denúncias e total de treinos ---------- */
+.denunciar{align-self:center;gap:6px;min-height:40px;font-size:12.5px;font-weight:600;color:var(--ink-3);text-decoration:none}
+.denunciar .i{width:14px;height:14px}
+.denunciar:hover{color:var(--danger)}
+.den-msgs{border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-size:13.5px}
+.den-msgs summary{cursor:pointer;font-weight:700;min-height:34px;display:flex;align-items:center}
+.den-msgs p{margin:8px 0 0;padding-top:8px;border-top:1px solid var(--line);overflow-wrap:anywhere}
+.stat-treinos{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2)}
+.stat-treinos .i{width:15px;height:15px}
+.stat-treinos b{color:var(--ink);font-weight:750}
+/* ---------- só na vertical ----------
+   Quem decide é a orientação do APARELHO, marcada em html.deitado pelo script.
+   Antes era a media query de orientação, que mede a área da página: no Android
+   o teclado encolhe essa área, o celular em pé "virava paisagem", o app sumia
+   e o campo perdia o foco — o teclado abria e fechava na hora.             */
+#rotate{display:none;position:fixed;inset:0;z-index:9999;background:var(--ground);color:var(--ink);
+  flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:12px 16px 22px;text-align:center}
+html.deitado #app,html.deitado #tabbar,html.deitado #fab,html.deitado #toastHost{display:none!important}
+html.deitado #rotate{display:flex}
+#rotate .giro-svg{height:min(72vh,290px);width:auto;aspect-ratio:1;overflow:visible}
+#rotate .giro{transform-box:view-box;transform-origin:50% 50%;animation:girar 9s linear infinite}
+#rotate .seta{fill:none;stroke:var(--volt);stroke-width:30}
+#rotate .ponta{fill:var(--volt)}
+#rotate .guia{fill:none;stroke:none}
+#rotate text{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;fill:var(--on-volt)}
+#rotate .cel{fill:none;stroke:var(--ink);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+/* em destaque, com a faixa neon do logo por baixo */
+#rotate b{position:relative;z-index:0;padding:0 6px;font-family:var(--display);font-stretch:68%;font-style:italic;font-weight:850;text-transform:uppercase;font-size:34px;line-height:.9}
+#rotate b::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:9px;background:var(--volt);transform:skewX(-18deg);z-index:-1}
+/* anti-horário */
+@keyframes girar{to{transform:rotate(-360deg)}}
 </style>
 </head>
 <body>
@@ -788,17 +832,17 @@ button.state-ok{width:100%;background:none;font:inherit;font-weight:800;cursor:p
 <button id="fab" class="fab" type="button" aria-label="Nova corrida" hidden></button>
 <div id="toastHost" aria-live="polite"></div>
 <div id="rotate">
-  <!-- Duas setas grossas girando em sentido horário em volta do celular deitado.
-       Cada frase corre por dentro de uma seta (texto em curva), então as duas
-       giram juntas. O celular fica parado no centro. -->
+  <!-- Duas setas grossas girando em sentido anti-horário em volta do celular
+       deitado. Cada frase corre por dentro de uma seta (texto em curva), então
+       as duas giram juntas. O celular fica parado no centro. -->
   <svg class="giro-svg" viewBox="0 0 300 300" role="img" aria-label="O Kohe foi feito para usar em pé. O pé foi feito para Koher.">
     <g class="giro">
       <path class="seta" d="M36.02 119.46A118 118 0 0 1 256.94 100.13"/>
-      <path class="ponta" d="M234.65 106.87L275.63 85.99L266.85 133.58Z"/>
+      <path class="ponta" d="M59.15 122.23L15.16 108.78L32.07 154.12Z"/>
       <path id="giroA" class="guia" d="M40.37 120.62A113.5 113.5 0 0 1 252.87 102.03"/>
       <text text-anchor="middle"><textPath href="#giroA" xlink:href="#giroA" startOffset="50%">O Kohe foi feito para usar em pé</textPath></text>
       <path class="seta" d="M263.98 180.54A118 118 0 0 1 43.06 199.87"/>
-      <path class="ponta" d="M65.35 193.13L24.37 214.01L33.15 166.42Z"/>
+      <path class="ponta" d="M240.85 177.77L284.84 191.22L267.93 145.88Z"/>
       <path id="giroB" class="guia" d="M259.63 179.38A113.5 113.5 0 0 1 47.13 197.97"/>
       <text text-anchor="middle"><textPath href="#giroB" xlink:href="#giroB" startOffset="50%">O pé foi feito para Koher</textPath></text>
     </g>
@@ -968,6 +1012,7 @@ function relDay(s) { const n = daysFrom(s); return n === 0 ? "hoje" : n === 1 ? 
 function fmtLong(s) { const d = pDate(s); return `${DOW_FULL[d.getDay()]}, ${d.getDate()} de ${MON_FULL[d.getMonth()]} de ${d.getFullYear()}`; }
 function fmtShort(s) { const d = pDate(s); return `${DOW[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`; }
 function fmtStamp(iso) { const d = new Date(iso); return `${d.getDate()} ${MON[d.getMonth()]} · ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
+function quandoTxt(iso) { const d = new Date(iso); return `${d.getDate()} ${MON[d.getMonth()]} às ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; }
 const brl = n => Number(n).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 /* ---------- papéis ---------- */
@@ -1080,7 +1125,11 @@ async function carregarPerfil() {
 
 const Session = {
   get: () => (CURRENT ? CURRENT.id : null),
-  clear: async () => { pararDeOuvir(); limparTreinos(); EDICOES = []; CURRENT = null; if (sb) await sb.auth.signOut(); }
+  clear: async () => {
+    pararDeOuvir(); pararGrupo(); limparTreinos(); EDICOES = []; DENUNCIAS = [];
+    [ULTIMA_ROTA, GRUPOS, TOTAL_TREINOS].forEach(o => Object.keys(o).forEach(k => { delete o[k]; }));
+    CURRENT = null; if (sb) await sb.auth.signOut();
+  }
 };
 const me = () => CURRENT;
 
@@ -1126,18 +1175,22 @@ const daLinha = (r, hist) => Object.assign({
   hora: r.hora ? String(r.hora).slice(0, 5) : null,
   mods: r.mods || [], rua: r.rua || "", cupom: r.cupom || "",
   desc: r.descricao || "", preco: r.preco === null ? null : Number(r.preco),
-  insc: r.insc || {}, arte: r.arte_url || null,
+  insc: r.insc || {}, arte: r.arte_url || null, kit: r.kit_url || null,
+  editadoPor: r.editado_por || null, editadoEm: r.editado_em || null,
   status: r.status, autor: r.autor_id, criado: r.criado_em,
   envios: r.envios, motivo: r.motivo || "", hist
 }, r.exclusao ? { exclusao: r.exclusao } : {},
    r.pedido_exclusao ? { pedidoExclusao: r.pedido_exclusao } : {});
 
-const paraLinha = r => ({
+/* A imagem do kit chegou no SQL 16. Ela só vai para o banco quando a coluna
+   existe — senão cadastrar corrida quebraria antes de o SQL ser rodado.     */
+let TEM_KIT = false;
+const paraLinha = r => Object.assign({
   nome: r.nome, cidade: r.cidade, data: r.data, hora: r.hora || null,
   mods: r.mods || [], rua: r.rua || "", cupom: r.cupom || "",
   descricao: r.desc || "", preco: (r.preco === "" || r.preco === undefined) ? null : r.preco,
   insc: r.insc || {}, arte_url: r.arte || null
-});
+}, TEM_KIT ? { kit_url: r.kit || null } : {});
 
 async function carregarCorridas() {
   if (!sb || !CURRENT) return;
@@ -1146,6 +1199,7 @@ async function carregarCorridas() {
     sb.from("race_events").select("race_id, quando, acao, por, obs").order("quando")
   ]);
   if (corridas.error || !corridas.data) { toast("Não deu para carregar as corridas agora.", true); return; }
+  if (corridas.data.length) TEM_KIT = "kit_url" in corridas.data[0];
   const hist = {};
   (eventos.data || []).forEach(e => {
     (hist[e.race_id] = hist[e.race_id] || []).push({ t: e.quando, acao: e.acao, por: e.por, obs: e.obs || "" });
@@ -1454,17 +1508,18 @@ function confirmBox(o) {
     let settled = false;
     const finish = v => { if (!settled) { settled = true; resolve(v); } };
     const r = o.reason, typed = o.typeToConfirm;
+    const contaMotivo = n => r && r.max ? `${n} / ${r.max} · mínimo ${r.min}` : `${n} / mínimo ${r ? r.min : 0}`;
     const sh = openSheet(`
       <div class="sheet-head"><h2 class="disp">${esc(o.title)}</h2></div>
       ${o.text ? `<p class="lead">${o.text}</p>` : ""}
       ${typed ? `<div class="field" id="f-cfI"><label for="cfI">Digite <b>${esc(typed)}</b> para confirmar</label><input id="cfI" class="input" autocomplete="off" autocapitalize="off" spellcheck="false"><div class="msg">${ic("alert")}<span>O texto não confere com ${esc(typed)}.</span></div></div>` : ""}
-      ${r ? `<div class="field" id="f-cfI"><label for="cfI">${esc(r.label)}</label><textarea id="cfI" class="input" maxlength="500" placeholder="${esc(r.placeholder || "")}"></textarea><div class="counter" id="cfC">0 / mínimo ${r.min}</div><div class="msg">${ic("alert")}<span>Escreva pelo menos ${r.min} caracteres explicando o motivo.</span></div></div>` : ""}
+      ${r ? `<div class="field" id="f-cfI"><label for="cfI">${esc(r.label)}</label><textarea id="cfI" class="input" maxlength="${r.max || 500}" placeholder="${esc(r.placeholder || "")}"></textarea><div class="counter" id="cfC">${contaMotivo(0)}</div><div class="msg">${ic("alert")}<span>Escreva pelo menos ${r.min} caracteres explicando o motivo.</span></div></div>` : ""}
       <div class="btn-row"><button class="btn" type="button" data-close>${esc(o.cancel || "Cancelar")}</button><button class="btn ${o.danger ? "btn-danger" : "btn-volt"}" type="button" id="cfOk">${esc(o.ok || "Confirmar")}</button></div>`,
       { center: !r && !typed, onClose: () => finish(null) });
     const inp = $("#cfI", sh.el);
     if (r) inp.addEventListener("input", () => {
       const n = inp.value.trim().length, c = $("#cfC", sh.el);
-      c.textContent = `${n} / mínimo ${r.min}`; c.classList.toggle("ok", n >= r.min);
+      c.textContent = contaMotivo(n); c.classList.toggle("ok", n >= r.min);
     });
     $("#cfOk", sh.el).addEventListener("click", () => {
       if (r && inp.value.trim().length < r.min) { $("#f-cfI", sh.el).classList.add("bad"); inp.focus(); return; }
@@ -1680,11 +1735,13 @@ async function excludeRace(r, u, motivo, via) {
   /* A arte sai junto. Consequência assumida: restaurar dentro dos 7 dias traz
      a corrida de volta sem a imagem — por isso o campo também é limpo, para
      não sobrar link quebrado.                                               */
-  const arteAntiga = r.arte;
+  const arteAntiga = r.arte, kitAntigo = r.kit;
   campos.arte_url = null;
+  if (TEM_KIT) campos.kit_url = null;
   const { error } = await sb.from("races").update(campos).eq("id", r.id);
   if (error) { toast("Não deu para excluir: " + error.message, true); return false; }
   apagarImagem(arteAntiga);
+  apagarImagem(kitAntigo);
   await salvarEvento(r.id, "excluida", motivo || "");
   await carregarCorridas();
   return true;
@@ -1712,12 +1769,20 @@ function purgeExcluded() {
 }
 function pendingCount() {
   return DB.races.filter(r => r.status === "pendente").length + DB.races.filter(delPending).length + DB.ups.filter(x => x.status === "pendente").length
-    + EDICOES.filter(e => e.status === "pendente").length;
+    + EDICOES.filter(e => e.status === "pendente").length + DENUNCIAS.length;
 }
 
 /* ---------- navegação ---------- */
 const ROUTES = [];
 const route = (re, view, o = {}) => ROUTES.push(Object.assign({ re, view }, o));
+/* Cada aba do menu lembra a última tela aberta nela: sair do chat em Perfil,
+   ir ao Início e voltar em Perfil devolve o chat. Tocar na aba em que você já
+   está leva ao começo dela.                                                 */
+const ULTIMA_ROTA = {};
+let CHROME_TAB = null;
+/* o que uma tela precisa desligar quando outra abre (tempo real, decisões) */
+const AO_SAIR = [];
+const aoSairDaTela = fn => AO_SAIR.push(fn);
 function parseHash() { const h = location.hash.replace(/^#/, "") || "/"; const i = h.indexOf("?"); return { path: i < 0 ? h : h.slice(0, i), q: new URLSearchParams(i < 0 ? "" : h.slice(i + 1)) }; }
 function go(path) { if (location.hash === "#" + path) render(); else location.hash = path; }
 function redirect(path) {
@@ -1729,14 +1794,15 @@ const unreadMsgs = u => u ? DB.msgs.filter(m => m.para === u.id && !m.lida).leng
 function unreadCount(u) { return notifCount(u) + unreadMsgs(u); }
 function renderChrome(rt, u) {
   const bar = $("#tabbar"), fab = $("#fab");
-  if (!u || rt.bare) { bar.hidden = true; fab.hidden = true; return; }
+  if (!u || rt.bare) { CHROME_TAB = null; bar.hidden = true; fab.hidden = true; return; }
+  CHROME_TAB = rt.tab || null;
   /* O Finder saiu do menu: agora é um botão no topo do Início, junto das
      outras formas de descobrir corrida. O lugar dele no menu vai para Treino. */
   const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0], ["treino", "#/treino", "run", "Treino", pedidosRecebidos()]];
   if (canCreate(u)) tabs.push(["sol", "#/solicitacoes", "list", "Solicitações", isAdmin(u) ? pendingCount() : 0]);
   tabs.push(["perfil", "#/perfil", "user", "Perfil", unreadCount(u)]);
   bar.innerHTML = tabs.map(([k, href, icn, label, badge]) =>
-    `<a class="tab${rt.tab === k ? " on" : ""}" href="${href}"${rt.tab === k ? ' aria-current="page"' : ""}>${ic(icn)}<span>${label}</span>${badge ? `<span class="badge">${badge}</span>` : ""}</a>`).join("");
+    `<a class="tab${rt.tab === k ? " on" : ""}" href="${rt.tab === k ? href : esc(ULTIMA_ROTA[k] || href)}"${rt.tab === k ? ' aria-current="page"' : ""}>${ic(icn)}<span>${label}</span>${badge ? `<span class="badge">${badge}</span>` : ""}</a>`).join("");
   bar.hidden = false;
   fab.innerHTML = ic("plus");
   fab.hidden = !(rt.fab && canCreate(u));
@@ -1749,10 +1815,14 @@ function render() {
   if (!rt.guest && !rt.any && !u) return redirect("/login");
   if (rt.roles && !rt.roles.includes(u.role)) return redirect("/feed");
   closeSheets();
+  AO_SAIR.splice(0).forEach(fn => { try { fn(); } catch (e) { console.warn("Kohe: ao sair da tela —", e); } });
   renderChrome(rt, u);
   const view = $("#view");
   view.scrollTop = 0;
   rt.view(view, path.match(rt.re).slice(1), q, u);
+  /* depois da tela: ela pode ter trocado a aba destacada (ex.: perfil aberto
+     a partir de um treino fica na aba Treino) */
+  if (CHROME_TAB && !/^\/enviada\//.test(path)) ULTIMA_ROTA[CHROME_TAB] = location.hash;
 }
 window.addEventListener("hashchange", render);
 
@@ -1771,9 +1841,17 @@ route(/^\/login$/, function vLogin(view, _, q) {
       <a class="linkbtn forgot" href="#/esqueci">Esqueci minha senha</a>
       <button class="btn btn-volt btn-block" type="submit">Entrar ${ic("arrow")}</button>
     </form>
-    <div class="signup-row"><span class="muted">Primeira vez no Kohe?</span><a class="btn btn-sm" href="#/cadastro">Fazer cadastro</a></div>
+    <div class="signup-row"><span class="muted">Primeira vez no Kohe?</span><a class="btn btn-sm" href="#/cadastro" id="irCadastro">Fazer cadastro</a></div>
     <button class="test-btn" type="button" id="testAcc">${ic("users")} Contas teste</button>
   </section>`;
+
+  /* Quem tentou entrar sem ter conta chega ao cadastro com o e-mail já escrito.
+     Vai pela sessão do navegador, não pelo endereço, para o e-mail não ficar
+     no histórico.                                                           */
+  $("#irCadastro").addEventListener("click", () => {
+    const email = val("lgUser");
+    if (email) SS.set("kohe.emailRascunho", email); else SS.del("kohe.emailRascunho");
+  });
 
   $("#testAcc").addEventListener("click", () => {
     const sh = openSheet(`
@@ -1896,6 +1974,8 @@ const SIGN_STEPS = [
 ];
 route(/^\/cadastro$/, function vSignup(view) {
   if (!SIGNUP) SIGNUP = { step: 0, prev: 0, d: { tel: "+55 " } };
+  const emailDoLogin = SS.get("kohe.emailRascunho");
+  if (emailDoLogin) { SIGNUP.d.email = emailDoLogin; SS.del("kohe.emailRascunho"); }
   const S = SIGNUP, d = S.d, step = S.step;
   const collect = () => $$("input", view).forEach(i => {
     if (!i.id.startsWith("su_")) return;
@@ -1903,7 +1983,7 @@ route(/^\/cadastro$/, function vSignup(view) {
   });
   let fields = "";
   if (step === 0) {
-    fields = F({ id: "su_nome", label: "Nome", value: d.nome, attrs: 'autocomplete="name" autocapitalize="words"', err: "Informe seu nome." })
+    fields = F({ id: "su_nome", label: "Nome completo", value: d.nome, attrs: 'autocomplete="name" autocapitalize="words"', err: "Informe seu nome completo." })
       + F({ id: "su_nick", label: "Nickname", value: d.nick, ph: "corre_ana", pre: "@", attrs: 'autocapitalize="off" autocomplete="off" spellcheck="false" maxlength="20"', hint: "3 a 20 caracteres: letras, números, ponto ou _. Não dá para trocar depois.", err: "Escolha um nickname." })
       + F({ id: "su_nasc", label: "Data de nascimento", type: "date", value: d.nasc, attrs: `max="${ymd(new Date())}"`, hint: "O Kohe é para maiores de 18 anos.", err: "Informe sua data de nascimento." });
   } else if (step === 1) {
@@ -2360,11 +2440,12 @@ function raceBodyHTML(r, u, opts = {}) {
     </dl>
     <div class="field"><span class="label">Modalidades</span><div class="chips">${r.mods.map(m => `<span class="chip" style="font-size:12px;padding:8px 11px;border-radius:9px">${esc(m)}</span>`).join("")}</div></div>
     <div class="big-price">${hasPrice(r) ? `<small>A partir de</small><strong class="num">${brl(r.preco)}</strong><small>kit básico</small>` : `<small>Preço do kit básico a confirmar</small>`}</div>
+    ${r.kit ? `<button class="kit-foto" type="button" data-kit="${esc(r.kit)}"><img src="${esc(r.kit)}" alt=""><span><b>Imagem do kit</b><span>Toque para ver maior</span></span>${ic("chev", "chev")}</button>` : ""}
     ${opts.preview ? "" : ctaHTML(r)}
     ${r.desc ? `<div class="field"><span class="label">Sobre a corrida</span><p class="prose">${esc(r.desc)}</p></div>` : ""}
     ${r.cupom ? `<div class="coupon"><div class="form" style="gap:3px"><span class="eyebrow">Cupom de desconto</span><code>${esc(r.cupom)}</code></div><button class="btn btn-sm" type="button" data-copy="${esc(r.cupom)}">${ic("copy")} Copiar</button></div>` : ""}
     ${opts.preview ? `<div class="field"><span class="label">Botão de inscrição</span>${ctaHTML(r)}</div>` : ""}
-    <div class="byline">${avatarHTML(autor, "mini-av")}<span>${r.status === "pendente" ? "Solicitada" : "Publicada"} por <b>@${esc(autor ? autor.nick : "conta excluída")}</b></span></div>`;
+    <div class="byline">${avatarHTML(autor, "mini-av")}<span>${r.status === "pendente" ? "Solicitada" : "Criada"} por <b>@${esc(autor ? autor.nick : "conta excluída")}</b>${r.editadoEm ? `<br>Editada por <b>@${esc((userById(r.editadoPor) || { nick: "conta excluída" }).nick)}</b> em ${quandoTxt(r.editadoEm)}` : ""}</span></div>`;
 }
 
 async function copyText(t) {
@@ -2378,6 +2459,12 @@ document.addEventListener("click", async e => {
   const b = e.target.closest && e.target.closest("[data-copy]"); if (!b) return;
   toast(await copyText(b.dataset.copy) ? `Cupom ${b.dataset.copy} copiado.` : "Não deu para copiar. Segure o código para copiar manualmente.");
 });
+/* imagem do kit em tamanho grande */
+document.addEventListener("click", e => {
+  const b = e.target.closest && e.target.closest("[data-kit]"); if (!b) return;
+  openSheet(`<div class="sheet-head"><h2 class="disp">Kit da corrida</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+    <img class="kit-grande" src="${esc(b.dataset.kit)}" alt="Imagem do kit da corrida">`);
+});
 
 function notFoundHTML(title, text, href, label) {
   return `<section class="done"><h1 class="disp">${title}</h1><p>${text}</p><a class="btn btn-volt btn-block" href="${href}">${label}</a></section>`;
@@ -2388,8 +2475,12 @@ function notFoundHTML(title, text, href, label) {
    edição nunca vai direto ao ar: vira pedido (race_edits) e a versão atual
    segue no feed até a aprovação. Edição do admin também passa pela fila e é
    aprovada numa segunda etapa, conferindo o antes e depois.                 */
-const EDITAVEIS = { nome: "nome", cidade: "cidade", data: "data", hora: "hora", mods: "mods", rua: "rua", cupom: "cupom", descricao: "desc", preco: "preco", insc: "insc", arte_url: "arte" };
-const ROTULO_CAMPO = { nome: "Nome", data: "Data", hora: "Horário", cidade: "Cidade", rua: "Rua de largada", mods: "Modalidades", preco: "Preço do kit básico", insc: "Inscrição", descricao: "Descrição", cupom: "Cupom", arte_url: "Arte" };
+const EDITAVEIS = { nome: "nome", cidade: "cidade", data: "data", hora: "hora", mods: "mods", rua: "rua", cupom: "cupom", descricao: "desc", preco: "preco", insc: "insc", arte_url: "arte", kit_url: "kit" };
+const ROTULO_CAMPO = { nome: "Nome", data: "Data", hora: "Horário", cidade: "Cidade", rua: "Rua de largada", mods: "Modalidades", preco: "Preço do kit básico", insc: "Inscrição", descricao: "Descrição", cupom: "Cupom", arte_url: "Arte", kit_url: "Imagem do kit" };
+/* imagens que subiram só para uma edição que não foi ao ar (negada ou cancelada) */
+function apagarImagensDaEdicao(dados, r) {
+  [["arte_url", r.arte], ["kit_url", r.kit]].forEach(([k, atual]) => { const nova = dados && dados[k]; if (nova && nova !== atual) apagarImagem(nova); });
+}
 const normCampo = (k, v) => k === "insc" ? JSON.stringify({ tipo: (v && v.tipo) || "site", url: (v && v.url) || "", app: (v && v.app) || "" })
   : k === "mods" ? JSON.stringify(v || [])
   : k === "preco" ? (v === null || v === undefined || v === "" ? "" : String(Number(v)))
@@ -2397,7 +2488,7 @@ const normCampo = (k, v) => k === "insc" ? JSON.stringify({ tipo: (v && v.tipo) 
 /* as duas no formato do app; devolve só o que mudou, no formato do banco */
 function mudancasCorrida(orig, nova) {
   const a = paraLinha(orig), b = paraLinha(nova), dados = {};
-  Object.keys(EDITAVEIS).forEach(k => { if (normCampo(k, a[k]) !== normCampo(k, b[k])) dados[k] = b[k]; });
+  Object.keys(EDITAVEIS).forEach(k => { if (normCampo(k, a[k]) !== normCampo(k, b[k])) dados[k] = b[k] === undefined ? null : b[k]; });
   return dados;
 }
 function aplicarEdicao(r, dados) {
@@ -2426,6 +2517,7 @@ function valorCampoHTML(k, r) {
     case "preco": return hasPrice(r) ? brl(r.preco) : "A confirmar";
     case "insc": return i.tipo === "app" ? `App ${esc(i.app || "?")}${i.url ? " · " + esc(i.url) : ""}` : i.url ? esc(i.url) : "Link a confirmar";
     case "arte_url": return r.arte ? `<img class="mini-arte" src="${esc(r.arte)}" alt="Arte">` : "Capa automática";
+    case "kit_url": return r.kit ? `<img class="mini-arte" src="${esc(r.kit)}" alt="Imagem do kit">` : "Sem imagem";
   }
   return "";
 }
@@ -2468,8 +2560,7 @@ function ligarEdicaoRodape(view, r) {
     b.disabled = true;
     const { error } = await sb.rpc("cancelar_edicao", { p_edicao: pend.id });
     if (error) { b.disabled = false; toast(erroEdicao(error), true); return; }
-    const arteNova = pend.dados && pend.dados.arte_url;
-    if (arteNova && arteNova !== r.arte) apagarImagem(arteNova);   // arte que subiu só para esta edição
+    apagarImagensDaEdicao(pend.dados, r);
     await carregarEdicoes(); render(); toast("Edição cancelada.");
   });
 }
@@ -2491,8 +2582,10 @@ route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
     <div class="cover top">${bibHTML(r, true)}
       <div class="cover-bar"><a class="glassbtn" href="${esc(back)}" aria-label="Voltar">${ic("back")}</a>${st !== "publicada" ? stPill(st) : ""}</div>
     </div>
-    <article class="detail">${raceBodyHTML(r, u)}${edicaoRodapeHTML(r, u)}</article>`;
+    <article class="detail">${raceBodyHTML(r, u)}${edicaoRodapeHTML(r, u)}${r.autor !== u.id ? botaoDenunciar("Denunciar corrida", "denCorrida") : ""}</article>`;
   ligarEdicaoRodape(view, r);
+  const denCorrida = $("#denCorrida", view);
+  if (denCorrida) denCorrida.addEventListener("click", () => denunciar("corrida", r.id, { oque: "com esta corrida" }));
 }, { tab: "feed" });
 
 /* =====================================================================
@@ -2508,7 +2601,7 @@ function draftFromRace(r) {
     id: r.id, tmpId: r.id, nome: r.nome, cidade: r.cidade, rua: r.rua || "", data: r.data, hora: r.hora || "",
     mods: [...r.mods], preco: hasPrice(r) ? String(r.preco).replace(".", ",") : "",
     inscTipo: (r.insc && r.insc.tipo) || "site", url: (r.insc && r.insc.url) || "", app: (r.insc && r.insc.app) || "",
-    desc: r.desc || "", cupom: r.cupom || "", arte: r.arte || null
+    desc: r.desc || "", cupom: r.cupom || "", arte: r.arte || null, kit: r.kit || null
   };
 }
 function fieldsFromDraft(d) {
@@ -2516,7 +2609,7 @@ function fieldsFromDraft(d) {
   return {
     nome: d.nome, cidade: c ? c.n : d.cidade, rua: d.rua, data: d.data, hora: d.hora, mods: [...d.mods],
     preco: parseBRL(d.preco), insc: { tipo: d.inscTipo, url: d.url, app: d.inscTipo === "app" ? d.app : "", plataforma: "" },
-    desc: d.desc, cupom: (d.cupom || "").toUpperCase(), arte: d.arte || null
+    desc: d.desc, cupom: (d.cupom || "").toUpperCase(), arte: d.arte || null, kit: d.kit || null
   };
 }
 
@@ -2529,7 +2622,7 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
       /* corrida no ar: a edição vira pedido e só entra no feed depois de aprovada */
       if (edicaoPendente(alvo.id)) { toast("Esta corrida já tem uma edição aguardando aprovação.", true); return redirect("/corrida/" + alvo.id); }
       orig = alvo; publicada = true;
-      if (!d || d.id !== editId || !d.edicao) d = Object.assign(draftFromRace(orig), { edicao: true, arteOriginal: orig.arte || null });
+      if (!d || d.id !== editId || !d.edicao) d = Object.assign(draftFromRace(orig), { edicao: true, arteOriginal: orig.arte || null, kitOriginal: orig.kit || null });
     } else {
       orig = DB.races.find(x => x.id === editId && x.autor === u.id && x.status === "negada");
       if (!orig || orig.envios >= MAX_ENVIOS) return redirect("/solicitacoes");
@@ -2591,6 +2684,15 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
           </label>
           ${d.arte ? `<button type="button" class="linkbtn" id="arteRm" style="align-self:flex-start">Remover imagem</button>` : ""}
         </div>
+        ${TEM_KIT ? `<div class="field" id="f-rf_kit">
+          <span class="label">Imagem do kit <span class="opt">(opcional)</span></span>
+          <label class="drop">
+            <span class="thumb">${d.kit ? `<img class="art" src="${d.kit}" alt="Imagem do kit enviada">` : ic("image")}</span>
+            <span class="txt"><b>${d.kit ? "Trocar imagem" : "Enviar imagem"}</b><span>Camiseta, medalha e brindes. Aparece na página da corrida.</span></span>
+            <input type="file" id="kitIn" accept="image/*">
+          </label>
+          ${d.kit ? `<button type="button" class="linkbtn" id="kitRm" style="align-self:flex-start">Remover imagem</button>` : ""}
+        </div>` : ""}
         <button class="btn btn-volt btn-block" type="submit">Revisar dados ${ic("arrow")}</button>
       </form>
     </section>`;
@@ -2635,6 +2737,20 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
     } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
   });
   const rm = $("#arteRm"); if (rm) rm.addEventListener("click", () => { if (d.arte !== d.arteOriginal) apagarImagem(d.arte); d.arte = null; rerender(); });
+  /* imagem do kit: mesmo caminho da arte, inclusive a regra de não apagar a
+     imagem da corrida no ar antes de a edição ser aprovada */
+  const kitIn = $("#kitIn");
+  if (kitIn) kitIn.addEventListener("change", async e => {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    try {
+      const comprimida = await compressImage(file);
+      const url = await subirImagem("race-art", comprimida, "kit");
+      if (!url) return;
+      if (d.kit !== d.kitOriginal) apagarImagem(d.kit);
+      d.kit = url; rerender(); toast("Imagem do kit adicionada.");
+    } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
+  });
+  const kitRm = $("#kitRm"); if (kitRm) kitRm.addEventListener("click", () => { if (d.kit !== d.kitOriginal) apagarImagem(d.kit); d.kit = null; rerender(); });
 
   $("#rf").addEventListener("submit", e => {
     e.preventDefault(); collect();
@@ -2873,6 +2989,9 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
     const races = DB.races.filter(r => r.status === "pendente").sort((a, b) => evT(a, "enviada", "reenviada").localeCompare(evT(b, "enviada", "reenviada")));
     const dels = DB.races.filter(delPending).sort((a, b) => a.pedidoExclusao.t.localeCompare(b.pedidoExclusao.t));
     const ups = DB.ups.filter(x => x.status === "pendente").sort((a, b) => a.criado.localeCompare(b.criado));
+    const secaoDenuncias = `
+      <div class="section-title"><h2 class="disp">Denúncias</h2><span class="eyebrow num">${plural(DENUNCIAS.length, "aberta", "abertas")}</span></div>
+      ${DENUNCIAS.length ? DENUNCIAS.map(denunciaCard).join("") : `<div class="empty sm"><h3>Sem denúncias</h3><p>Denúncias de perfis, corridas, treinos e conversas chegam aqui para análise.</p></div>`}`;
     const edicoes = EDICOES.filter(e => e.status === "pendente");
     const secaoEdicoes = `
       <div class="section-title"><h2 class="disp">Edições</h2><span class="eyebrow num">${plural(edicoes.length, "pedido", "pedidos")}</span></div>
@@ -2887,6 +3006,7 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
         </article>`;
       }).join("") : `<div class="empty sm"><h3>Sem edições</h3><p>Edições de corridas publicadas esperam aqui antes de irem ao ar.</p></div>`}`;
     body = `
+      ${secaoDenuncias}
       <div class="section-title"><h2 class="disp">Corridas</h2><span class="eyebrow num">${races.length} na fila</span></div>
       ${races.length ? races.map(r => {
         const a = userById(r.autor), sent = lastEvent(r, "enviada", "reenviada");
@@ -2955,6 +3075,20 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
     try { history.replaceState(null, "", `#/solicitacoes?ver=minhas&aba=${k}`); } catch (e) {}
   }));
   ligarBotoesDaLista();
+  $$("[data-analisada]", view).forEach(b => b.addEventListener("click", async () => {
+    b.disabled = true;
+    const { error } = await sb.from("denuncias")
+      .update({ status: "analisada", analisada_em: new Date().toISOString(), analisada_por: u.id }).eq("id", b.dataset.analisada);
+    if (error) { b.disabled = false; toast("Não deu para marcar agora. Tente de novo.", true); return; }
+    await carregarDenuncias(); render(); toast("Denúncia marcada como analisada.");
+  }));
+  /* denúncias chegam a qualquer hora: ao abrir a fila, confere se há novas */
+  if (admin && mode === "aprovar") {
+    const antes = DENUNCIAS.map(x => x.id).join();
+    carregarDenuncias().then(() => {
+      if (DENUNCIAS.map(x => x.id).join() !== antes && location.hash.startsWith("#/solicitacoes") && !$(".scrim")) render();
+    });
+  }
   $$("[data-restore]", view).forEach(b => b.addEventListener("click", async () => {
     const r = DB.races.find(x => x.id === b.dataset.restore); if (!r) return;
     const ok = await confirmBox({ title: "Restaurar corrida?", ok: "Restaurar", text: `<b>${esc(r.nome)}</b> volta para ${r.exclusao && r.exclusao.antes === "pendente" ? "a fila de aprovação" : "o feed"}.` });
@@ -3094,10 +3228,11 @@ route(/^\/aprovar-edicao\/([\w-]+)$/, function vApproveEdit(view, [id], q, u) {
     const ok = await confirmBox({ title: "Aprovar edição?", ok: "Aprovar", text: `A nova versão de <b>${esc(r.nome)}</b> entra no feed na hora.` });
     if (!ok) return;
     aprovar.disabled = true;
-    const arteAntiga = r.arte;
+    const antigas = { arte_url: r.arte, kit_url: r.kit };
     const { error } = await sb.rpc("aprovar_edicao", { p_edicao: e.id });
     if (error) { aprovar.disabled = false; toast("Não deu para aprovar: " + erroEdicao(error), true); return; }
-    if ("arte_url" in e.dados && arteAntiga && e.dados.arte_url !== arteAntiga) apagarImagem(arteAntiga);   // a arte antiga saiu do ar
+    /* as imagens que a nova versão trocou saíram do ar */
+    Object.entries(antigas).forEach(([k, antiga]) => { if (k in e.dados && antiga && e.dados[k] !== antiga) apagarImagem(antiga); });
     await carregarCorridas(); await carregarEdicoes();
     toast("Edição aprovada. A nova versão já está no feed."); go("/solicitacoes?ver=aprovar");
   });
@@ -3110,8 +3245,7 @@ route(/^\/aprovar-edicao\/([\w-]+)$/, function vApproveEdit(view, [id], q, u) {
     if (!motivo) return;
     const { error } = await sb.rpc("negar_edicao", { p_edicao: e.id, p_motivo: motivo });
     if (error) { toast("Não deu para negar: " + erroEdicao(error), true); return; }
-    const arteNova = e.dados.arte_url;
-    if (arteNova && arteNova !== r.arte) apagarImagem(arteNova);   // arte que subiu só para a edição negada
+    apagarImagensDaEdicao(e.dados, r);
     await carregarEdicoes();
     toast("Edição negada. A corrida segue como estava."); go("/solicitacoes?ver=aprovar");
   });
@@ -3235,6 +3369,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
           <h1 class="disp">@${esc(u.nick)}</h1>
           ${roleChipsHTML(u, konChip)}
           ${komunidadeLineHTML(u, "perfil")}
+          ${totalTreinosHTML(totalTreinosMeus())}
           ${u.foto ? `<button class="linkbtn" type="button" id="fotoRm" style="font-size:13px;min-height:32px;align-self:flex-start">Remover foto</button>` : ""}
         </div>
       </div>
@@ -3665,6 +3800,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
         <h1 class="disp">@${esc(p.nick)}</h1>
         <span class="nome">${esc(p.nome)}</span>
         ${komunidadeLineHTML(p, "u:" + p.nick)}
+        ${TOTAL_TREINOS[p.id] === null ? "" : totalTreinosHTML(TOTAL_TREINOS[p.id] ?? "…")}
       </div>
       ${action}
       ${isAdmin(u) ? `<div style="display:flex;flex-direction:column;align-items:center;gap:8px">
@@ -3678,6 +3814,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
         <div class="section-title"><h2 class="disp">Favoritos</h2><span class="eyebrow num">${favs.length}</span></div>
         ${favs.length ? `<a class="btn btn-sm btn-block" href="#/u/${encodeURIComponent(p.nick)}/calendario">${ic("cal")} Calendário do korredor</a>${favsPorDia}` : `<div class="empty sm"><p>Nenhuma corrida favoritada.</p></div>`}`
       : `<div class="lock-card">${ic("lock")}<span>Perfil privado. Só as Konexões de @${esc(p.nick)} veem as corridas favoritas e as Konexões.</span></div>`}
+      ${botaoDenunciar("Denunciar perfil", "denPerfil")}
     </section>`;
   const on = (id, fn) => { const b = document.getElementById(id); if (b) b.addEventListener("click", fn); };
   /* Só admin vê e só admin consegue: a regra do banco já recusa a troca de
@@ -3700,6 +3837,11 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
     const ok = await confirmBox({ title: "Desfazer konexão?", ok: "Desfazer", danger: true, text: `Você e <b>@${esc(p.nick)}</b> deixam de aparecer nas Konexões um do outro.` });
     if (!ok) return;
     if (await removeConn(c)) { render(); toast("Konexão desfeita."); }
+  });
+  on("denPerfil", () => denunciar("perfil", p.id, { oque: "com este perfil" }));
+  if (!(p.id in TOTAL_TREINOS)) carregarTotalTreinos(p.id).then(() => {
+    const el = $("#totalTreinos b"); if (!el || !el.isConnected) return;
+    if (TOTAL_TREINOS[p.id] === null) el.parentElement.remove(); else el.textContent = TOTAL_TREINOS[p.id];
   });
   /* As Konexões desta pessoa não estão no cache: busca no servidor e redesenha
      quando chegarem. A tela aparece na hora, com a lista preenchendo depois.  */
@@ -4074,6 +4216,7 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
       ${mine
         ? `<button class="state-ok" type="button" id="kToggle" aria-label="Kohendo com ${esc(komunidadeTag(k))}. Toque para sair">${ic("check")} Kohendo com ${esc(komunidadeTag(k))}</button>`
         : `<button class="btn btn-volt btn-block" type="button" id="kToggle">${ic("users")} Koher junto</button>${other ? `<p class="eyebrow" style="text-align:center">Você está na ${esc(komunidadeTag(other))}. Ao entrar aqui, sai de lá.</p>` : ""}`}
+      ${mine ? `<a class="btn btn-block" href="#/komunidade/${k.id}/chat">${ic("chat")} Chat da Komunidade</a>` : ""}
       <dl class="dl">
         <div><dt>${ic("pin")}Cidade</dt><dd>${esc(k.cidade)}</dd></div>
         <div><dt>${ic("cal")}Desde</dt><dd class="${k.desde ? "num" : "tbd"}">${k.desde ? esc(k.desde) : "Não informado"}</dd></div>
@@ -4203,8 +4346,16 @@ route(/^\/mensagens$/, function vInbox(view, _, q, u) {
     const ms = pairMsgs(u.id, p.id);
     return { p, last: ms[ms.length - 1], unread: ms.filter(m => m.para === u.id && !m.lida).length };
   }).sort((a, b) => (b.last ? b.last.t : "").localeCompare(a.last ? a.last.t : "") || a.p.nick.localeCompare(b.p.nick));
+  /* chats em grupo: o da minha Komunidade e os dos treinos de hoje em diante em
+     que há mais alguém além de mim */
+  const grupos = [], km = komunidadeById(u.komunidade), hoje = ymd(new Date());
+  if (km) grupos.push(`<a class="person-row" href="#/komunidade/${km.id}/chat?de=mensagens">${komunidadeLogoHTML(km, "av-sm")}<span class="who"><b>Chat da ${esc(komunidadeTag(km))}</b><span>Komunidade · ${plural(komunidadeMembers(km.id).length, "membro", "membros")}</span></span>${ic("chev", "chev")}</a>`);
+  MEUS_TREINOS.filter(t => t.status === "ativo" && t.data >= hoje && (t.papel === "organizador" ? t.confirmados > 0 : t.pedido === "aceito"))
+    .sort((a, b) => inicioTreino(a) - inicioTreino(b))
+    .forEach(t => grupos.push(`<a class="person-row" href="#/treino/${t.id}/chat?de=mensagens"><span class="avatar av-sm">${ic("run")}</span><span class="who"><b>Treino · ${esc(t.local)}</b><span>${fmtShort(t.data)} · ${horaTreino(t)}${treinoFuturo(t) ? "" : " · chat encerrado"}</span></span>${ic("chev", "chev")}</a>`));
   view.innerHTML = `${subHead("Mensagens", "#/perfil", "Perfil")}
     <section class="page">
+      ${grupos.length ? `<div class="section-title" style="padding-top:0"><h2 class="disp">Grupos</h2><span class="eyebrow num">${grupos.length}</span></div><div class="rows grupos">${grupos.join("")}</div><div class="section-title"><h2 class="disp">Conversas</h2></div>` : ""}
       ${rows.some(r => r.last) ? `<p class="eyebrow swipe-hint">${ic("trash")} Arraste uma conversa para a esquerda para limpar</p>` : ""}
       ${rows.length ? `<div class="rows">${rows.map(({ p, last, unread }) => {
         const linha = `<a class="person-row" href="#/chat/${encodeURIComponent(p.nick)}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p.nick)}</b><span>${last ? (last.de === u.id ? "Você: " : "") + esc(last.texto) : "Mande o primeiro oi"}</span></span>${unread ? `<span class="badge-num">${unread}</span>` : last ? `<span class="eyebrow">${shortStamp(last.t)}</span>` : ""}</a>`;
@@ -4254,6 +4405,7 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
     <header class="topbar"><div class="topbar-in">
       <a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a>
       <a class="chat-who" href="#/u/${encodeURIComponent(p.nick)}?de=mensagens">${avatarHTML(p, "avatar av-xs")}<span class="chat-name"><b>@${esc(p.nick)}</b><span class="eyebrow">${esc(p.nome)}</span></span></a>
+      ${DB.msgs.some(m => (m.de === u.id && m.para === p.id) || (m.de === p.id && m.para === u.id)) ? `<button class="icon-btn discreto" type="button" id="chDenunciar" aria-label="Denunciar conversa">${ic("alert")}</button>` : ""}
     </div></header>
     <section class="chat" id="chatLog" aria-live="polite">${log || `<p class="chat-empty">${connected ? "Vocês estão konectados. Mande o primeiro oi." : treinam ? "Vocês vão treinar juntos. Mande o primeiro oi." : "Nenhuma mensagem."}</p>`}</section>
     ${connected || treinam
@@ -4267,6 +4419,8 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
     /* marcar como lida não precisa segurar a tela: o badge já baixou */
     sb.from("messages").update({ lida: true }).in("id", naoLidas.map(m => m.id)).then(() => {});
   }
+  const denChat = $("#chDenunciar");
+  if (denChat) denChat.addEventListener("click", () => denunciar("chat", p.id, { oque: `na conversa com @${p.nick}` }));
   const form = $("#chatForm");
   if (!form) return;
   const inp = $("#chatIn");
@@ -4494,7 +4648,7 @@ function treinoCard(t, { de = "", comData = false, extra = "" } = {}) {
     <div class="body">
       <div class="meta">${comData ? `<span>${ic("cal")}${fmtShort(t.data)}</span>` : ""}<span>${ic("clock")}${horaTreino(t)}</span><span>${ic("pin")}${esc(t.cidade)}</span></div>
       <h3><a class="rc-link" href="#/treino/${t.id}${de ? "?de=" + de : ""}">${esc(t.local)}</a></h3>
-      <div class="chips"><span class="chip">${km} km</span><span class="chip">Pace ${paceTxt(t.pace_seg)}/km</span></div>
+      <div class="chips"><span class="chip">${km} km</span><span class="chip">Pace ${paceTxt(t.pace_seg)}/km</span>${t.aceite_automatico ? `<span class="chip chip-auto">${ic("bolt")}Entrada na hora</span>` : ""}</div>
       <div class="rc-foot"><span class="conf">${ic("users")}${confirmadosTxt(t.confirmados)}</span>${extra}</div>
     </div>
   </article>`;
@@ -4519,7 +4673,8 @@ const AVISO_TREINO = {
   treino_aceito: () => "Pedido de treino aceito",
   treino_recusado: () => "Pedido de treino não aceito",
   treino_cancelado: () => "Treino cancelado",
-  treino_desistencia: p => `@${p ? p.nick : "alguém"} desistiu do treino`
+  treino_desistencia: p => `@${p ? p.nick : "alguém"} desistiu do treino`,
+  treino_entrada: p => `@${p ? p.nick : "alguém"} entrou no seu treino`
 };
 function avisoTreinoHTML(n, p, nova) {
   const titulo = (AVISO_TREINO[n.tipo] || (() => "Novidade de treino"))(p);
@@ -4613,12 +4768,18 @@ route(/^\/treino$/, function vTreinoProcurar(view, _, q, u) {
 /* ---------- Oferecer ---------- */
 const RASCUNHO_TREINO = "kohe.treinoRascunho";
 route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
-  const d = Object.assign({ cidade: "", local: "", ponto: "", lat: null, lon: null, data: "", hora: "", pace: "", dist: "", desc: "" }, SS.get(RASCUNHO_TREINO) || {});
+  const d = Object.assign({ cidade: "", local: "", ponto: "", lat: null, lon: null, data: "", hora: "", pace: "", dist: "", desc: "", auto: false }, SS.get(RASCUNHO_TREINO) || {});
   const guardar = () => SS.set(RASCUNHO_TREINO, d);
-  const coletar = () => ["cidade", "local", "ponto", "data", "hora", "pace", "dist", "desc"].forEach(k => {
-    const el = document.getElementById("tr_" + k); if (el) d[k] = el.value.trim();
-  });
+  const coletar = () => {
+    ["cidade", "local", "ponto", "data", "hora", "pace", "dist", "desc"].forEach(k => {
+      const el = document.getElementById("tr_" + k); if (el) d[k] = el.value.trim();
+    });
+    const auto = document.getElementById("tr_auto"); if (auto) d.auto = auto.checked;
+  };
   const temGps = d.lat != null && d.lon != null;
+  const privacidadeTxt = auto => auto
+    ? "Na busca aparecem só local, data, horário, pace e distância. Com a participação automática, quem pedir entra na hora e já vê quem você é e o ponto de encontro."
+    : "Na busca aparecem só local, data, horário, pace e distância. Quem você é, o ponto de encontro e a localização ficam visíveis apenas para quem você aceitar.";
   view.innerHTML = `${treinoTopo()}
     <section class="page">
       ${treinoAbas("oferecer")}
@@ -4643,7 +4804,13 @@ route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
           <textarea id="tr_desc" class="input" maxlength="${DESC_MAX}" placeholder="Corrida leve, regenerativo, tempo run...">${esc(d.desc)}</textarea>
           <div class="counter" id="tr_descN">${d.desc.length} / ${DESC_MAX}</div>
         </div>
-        <div class="lock-card">${ic("lock")}<span>Na busca aparecem só local, data, horário, pace e distância. Quem você é, o ponto de encontro e a localização ficam visíveis apenas para quem você aceitar.</span></div>
+        <div class="group slim">
+          <div class="setting sm">
+            <span class="txt"><b>Participação automática</b><span>Quem pedir entra na hora, sem você aprovar um por um.</span></span>
+            <label class="switch sm"><input type="checkbox" id="tr_auto"${d.auto ? " checked" : ""} aria-label="Participação automática"><i></i></label>
+          </div>
+        </div>
+        <div class="lock-card" id="tr_privacidade">${ic("lock")}<span>${privacidadeTxt(d.auto)}</span></div>
         <button class="btn btn-volt btn-block" type="submit">Publicar treino ${ic("arrow")}</button>
       </form>
     </section>`;
@@ -4658,6 +4825,7 @@ route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
   dist.addEventListener("input", () => { const v = kmInput(dist.value); if (v !== dist.value) dist.value = v; });
   const desc = $("#tr_desc");
   desc.addEventListener("input", () => { $("#tr_descN").textContent = `${desc.value.length} / ${DESC_MAX}`; });
+  $("#tr_auto").addEventListener("change", e => { d.auto = e.target.checked; $("#tr_privacidade span").textContent = privacidadeTxt(d.auto); });
   const rm = $("#tr_gpsRm");
   if (rm) rm.addEventListener("click", () => { d.lat = null; d.lon = null; refazer(); });
   /* Sem serviço de mapa: a coordenada fica guardada para quem for aceito e,
@@ -4706,7 +4874,10 @@ route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
     const { data, error } = await sb.from("treinos").insert({
       organizador_id: u.id, cidade: cidade ? cidade.n : d.cidade, local: d.local,
       ponto_encontro: d.ponto || null, lat: d.lat, lon: d.lon, data: d.data, hora: d.hora,
-      pace_seg: +d.pace, distancia_km: Math.round(km * 100) / 100, descricao: d.desc || null
+      pace_seg: +d.pace, distancia_km: Math.round(km * 100) / 100, descricao: d.desc || null,
+      /* desligada é o padrão do banco: só manda quando ligada, e o cadastro de
+         treino segue funcionando mesmo antes de o SQL 16 ser rodado */
+      ...(d.auto ? { aceite_automatico: true } : {})
     }).select("id").single();
     if (error) { btn.disabled = false; toast("Não deu para publicar: " + erroTreino(error), true); return; }
     clearTimeout(vTreinoOferecer.t);   // senão o salvamento atrasado recria o rascunho já publicado
@@ -4758,6 +4929,92 @@ route(/^\/treino\/meus$/, function vTreinoMeus(view, _, q, u) {
   });
 }, { tab: "treino" });
 
+/* ---------- pilha de pedidos (quem organiza) ----------
+   Arrastar para a direita aceita, para a esquerda recusa — o gesto do Finder.
+   A decisão só vai ao servidor depois de 4 s, com "Desfazer" na tela: aceitar
+   e recusar não têm volta no banco. Decidir o próximo, sair da tela ou fechar
+   o app grava a anterior na hora.                                            */
+const PEDIDOS_DECIDIDOS = new Set();
+let DECISAO_PENDENTE = null;
+const DESFAZER_MS = 4000;
+function ligarPilha(view, aoDecidir) {
+  const card = $("#pcard", view); if (!card) return;
+  const back = $(".pilha-pedidos .fcard.back", view);
+  let x0 = 0, y0 = 0, dx = 0, dy = 0, down = false, moved = false, busy = false;
+  const setT = (x, y, anim) => {
+    card.style.transition = anim ? "transform .3s cubic-bezier(.2,.8,.2,1)" : "none";
+    card.style.transform = x || y ? `translate(${x}px, ${y}px) rotate(${x / 16}deg)` : "";
+    card.style.setProperty("--like", Math.max(0, Math.min(1, x / 90)).toFixed(2));
+    card.style.setProperty("--nope", Math.max(0, Math.min(1, -x / 90)).toFixed(2));
+    if (back) {
+      const k = Math.max(0, Math.min(1, Math.abs(x) / (card.offsetWidth * 0.6 || 1)));
+      back.style.transition = anim ? "transform .3s cubic-bezier(.2,.8,.2,1), opacity .3s ease" : "none";
+      back.style.transform = `translateY(${(14 * (1 - k)).toFixed(1)}px) scale(${(0.95 + 0.05 * k).toFixed(3)})`;
+      back.style.opacity = (0.6 + 0.4 * k).toFixed(2);
+    }
+  };
+  const decide = dir => {
+    if (busy) return; busy = true;
+    const feito = () => aoDecidir(card.dataset.pedido, dir > 0);
+    if (document.hidden || reducedMotion()) return feito();
+    setT(dir * (card.getBoundingClientRect().width + 160), dy, true);
+    let foi = false;
+    const fim = () => { if (!foi) { foi = true; feito(); } };
+    card.addEventListener("transitionend", fim, { once: true });
+    setTimeout(fim, 450);
+  };
+  card.addEventListener("pointerdown", e => {
+    if (busy || (e.pointerType === "mouse" && e.button !== 0)) return;
+    down = true; moved = false; x0 = e.clientX; y0 = e.clientY; dx = dy = 0;
+    try { card.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  card.addEventListener("pointermove", e => {
+    if (!down) return;
+    dx = e.clientX - x0; dy = (e.clientY - y0) * 0.25;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) moved = true;
+    setT(dx, dy, false);
+  });
+  card.addEventListener("pointerup", () => {
+    if (!down) return; down = false;
+    if (moved && Math.abs(dx) > card.getBoundingClientRect().width * 0.28) decide(dx > 0 ? 1 : -1);
+    else setT(0, 0, true);
+  });
+  card.addEventListener("pointercancel", () => { down = false; setT(0, 0, true); });
+  $("#pLike", view).addEventListener("click", () => decide(1));
+  $("#pNope", view).addEventListener("click", () => decide(-1));
+}
+function decidirPedido(pedidoId, aceitar, aoTerminar) {
+  confirmarDecisaoPendente();
+  PEDIDOS_DECIDIDOS.add(pedidoId);
+  const dec = { pedidoId, aceitar, aoTerminar };
+  dec.timer = setTimeout(confirmarDecisaoPendente, DESFAZER_MS);
+  DECISAO_PENDENTE = dec;
+  mostrarDesfazer(aceitar ? "Pedido aceito" : "Pedido recusado", () => {
+    if (DECISAO_PENDENTE !== dec) return;
+    clearTimeout(dec.timer); DECISAO_PENDENTE = null;
+    PEDIDOS_DECIDIDOS.delete(pedidoId);
+    esconderDesfazer(); aoTerminar(false);
+  });
+  aoTerminar(false);
+}
+function confirmarDecisaoPendente() {
+  const dec = DECISAO_PENDENTE; if (!dec) return;
+  DECISAO_PENDENTE = null; clearTimeout(dec.timer); esconderDesfazer();
+  sb.rpc("decidir_pedido_treino", { p_pedido: dec.pedidoId, p_aceitar: dec.aceitar }).then(({ error }) => {
+    if (error) { PEDIDOS_DECIDIDOS.delete(dec.pedidoId); toast(erroTreino(error), true); }
+    dec.aoTerminar(true);
+  });
+}
+function mostrarDesfazer(texto, desfazer) {
+  let el = $("#desfazer");
+  if (!el) { el = document.createElement("div"); el.id = "desfazer"; el.className = "fav-toast desfazer"; el.setAttribute("role", "status"); document.body.appendChild(el); }
+  el.innerHTML = `<div class="ft-in"><p>${ic("check")}<b>${esc(texto)}</b><button class="btn btn-sm" type="button" id="desfazerBtn">Desfazer</button></p><i class="ft-timer" style="animation-duration:${DESFAZER_MS / 1000}s"></i></div>`;
+  el.hidden = false;
+  $("#desfazerBtn", el).addEventListener("click", desfazer, { once: true });
+}
+function esconderDesfazer() { const el = $("#desfazer"); if (el) el.hidden = true; }
+window.addEventListener("pagehide", confirmarDecisaoPendente);
+
 /* ---------- detalhe do treino ---------- */
 const DETALHE_TREINO = {};   // id -> { t, pedidos }: redesenha na hora enquanto recarrega
 route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/, function vTreinoDetalhe(view, [id], q, u) {
@@ -4803,11 +5060,13 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
 
     let acao;
     if (cancelado) acao = aviso(org ? "Você cancelou este treino." : "Este treino foi cancelado.");
-    else if (org) acao = `<div class="state-ok">${ic("flag")} Você organiza este treino</div>`;
+    else if (org) acao = `<div class="state-ok">${ic("flag")} Você organiza este treino</div>${t.aceite_automatico ? `<p class="eyebrow" style="text-align:center">${ic("bolt")} Participação automática ligada</p>` : ""}`;
     else if (!futuro) acao = conf ? `<div class="state-ok">${ic("check")} Você participou deste treino</div>` : aviso("Este treino já aconteceu.");
     else if (conf) acao = `<div class="state-ok">${ic("check")} Presença confirmada</div><button class="linkbtn small-link" type="button" id="trSair" style="color:var(--danger)">Desistir do treino</button>`;
     else if (t.meu_pedido === "pendente") acao = `<div class="state-ok espera">${ic("clock")} Pedido enviado · aguardando resposta</div><button class="linkbtn small-link" type="button" id="trDesistirPedido">Cancelar pedido</button>`;
     else if (t.meu_pedido === "recusado") acao = aviso("Quem organiza não aceitou seu pedido para este treino.");
+    else if (t.aceite_automatico) acao = `<button class="btn btn-volt btn-block" type="button" id="trPedir">${ic("bolt")} Participar</button>
+      <p class="privacy-note">Participação automática: você entra na hora, sem esperar aprovação. Ao entrar, você passa a ver quem organiza e o ponto de encontro, e quem vai passa a ver você.</p>`;
     else acao = `<button class="btn btn-volt btn-block" type="button" id="trPedir">${ic("run")} Solicitar participação</button>
       <p class="privacy-note">Antes de aceitar, quem organiza vê só seu nível, se você gosta de conversar, sua mini biografia e seus hobbies, sem nome, foto ou @. O ponto de encontro e quem vai aparecem depois do aceite.</p>`;
 
@@ -4817,12 +5076,25 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
       ? `<dd>${t.ponto_encontro ? esc(t.ponto_encontro) : "Na localização marcada"}${mapa}</dd>`
       : `<dd class="tbd">${ic("lock")} Liberado para quem for aceito</dd>`;
 
-    const pedidoCard = x => `<div class="req">
-        <div class="req-top"><span class="eyebrow">Pedido · ${fmtStamp(x.criado_em)}</span><span class="st st-pend">Aguardando</span></div>
+    /* Pedidos empilhados, como no Finder: o de cima é decidido e o próximo
+       vem por trás. Os já decididos nesta tela somem na hora, antes mesmo de o
+       servidor confirmar (dá para desfazer por alguns segundos).            */
+    const pilha = pendentes.filter(x => !PEDIDOS_DECIDIDOS.has(x.pedido_id));
+    const pedidoInner = x => `<div class="fbody pbody">
+        <span class="eyebrow">Pedido · ${fmtStamp(x.criado_em)}</span>
         ${corredorTagsHTML(x)}
         ${x.bio ? `<p class="prose">${esc(x.bio)}</p>` : `<p class="muted" style="font-size:13.5px">Sem mini biografia.</p>`}
         ${hobbiesHTML(x.hobbies)}
-        <div class="btn-row"><button class="btn btn-sm" type="button" data-recusar="${x.pedido_id}">Recusar</button><button class="btn btn-sm btn-volt" type="button" data-aceitar="${x.pedido_id}">${ic("check")} Aceitar</button></div>
+      </div>`;
+    const pilhaHTML = !pilha.length ? "" : `
+      <div class="deck pilha-pedidos">
+        ${pilha[1] ? `<article class="fcard back" aria-hidden="true">${pedidoInner(pilha[1])}</article>` : ""}
+        <article class="fcard" id="pcard" data-pedido="${pilha[0].pedido_id}" aria-label="Pedido de participação. Arraste para a direita para aceitar ou para a esquerda para recusar.">${pedidoInner(pilha[0])}<span class="stamp like">${ic("check")}Aceitar</span><span class="stamp nope">${ic("x")}Recusar</span></article>
+      </div>
+      <p class="eyebrow pilha-dica">${pilha.length > 1 ? `1 de ${pilha.length} · ` : ""}direita aceita · esquerda recusa</p>
+      <div class="fbtns pilha-acoes">
+        <button class="fbtn nope" type="button" id="pNope" aria-label="Recusar pedido">${ic("x")}</button>
+        <button class="fbtn like" type="button" id="pLike" aria-label="Aceitar pedido">${ic("check")}</button>
       </div>`;
     const pessoa = (pp, papel) => {
       if (!pp) return "";
@@ -4851,9 +5123,11 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
         </dl>
         ${t.descricao ? `<div class="field"><span class="label">Sobre o treino</span><p class="prose">${esc(t.descricao)}</p></div>` : ""}
         ${acao}
-        ${org && !cancelado && futuro ? `<div class="section-title"><h2 class="disp">Solicitações</h2><span class="eyebrow num">${pendentes.length}</span></div>${pendentes.length ? pendentes.map(pedidoCard).join("") : `<div class="empty sm"><p>Nenhuma solicitação esperando você.</p></div>`}` : ""}
+        ${org && !cancelado && futuro ? `<div class="section-title"><h2 class="disp">Solicitações</h2><span class="eyebrow num">${pilha.length}</span></div>${pilha.length ? pilhaHTML : `<div class="empty sm"><p>${t.aceite_automatico ? "Participação automática ligada: quem pede já entra direto." : "Nenhuma solicitação esperando você."}</p></div>`}` : ""}
+        ${envolvido ? `<a class="btn btn-block" href="#/treino/${t.id}/chat">${ic("chat")} Chat do treino${cancelado || !futuro ? " · encerrado" : ""}</a>` : ""}
         ${quemVai.length ? `<div class="section-title"><h2 class="disp">Quem vai</h2><span class="eyebrow num">${quemVai.length}</span></div><div class="rows">${quemVai.join("")}</div>` : ""}
         ${org && !cancelado && futuro ? `<button class="linkbtn small-link" type="button" id="trCancelar" style="color:var(--danger)">Cancelar treino</button>` : ""}
+        ${org ? "" : botaoDenunciar("Denunciar treino", "trDenunciar")}
       </section>`;
 
     const ao = (sel, fn) => { const b = $(sel, view); if (b) b.addEventListener("click", ev => fn(ev.currentTarget)); };
@@ -4869,7 +5143,7 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
     };
     ao("#trPedir", async b => {
       if (!temPerfilCorredor(u) && !(await pedirPerfilCorredor(u, "pedir"))) return;
-      rodar(b, "pedir_treino", { p_treino: t.id }, "Pedido enviado. Você recebe um aviso quando responderem.");
+      rodar(b, "pedir_treino", { p_treino: t.id }, t.aceite_automatico ? "Pronto: você está no treino." : "Pedido enviado. Você recebe um aviso quando responderem.");
     });
     ao("#trDesistirPedido", async b => {
       if (!(await confirmBox({ title: "Cancelar pedido?", ok: "Cancelar pedido", cancel: "Voltar", text: "Seu pedido sai da lista de quem organiza. Se mudar de ideia, dá para pedir de novo." }))) return;
@@ -4879,22 +5153,245 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
       if (!(await confirmBox({ title: "Desistir do treino?", ok: "Desistir", cancel: "Voltar", danger: true, text: "Quem organiza recebe um aviso de que você não vai, e o chat liberado pelo treino deixa de valer." }))) return;
       rodar(b, "cancelar_pedido_treino", { p_treino: t.id }, "Você saiu do treino.");
     });
+    ao("#trDenunciar", () => denunciar("treino", t.id, { oque: "com este treino" }));
     ao("#trCancelar", async b => {
       if (!(await confirmBox({ title: "Cancelar treino?", ok: "Cancelar treino", cancel: "Voltar", danger: true, text: "Quem pediu para participar e quem já foi aceito recebem um aviso. Não dá para desfazer." }))) return;
       rodar(b, "cancelar_treino", { p_treino: t.id }, "Treino cancelado.");
     });
-    $$("[data-aceitar]", view).forEach(b => b.addEventListener("click", () =>
-      rodar(b, "decidir_pedido_treino", { p_pedido: b.dataset.aceitar, p_aceitar: true }, "Pedido aceito. Agora vocês podem conversar pelo chat.")));
-    $$("[data-recusar]", view).forEach(b => b.addEventListener("click", async () => {
-      if (!(await confirmBox({ title: "Recusar pedido?", ok: "Recusar", cancel: "Voltar", danger: true, text: "A pessoa recebe um aviso, sem saber quem organiza, e não pode pedir de novo para este treino." }))) return;
-      rodar(b, "decidir_pedido_treino", { p_pedido: b.dataset.recusar, p_aceitar: false }, "Pedido recusado.");
-    }));
+    ligarPilha(view, (pedidoId, aceitar) => decidirPedido(pedidoId, aceitar, aposDecisao));
   }
+  /* depois de decidir um pedido da pilha: redesenha na hora com o que já está
+     em memória; quando o servidor grava, recarrega de verdade */
+  function aposDecisao(gravou) {
+    if (gravou) { carregarTreinos().then(() => { if (vivo()) atualizar(); else if (CURRENT && CHROME_TAB) renderChrome({ tab: CHROME_TAB }, CURRENT); }); return; }
+    if (vivo() && DETALHE_TREINO[id]) { const sc = view.scrollTop; pintar(DETALHE_TREINO[id]); view.scrollTop = sc; }
+  }
+  aoSairDaTela(confirmarDecisaoPendente);
 
   if (DETALHE_TREINO[id]) pintar(DETALHE_TREINO[id]);
   else view.innerHTML = `${topo()}<section class="page"><p class="eyebrow carregando">Carregando treino…</p></section>`;
   atualizar();
 }, { tab: "treino" });
+
+/* =====================================================================
+   TELAS — chat em grupo (treino e Komunidade)
+   Mesma cara do chat entre duas pessoas, com o @ e a foto de quem escreve.
+   Treino: quem organiza e quem foi aceito; fecha para mensagens novas no
+   horário de início. Komunidade: quem está nela. Quem saiu continua nas
+   mensagens antigas, com o aviso de que não participa mais. Quem decide o
+   acesso é o banco (grupo_mensagens, SQL 16).
+   ===================================================================== */
+const GRUPOS = {};            // "tipo:id" -> mensagens em ordem
+let CANAL_GRUPO = null;       // uma assinatura de tempo real por vez: a do grupo aberto
+function pararGrupo() { if (sb && CANAL_GRUPO) sb.removeChannel(CANAL_GRUPO); CANAL_GRUPO = null; }
+async function carregarGrupo(tipo, id) {
+  const { data, error } = await sb.from("grupo_mensagens")
+    .select("id, de, texto, criado_em").eq("grupo_tipo", tipo).eq("grupo_id", id)
+    .order("criado_em", { ascending: false }).limit(200);
+  if (error) return error;
+  GRUPOS[tipo + ":" + id] = (data || []).reverse();
+  return null;
+}
+function ouvirGrupo(tipo, id, aoChegar) {
+  pararGrupo();
+  if (!sb) return;
+  const chave = tipo + ":" + id;
+  CANAL_GRUPO = sb.channel("grupo-" + chave)
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "grupo_mensagens", filter: "grupo_id=eq." + id }, payload => {
+      const m = payload.new;
+      if (!m || m.grupo_tipo !== tipo) return;
+      const lista = GRUPOS[chave] || (GRUPOS[chave] = []);
+      if (lista.some(x => x.id === m.id)) return;   // a minha já entrou pela resposta do envio
+      lista.push({ id: m.id, de: m.de, texto: m.texto, criado_em: m.criado_em });
+      aoChegar();
+    })
+    .subscribe();
+}
+function telaGrupo(view, u, o) {
+  const chave = o.tipo + ":" + o.id, rascunho = "kohe.grupo." + chave;
+  const participa = id => o.tipo === "komunidade" ? (userById(id) || {}).komunidade === o.id : o.membros.has(id);
+  const logHTML = () => {
+    const ms = GRUPOS[chave];
+    if (!ms) return `<p class="chat-empty">Carregando mensagens…</p>`;
+    if (!ms.length) return `<p class="chat-empty">${o.aberto ? "Ninguém escreveu ainda. Mande o primeiro oi." : "Nenhuma mensagem."}</p>`;
+    let html = "", dia = "", anterior;
+    ms.forEach(m => {
+      const d = new Date(m.criado_em), day = ymd(d), hora = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+      if (day !== dia) { dia = day; anterior = undefined; html += `<div class="chat-day">${day === ymd(new Date()) ? "Hoje" : fmtShort(day)}</div>`; }
+      if (m.de === u.id) html += `<div class="bubble me"><p>${esc(m.texto)}</p><time>${hora}</time></div>`;
+      else {
+        /* foto e @ só no começo de cada sequência da mesma pessoa */
+        const p = m.de ? userById(m.de) : null, comeca = anterior !== m.de;
+        const nome = p ? "@" + p.nick : m.de ? "@alguém" : "Conta excluída";
+        html += `<div class="gmsg${comeca ? " inicio" : ""}">${comeca ? avatarHTML(p, "avatar av-xxs") : `<span class="gav-vazio"></span>`}<div class="gcol">${comeca ? `<span class="gnick">${esc(nome)}${m.de && !participa(m.de) ? `<em>não participa mais</em>` : ""}</span>` : ""}<div class="bubble them"><p>${esc(m.texto)}</p><time>${hora}</time></div></div></div>`;
+      }
+      anterior = m.de;
+    });
+    return html;
+  };
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="${o.back}" aria-label="Voltar">${ic("back")}</a>
+      <a class="chat-who" href="${o.link}">${o.avatar}<span class="chat-name"><b>${esc(o.titulo)}</b><span class="eyebrow">${esc(o.sub)}</span></span></a>
+      <button class="icon-btn discreto" type="button" id="grDenunciar" aria-label="Denunciar conversa">${ic("alert")}</button>
+    </div></header>
+    <section class="chat" id="chatLog" aria-live="polite">${logHTML()}</section>
+    ${o.aberto
+      ? `<form class="composer" id="grForm"><textarea id="grIn" class="input" rows="1" maxlength="1000" placeholder="Mensagem para o grupo" aria-label="Mensagem para o grupo"></textarea><button class="send" type="submit" aria-label="Enviar">${ic("send")}</button></form>`
+      : `<div class="composer off">${ic("lock")}<span>${esc(o.fechadoTxt)}</span></div>`}`;
+  view.scrollTop = view.scrollHeight;
+  const repintar = paraFim => {
+    const log = $("#chatLog", view); if (!log || !log.isConnected) return;
+    const noFim = paraFim || view.scrollHeight - view.scrollTop - view.clientHeight < 120;
+    log.innerHTML = logHTML();
+    if (noFim) view.scrollTop = view.scrollHeight;
+  };
+  const semPerfil = () => (GRUPOS[chave] || []).some(m => m.de && !userById(m.de));
+  carregarGrupo(o.tipo, o.id).then(async erro => {
+    if (erro) {
+      const log = $("#chatLog", view);
+      if (log && log.isConnected) log.innerHTML = `<p class="chat-empty">${/schema cache|does not exist/i.test(erro.message || "") ? "O chat em grupo ainda não foi ativado no servidor." : "Não deu para carregar as mensagens agora."}</p>`;
+      return;
+    }
+    if (semPerfil()) await carregarPessoas();
+    repintar(true);
+  });
+  ouvirGrupo(o.tipo, o.id, async () => { if (semPerfil()) await carregarPessoas(); repintar(false); });
+  aoSairDaTela(pararGrupo);
+  $("#grDenunciar", view).addEventListener("click", () => denunciar("chat", o.id, { grupo: o.tipo, oque: "nesta conversa" }));
+
+  const form = $("#grForm", view); if (!form) return;
+  const inp = $("#grIn", view);
+  const crescer = () => { inp.style.height = "auto"; inp.style.height = Math.min(120, Math.max(46, inp.scrollHeight)) + "px"; };
+  inp.value = SS.get(rascunho) || ""; crescer();
+  inp.addEventListener("input", () => { SS.set(rascunho, inp.value); crescer(); });
+  /* Enter quebra linha, como no chat entre duas pessoas; enviar é pelo botão */
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const texto = inp.value.trim(); if (!texto) return;
+    if (o.inicio && o.inicio <= new Date()) { toast("O chat do treino fechou no horário de início.", true); render(); return; }
+    const envio = $(".send", form); envio.disabled = true;
+    const { data, error } = await sb.from("grupo_mensagens")
+      .insert({ grupo_tipo: o.tipo, grupo_id: o.id, de: u.id, texto }).select("id, de, texto, criado_em").single();
+    envio.disabled = false;
+    if (error) { toast("Não deu para enviar. Tente de novo.", true); return; }
+    const lista = GRUPOS[chave] || (GRUPOS[chave] = []);
+    if (!lista.some(x => x.id === data.id)) lista.push(data);
+    inp.value = ""; SS.del(rascunho); crescer(); repintar(true); inp.focus();
+  });
+}
+
+route(/^\/komunidade\/([\w-]+)\/chat$/, function vGrupoKomunidade(view, [id], q, u) {
+  const k = komunidadeById(id);
+  if (!k) { view.innerHTML = notFoundHTML("Komunidade não encontrada", "Essa Komunidade pode não existir mais.", "#/buscar", "Voltar à busca"); return; }
+  const deMensagens = q.get("de") === "mensagens";
+  if (deMensagens) renderChrome({ tab: "perfil" }, u);
+  const back = deMensagens ? "#/mensagens" : "#/komunidade/" + k.id;
+  if (u.komunidade !== k.id) {
+    view.innerHTML = `${subHead("Chat", back, esc(komunidadeTag(k)))}<section class="page"><div class="lock-card">${ic("lock")}<span>Só quem participa da ${esc(komunidadeTag(k))} vê e escreve neste chat.</span></div></section>`;
+    return;
+  }
+  telaGrupo(view, u, {
+    tipo: "komunidade", id: k.id, back, link: "#/komunidade/" + k.id, aberto: true,
+    titulo: "Chat da " + komunidadeTag(k), sub: plural(komunidadeMembers(k.id).length, "membro", "membros"),
+    avatar: komunidadeLogoHTML(k, "av-xs")
+  });
+}, { tab: "buscar" });
+
+route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/chat$/, function vGrupoTreino(view, [id], q, u) {
+  const deMensagens = q.get("de") === "mensagens";
+  if (deMensagens) renderChrome({ tab: "perfil" }, u);
+  const back = deMensagens ? "#/mensagens" : "#/treino/" + id + "?de=meus";
+  const token = vGrupoTreino.token = (vGrupoTreino.token || 0) + 1;
+  let pintado = "";
+  const pintar = t => {
+    if (!t) { view.innerHTML = notFoundHTML("Treino não encontrado", "Esse endereço não leva a nenhum treino.", "#/treino", "Procurar treinos"); return; }
+    const membros = new Set([t.organizador && t.organizador.id, ...(t.participantes || []).map(x => x.id)].filter(Boolean));
+    const acesso = !!(t.sou_organizador || t.estou_confirmado);
+    const marca = [acesso, t.status, [...membros].sort().join()].join("|");
+    if (marca === pintado) return;   // nada mudou: não mexe no que a pessoa está digitando
+    pintado = marca;
+    if (!acesso) { view.innerHTML = `${subHead("Chat do treino", back, "Treino")}<section class="page"><div class="lock-card">${ic("lock")}<span>Só quem organiza e quem foi aceito neste treino vê o chat.</span></div></section>`; return; }
+    const inicio = inicioTreino(t), cancelado = t.status === "cancelado";
+    telaGrupo(view, u, {
+      tipo: "treino", id, back, link: "#/treino/" + id + "?de=meus", membros, inicio,
+      titulo: "Treino · " + t.local, sub: `${fmtShort(t.data)} · ${horaTreino(t)} · ${plural(membros.size, "pessoa", "pessoas")}`,
+      avatar: `<span class="avatar av-xs">${ic("run")}</span>`,
+      aberto: !cancelado && inicio > new Date(),
+      fechadoTxt: cancelado ? "Treino cancelado: o chat foi encerrado." : "O chat fechou no horário de início do treino."
+    });
+  };
+  if (DETALHE_TREINO[id]) pintar(DETALHE_TREINO[id].t);
+  else view.innerHTML = `${subHead("Chat do treino", back, "Treino")}<section class="page"><p class="eyebrow carregando">Carregando…</p></section>`;
+  sb.rpc("detalhe_treino", { p_treino: id }).then(async ({ data: t, error }) => {
+    if (vGrupoTreino.token !== token || !location.hash.startsWith("#/treino/" + id + "/chat")) return;
+    if (error) { view.innerHTML = `${subHead("Chat do treino", back, "Treino")}<section class="page"><div class="note">${ic("alert")}<span>${esc(erroTreino(error))}</span></div></section>`; return; }
+    if (t) DETALHE_TREINO[id] = Object.assign({ pedidos: [] }, DETALHE_TREINO[id], { t });
+    const ids = t ? [t.organizador && t.organizador.id, ...(t.participantes || []).map(x => x.id)].filter(Boolean) : [];
+    if (ids.some(x => !userById(x))) await carregarPessoas();
+    if (vGrupoTreino.token === token) pintar(t);
+  });
+}, { tab: "treino" });
+
+/* =====================================================================
+   DENÚNCIAS (etapa D)
+   Botão discreto em perfil, corrida, treino e conversas. A denúncia vira um
+   pedido de análise em Solicitações; nada sai do ar sozinho. Numa conversa,
+   quem anexa as últimas mensagens é o servidor, não o app.
+   ===================================================================== */
+const DENUNCIA_MAX = 300;
+const TIPO_DENUNCIA = { perfil: "Perfil", corrida: "Corrida", treino: "Treino", chat: "Chat" };
+let DENUNCIAS = [];
+async function carregarDenuncias() {
+  if (!sb || !CURRENT || !isAdmin(CURRENT)) { DENUNCIAS = []; return; }
+  const { data, error } = await sb.from("denuncias")
+    .select("id, autor_id, tipo, alvo_id, grupo, motivo, contexto, status, criado_em")
+    .eq("status", "aberta").order("criado_em");
+  if (!error) DENUNCIAS = data || [];
+}
+const botaoDenunciar = (rotulo, id) => `<button class="linkbtn denunciar" type="button" id="${id}">${ic("alert")}${rotulo}</button>`;
+async function denunciar(tipo, alvo, { grupo = null, oque = "" } = {}) {
+  const motivo = await confirmBox({
+    title: "Denunciar", ok: "Enviar denúncia", danger: true,
+    text: `Conte o que aconteceu${oque ? " " + esc(oque) : ""}. A administração analisa com cuidado e nada é removido automaticamente.${tipo === "chat" ? " As últimas mensagens da conversa vão junto, para dar contexto." : ""}`,
+    reason: { label: "Motivo", min: 10, max: DENUNCIA_MAX, placeholder: "Ex.: mensagens ofensivas, informação falsa, comportamento estranho…" }
+  });
+  if (!motivo) return;
+  const { error } = await sb.rpc("denunciar", { p_tipo: tipo, p_alvo: alvo, p_motivo: motivo, p_grupo: grupo });
+  if (error) { toast(/schema cache|does not exist/i.test(error.message || "") ? "As denúncias ainda não foram ativadas no servidor." : error.message, true); return; }
+  toast("Denúncia enviada. Obrigado por avisar.");
+}
+function denunciaCard(dn) {
+  const c = dn.contexto || {}, autor = userById(dn.autor_id);
+  let tipo = TIPO_DENUNCIA[dn.tipo] || dn.tipo, titulo = "", link = "", extra = "";
+  if (dn.tipo === "perfil") { titulo = `@${c.nick || "?"}${c.nome ? " · " + c.nome : ""}`; link = c.nick ? "#/u/" + encodeURIComponent(c.nick) : ""; }
+  else if (dn.tipo === "corrida") { titulo = c.nome || "Corrida"; link = `#/corrida/${dn.alvo_id}?de=sol`; if (c.autor_nick) extra = `Criada por @${c.autor_nick}`; }
+  else if (dn.tipo === "treino") { titulo = [c.local || "Treino", c.data ? fmtShort(c.data) : "", c.hora || ""].filter(Boolean).join(" · "); if (c.organizador_nick) extra = `Organizado por @${c.organizador_nick}`; }
+  else if (dn.grupo) { tipo = dn.grupo === "komunidade" ? "Chat da Komunidade" : "Chat do treino"; titulo = c.titulo || tipo; link = dn.grupo === "komunidade" ? "#/komunidade/" + dn.alvo_id : ""; }
+  else { titulo = `Conversa com @${c.com_nick || "?"}`; link = c.com_nick ? "#/u/" + encodeURIComponent(c.com_nick) : ""; }
+  const msgs = Array.isArray(c.mensagens) ? c.mensagens : null;
+  return `<article class="req">
+    <div class="req-top"><div class="form" style="gap:5px;min-width:0"><span class="meta">${fmtStamp(dn.criado_em)}</span><h3>${esc(titulo)}</h3></div><span class="st st-neg">${esc(tipo)}</span></div>
+    ${extra ? `<p class="eyebrow">${esc(extra)}</p>` : ""}
+    <div class="byline">${avatarHTML(autor, "mini-av")}<span>Denunciado por <b>@${esc(autor ? autor.nick : "conta excluída")}</b></span></div>
+    <div class="reason warn"><b>Motivo</b>${esc(dn.motivo)}</div>
+    ${msgs ? `<details class="den-msgs"><summary>Últimas mensagens (${msgs.length})</summary>${msgs.length ? msgs.map(m => `<p><b>@${esc(m.nick || "conta excluída")}</b> <span class="eyebrow">${m.em ? fmtStamp(m.em) : ""}</span><br>${esc(m.texto)}</p>`).join("") : "<p>Sem mensagens.</p>"}</details>` : ""}
+    <div class="btn-row">${link ? `<a class="btn btn-sm" href="${link}">Ver</a>` : ""}<button class="btn btn-sm btn-volt" type="button" data-analisada="${dn.id}" aria-label="Marcar como analisada">${ic("check")} Analisada</button></div>
+  </article>`;
+}
+
+/* ---------- Total de treinos (etapa D) ----------
+   Um número só, discreto: treinos que já aconteceram com ao menos um
+   confirmado, como organizador ou participante. O meu sai de Meus treinos; o
+   dos outros vem do servidor.                                              */
+const TOTAL_TREINOS = {};
+const totalTreinosMeus = () => MEUS_TREINOS.filter(t => t.status === "ativo" && !treinoFuturo(t)
+  && (t.papel === "organizador" ? t.confirmados > 0 : t.pedido === "aceito")).length;
+async function carregarTotalTreinos(id) {
+  const { data, error } = await sb.rpc("total_treinos", { p_user: id });
+  TOTAL_TREINOS[id] = error ? null : Number(data) || 0;
+}
+const totalTreinosHTML = n => `<span class="stat-treinos" id="totalTreinos">${ic("run")}Total de treinos <b class="num">${n}</b></span>`;
 
 function installAppIcon(onlyTouch = false) {
   const draw = size => {
@@ -5008,6 +5505,25 @@ function maybeInstallTip() {
   }, 1200);
 }
 
+/* ---------- só na vertical: orientação do aparelho, não da página ----------
+   A trava vale para celular (lado menor da tela até 520 px); computador e
+   tablet seguem livres, como antes. screen.width/height não mudam quando o
+   teclado abre — é isso que acaba com o "teclado abre e fecha" do Android.   */
+function marcarDeitado() {
+  let paisagem = false;
+  try {
+    const tipo = screen.orientation && screen.orientation.type;
+    if (tipo) paisagem = tipo.startsWith("landscape");
+    else if (typeof window.orientation === "number") paisagem = Math.abs(window.orientation) === 90;
+  } catch (e) { paisagem = false; }
+  const celular = Math.min(screen.width || 9999, screen.height || 9999) <= 520;
+  document.documentElement.classList.toggle("deitado", paisagem && celular);
+}
+marcarDeitado();
+try { if (screen.orientation && screen.orientation.addEventListener) screen.orientation.addEventListener("change", marcarDeitado); } catch (e) {}
+window.addEventListener("orientationchange", () => setTimeout(marcarDeitado, 60));
+window.addEventListener("resize", marcarDeitado);
+
 /* ---------- teclado no celular: o app acompanha a área visível (cabeçalho fixo no chat) ---------- */
 let BASE_VH = 0;
 function syncViewport() {
@@ -5022,7 +5538,7 @@ function syncViewport() {
   root.style.setProperty("--vvtop", Math.round(vv.offsetTop) + "px");
   const was = root.classList.contains("kb-open");
   root.classList.toggle("kb-open", open);
-  if (open && !was && location.hash.startsWith("#/chat/")) { const v = $("#view"); v.scrollTop = v.scrollHeight; }
+  if (open && !was && /^#\/(chat\/|(treino|komunidade)\/[^/?]+\/chat)/.test(location.hash)) { const v = $("#view"); v.scrollTop = v.scrollHeight; }
 }
 if (window.visualViewport) {
   visualViewport.addEventListener("resize", syncViewport);
@@ -5059,6 +5575,7 @@ if (window.visualViewport) {
   await carregarFinder();
   await carregarPedidos();
   await carregarEdicoes();
+  await carregarDenuncias();
   await carregarTreinos();
   ouvirMensagens();
   ouvirConfig();
@@ -5083,6 +5600,7 @@ if (window.visualViewport) {
     await carregarFinder();
     await carregarPedidos();
     await carregarEdicoes();
+    await carregarDenuncias();
     await carregarTreinos();
     ouvirMensagens();
     ouvirConfig();
