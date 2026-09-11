@@ -1011,7 +1011,7 @@ async function carregarPerfil() {
 
 const Session = {
   get: () => (CURRENT ? CURRENT.id : null),
-  clear: async () => { CURRENT = null; if (sb) await sb.auth.signOut(); }
+  clear: async () => { pararDeOuvir(); CURRENT = null; if (sb) await sb.auth.signOut(); }
 };
 const me = () => CURRENT;
 
@@ -1143,6 +1143,44 @@ async function carregarNotificacoes() {
   if (error || !data) return;
   DB.notifs = data.map(n => ({ id: n.id, para: n.para, tipo: n.tipo, de: n.de, t: n.criado_em, lida: n.lida }));
   DB.save();
+}
+
+async function carregarMensagens() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("messages")
+    .select("id, de, para, texto, criado_em, lida").order("criado_em");
+  if (error || !data) return;
+  DB.msgs = data.map(m => ({ id: m.id, de: m.de, para: m.para, texto: m.texto, t: m.criado_em, lida: m.lida }));
+  DB.save();
+}
+
+/* ---------- tempo real (KM 7) ----------
+   Uma assinatura só, ligada no login, ouvindo as mensagens endereçadas a você.
+   Serve o chat aberto e também o contador de não lidas quando você está em
+   outra tela. O aviso respeita as mesmas regras da tabela: você só é avisado
+   de mensagem que já teria permissão de ler.                                */
+let CANAL_MSGS = null;
+
+function pararDeOuvir() {
+  if (sb && CANAL_MSGS) { sb.removeChannel(CANAL_MSGS); }
+  CANAL_MSGS = null;
+}
+
+function ouvirMensagens() {
+  if (!sb || !CURRENT) return;
+  pararDeOuvir();
+  const meuId = CURRENT.id;
+  CANAL_MSGS = sb.channel("mensagens-" + meuId)
+    .on("postgres_changes",
+      { event: "INSERT", schema: "public", table: "messages", filter: "para=eq." + meuId },
+      payload => {
+        const m = payload.new;
+        if (!m || DB.msgs.some(x => x.id === m.id)) return;   // ignora repetição
+        DB.msgs.push({ id: m.id, de: m.de, para: m.para, texto: m.texto, t: m.criado_em, lida: m.lida });
+        DB.save();
+        if (!$(".scrim")) render();
+      })
+    .subscribe();
 }
 
 async function salvarEvento(race_id, acao, obs) {
@@ -1530,7 +1568,7 @@ async function resetAll() {
   await seedDB(); SS.del("kohe.draft"); SIGNUP = null; RECOVERY = null;
   await carregarPerfil(); await carregarPessoas(); await carregarKomunidades();
   await carregarCorridas(); await carregarFavoritas();
-  await carregarKonexoes(); await carregarNotificacoes();
+  await carregarKonexoes(); await carregarNotificacoes(); await carregarMensagens();
   toast("Dados iniciais restaurados."); go("/feed");
 }
 
@@ -3471,9 +3509,13 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
       ? `<form class="composer" id="chatForm"><textarea id="chatIn" class="input" rows="1" maxlength="1000" placeholder="Mensagem para @${esc(p.nick)}" aria-label="Mensagem para @${esc(p.nick)}"></textarea><button class="send" type="submit" aria-label="Enviar">${ic("send")}</button></form>`
       : `<div class="composer off">${ic("lock")}<span>Vocês não estão konectados. Konecte-se para conversar.</span></div>`}`;
   view.scrollTop = view.scrollHeight;
-  let changed = false;
-  DB.msgs.forEach(m => { if (m.de === p.id && m.para === u.id && !m.lida) { m.lida = true; changed = true; } });
-  if (changed) { DB.save(); renderChrome({ tab: "perfil" }, u); }
+  const naoLidas = DB.msgs.filter(m => m.de === p.id && m.para === u.id && !m.lida);
+  if (naoLidas.length) {
+    naoLidas.forEach(m => { m.lida = true; });
+    DB.save(); renderChrome({ tab: "perfil" }, u);
+    /* marcar como lida não precisa segurar a tela: o badge já baixou */
+    sb.from("messages").update({ lida: true }).in("id", naoLidas.map(m => m.id)).then(() => {});
+  }
   const form = $("#chatForm");
   if (!form) return;
   const inp = $("#chatIn");
@@ -3483,11 +3525,20 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
   inp.addEventListener("keydown", e => {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event("submit", { cancelable: true })); }
   });
-  form.addEventListener("submit", e => {
+  form.addEventListener("submit", async e => {
     e.preventDefault();
     const texto = inp.value.trim(); if (!texto) return;
     if (!isConnected(u.id, p.id)) { toast("Vocês não estão mais konectados.", true); render(); return; }
-    DB.msgs.push({ id: uid("m"), de: u.id, para: p.id, texto, t: new Date().toISOString(), lida: false });
+    const envio = $(".send", form); if (envio) envio.disabled = true;
+    const { data, error } = await sb.from("messages")
+      .insert({ de: u.id, para: p.id, texto }).select("id, de, para, texto, criado_em, lida").single();
+    if (error) {
+      if (envio) envio.disabled = false;
+      toast("Não deu para enviar. Tente de novo.", true); return;
+    }
+    /* O aviso em tempo real só chega para quem RECEBE, então a própria
+       mensagem entra no cache aqui mesmo.                                   */
+    DB.msgs.push({ id: data.id, de: data.de, para: data.para, texto: data.texto, t: data.criado_em, lida: data.lida });
     DB.save(); SS.del(key); render();
     const again = $("#chatIn"); if (again) again.focus();
   });
@@ -3616,6 +3667,8 @@ if (window.visualViewport) {
   await carregarFavoritas();   // depois de carregarPessoas: preenche u.favs de cada um
   await carregarKonexoes();
   await carregarNotificacoes();
+  await carregarMensagens();
+  ouvirMensagens();
   purgeExcluded();
   render();
 
@@ -3631,6 +3684,8 @@ if (window.visualViewport) {
     await carregarFavoritas();
     await carregarKonexoes();
     await carregarNotificacoes();
+    await carregarMensagens();
+    ouvirMensagens();
     if (!$(".scrim")) render();
   });
 
