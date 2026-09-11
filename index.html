@@ -797,9 +797,10 @@ const CITIES = ("Campinas|-22.906|-47.061;Americana|-22.737|-47.333;Atibaia|-23.
   "Salto|-23.200|-47.287;Cabreúva|-23.307|-47.133;Hortolândia|-22.858|-47.220;Nova Odessa|-22.779|-47.296;" +
   "Santa Bárbara d'Oeste|-22.754|-47.414;Cosmópolis|-22.646|-47.196;Artur Nogueira|-22.573|-47.173;" +
   "Engenheiro Coelho|-22.488|-47.215;Jaguariúna|-22.706|-46.986;Holambra|-22.633|-47.056;Pedreira|-22.742|-46.901;" +
+  "Santo Antônio de Posse|-22.606|-46.919;" +
   "Amparo|-22.701|-46.765;Serra Negra|-22.612|-46.701;Socorro|-22.593|-46.529;Águas de Lindóia|-22.476|-46.633;" +
   "Itatiba|-23.006|-46.839;Morungaba|-22.880|-46.792;Jarinu|-23.101|-46.728;Campo Limpo Paulista|-23.208|-46.788;" +
-  "Várzea Paulista|-23.211|-46.828;Nazaré Paulista|-23.181|-46.395;Piracaia|-23.054|-46.358;" +
+  "Várzea Paulista|-23.211|-46.828;Nazaré Paulista|-23.181|-46.395;Piracaia|-23.054|-46.358;Igaratá|-23.205|-46.157;" +
   "Bom Jesus dos Perdões|-23.135|-46.465;Joanópolis|-22.930|-46.275;Pinhalzinho|-22.781|-46.590;Tuiuti|-22.819|-46.694;" +
   "Vargem|-22.887|-46.412;Mogi Mirim|-22.432|-46.958;Mogi Guaçu|-22.372|-46.942;Itapira|-22.436|-46.822;" +
   "Espírito Santo do Pinhal|-22.191|-46.748;São João da Boa Vista|-21.969|-46.798;Conchal|-22.330|-47.173;" +
@@ -1059,9 +1060,54 @@ async function carregarPessoas() {
   DB.save();
 }
 
+/* ---------- corridas (KM 4) ----------
+   As corridas passam a viver no Supabase. Como todas as telas leem DB.races
+   de forma síncrona, mantemos um cache em memória alimentado pelo servidor:
+   carregarCorridas() enche, e toda gravação recarrega em seguida.
+
+   As colunas do banco não têm exatamente os mesmos nomes dos campos do app
+   ("desc" é palavra reservada em SQL, por exemplo), então a tradução acontece
+   em um lugar só: daLinha() para ler, paraLinha() para gravar.              */
+const daLinha = (r, hist) => Object.assign({
+  id: r.id, nome: r.nome, cidade: r.cidade, data: r.data,
+  hora: r.hora ? String(r.hora).slice(0, 5) : null,
+  mods: r.mods || [], rua: r.rua || "", cupom: r.cupom || "",
+  desc: r.descricao || "", preco: r.preco === null ? null : Number(r.preco),
+  insc: r.insc || {}, arte: r.arte_url || null,
+  status: r.status, autor: r.autor_id, criado: r.criado_em,
+  envios: r.envios, motivo: r.motivo || "", hist
+}, r.exclusao ? { exclusao: r.exclusao } : {},
+   r.pedido_exclusao ? { pedidoExclusao: r.pedido_exclusao } : {});
+
+const paraLinha = r => ({
+  nome: r.nome, cidade: r.cidade, data: r.data, hora: r.hora || null,
+  mods: r.mods || [], rua: r.rua || "", cupom: r.cupom || "",
+  descricao: r.desc || "", preco: (r.preco === "" || r.preco === undefined) ? null : r.preco,
+  insc: r.insc || {}, arte_url: r.arte || null
+});
+
+async function carregarCorridas() {
+  if (!sb || !CURRENT) return;
+  const [corridas, eventos] = await Promise.all([
+    sb.from("races").select("*"),
+    sb.from("race_events").select("race_id, quando, acao, por, obs").order("quando")
+  ]);
+  if (corridas.error || !corridas.data) { toast("Não deu para carregar as corridas agora.", true); return; }
+  const hist = {};
+  (eventos.data || []).forEach(e => {
+    (hist[e.race_id] = hist[e.race_id] || []).push({ t: e.quando, acao: e.acao, por: e.por, obs: e.obs || "" });
+  });
+  DB.races = corridas.data.map(r => daLinha(r, hist[r.id] || []));
+  DB.save();
+}
+
+async function salvarEvento(race_id, acao, obs) {
+  await sb.from("race_events").insert({ race_id, acao, por: CURRENT ? CURRENT.id : null, obs: obs || null });
+}
+
 async function seedDB() {
   DB.users = [];   // desde o KM 3 as contas vêm do Supabase, não de semente local
-  DB.races = JSON.parse(JSON.stringify(SEED_RACES));
+  DB.races = [];   // desde o KM 4 as corridas vêm do Supabase, não de semente local
   DB.komunidades = JSON.parse(JSON.stringify(SEED_KOMUNIDADES));
   DB.ups = []; DB.conns = []; DB.notifs = []; DB.msgs = []; DB.config = { finder: false };
   DB.v = 4;
@@ -1334,20 +1380,32 @@ const avatarHTML = (u, cls = "avatar", style = "") => `<span class="${cls}"${sty
 const lastEvent = (r, ...acoes) => [...(r.hist || [])].reverse().find(h => acoes.includes(h.acao));
 const diasRestantes = r => Math.max(0, Math.ceil((new Date(r.exclusao.t).getTime() + EXCLUIDA_DIAS * 864e5 - Date.now()) / 864e5));
 const delPending = r => !!(r.pedidoExclusao && r.pedidoExclusao.status === "pendente" && r.status !== "excluida");
-function excludeRace(r, u, motivo, via) {
+async function excludeRace(r, u, motivo, via) {
   const t = new Date().toISOString();
   const pedido = r.pedidoExclusao && r.pedidoExclusao.status === "pendente";
-  r.exclusao = { t, por: u.id, motivo: motivo || "", via, antes: r.status };
-  r.status = "excluida";
-  if (pedido) Object.assign(r.pedidoExclusao, { status: "aprovado", decidido: t, decididoPor: u.id });
-  r.hist.push({ t, acao: "excluida", por: u.id, obs: motivo || "" });
+  const campos = {
+    status: "excluida", excluida_em: t,
+    exclusao: { t, por: u.id, motivo: motivo || "", via, antes: r.status }
+  };
+  if (pedido) campos.pedido_exclusao = Object.assign({}, r.pedidoExclusao, { status: "aprovado", decidido: t, decididoPor: u.id });
+  const { error } = await sb.from("races").update(campos).eq("id", r.id);
+  if (error) { toast("Não deu para excluir: " + error.message, true); return false; }
+  await salvarEvento(r.id, "excluida", motivo || "");
+  await carregarCorridas();
+  return true;
 }
-function restoreRace(r, u) {
+async function restoreRace(r, u) {
   const antes = r.exclusao && r.exclusao.antes;
-  r.status = antes === "pendente" || antes === "negada" ? antes : "publicada";
-  r.hist.push({ t: new Date().toISOString(), acao: "restaurada", por: u.id });
-  delete r.exclusao; delete r.pedidoExclusao;
+  const status = antes === "pendente" || antes === "negada" ? antes : "publicada";
+  const { error } = await sb.from("races")
+    .update({ status, excluida_em: null, exclusao: null, pedido_exclusao: null }).eq("id", r.id);
+  if (error) { toast("Não deu para restaurar: " + error.message, true); return false; }
+  await salvarEvento(r.id, "restaurada");
+  await carregarCorridas();
+  return true;
 }
+/* Some da tela depois de 7 dias, mas a linha continua no banco: serve de
+   registro do que foi excluído. Só mexe no cache, que é refeito a cada boot. */
 function purgeExcluded() {
   const lim = Date.now() - EXCLUIDA_DIAS * 864e5, n = DB.races.length;
   DB.races = DB.races.filter(r => !(r.status === "excluida" && r.exclusao && new Date(r.exclusao.t).getTime() < lim));
@@ -1413,7 +1471,7 @@ async function resetAll() {
   });
   if (!ok) return;
   await seedDB(); SS.del("kohe.draft"); SIGNUP = null; RECOVERY = null;
-  await carregarPerfil(); await carregarPessoas();
+  await carregarPerfil(); await carregarPessoas(); await carregarCorridas();
   toast("Dados iniciais restaurados."); go("/feed");
 }
 
@@ -1838,8 +1896,9 @@ function bindSwipe(view, u) {
       text: `<b>${esc(r.nome)}</b> sai do feed para todos os perfis e fica ${EXCLUIDA_DIAS} dias em Solicitações › Excluídas, onde dá para restaurar.`
     });
     if (!ok) { w.classList.remove("open", "dragging"); $(".rc", w).style.transform = ""; return; }
-    excludeRace(r, u, "", "admin");
-    DB.save();
+    if (!(await excludeRace(r, u, "", "admin"))) {
+      w.classList.remove("open", "dragging"); $(".rc", w).style.transform = ""; return;
+    }
     const sc = view.scrollTop; render(); view.scrollTop = sc;
     toast(`Corrida excluída. Dá para restaurar por ${EXCLUIDA_DIAS} dias.`);
   }));
@@ -2231,22 +2290,27 @@ route(/^\/revisao$/, function vReview(view, _, q, u) {
         <a class="btn btn-block" href="${editHref}">${ic("edit")} Voltar e editar</a>
       </div>
     </section>`;
-  $("#send").addEventListener("click", () => {
-    const t = new Date().toISOString(); let id;
+  $("#send").addEventListener("click", async () => {
+    const btn = $("#send"); btn.disabled = true;
+    let id;
     if (d.id) {
       const o = DB.races.find(x => x.id === d.id);
       if (!o || o.status !== "negada" || o.envios >= MAX_ENVIOS) { toast("Essa corrida não pode mais ser reenviada.", true); return go("/solicitacoes"); }
-      const backup = JSON.stringify(o);
-      Object.assign(o, fieldsFromDraft(d), { status: "pendente", envios: o.envios + 1 });
-      o.hist.push({ t, acao: "reenviada", por: u.id });
-      if (!DB.save()) { Object.assign(o, JSON.parse(backup)); return; }
+      const { error } = await sb.from("races")
+        .update(Object.assign(paraLinha(fieldsFromDraft(d)), { status: "pendente", envios: o.envios + 1, motivo: "" }))
+        .eq("id", o.id);
+      if (error) { btn.disabled = false; toast("Não deu para reenviar: " + error.message, true); return; }
+      await salvarEvento(o.id, "reenviada");
       id = o.id;
     } else {
-      const race = Object.assign({ id: d.tmpId, autor: u.id, criado: t, envios: 1, motivo: "", status: admin ? "publicada" : "pendente", hist: [{ t, acao: admin ? "publicada" : "enviada", por: u.id }] }, fieldsFromDraft(d));
-      DB.races.push(race);
-      if (!DB.save()) { DB.races.pop(); return; }
-      id = race.id;
+      const novo = Object.assign(paraLinha(fieldsFromDraft(d)),
+        { autor_id: u.id, status: admin ? "publicada" : "pendente", envios: 1, motivo: "" });
+      const { data, error } = await sb.from("races").insert(novo).select("id").single();
+      if (error) { btn.disabled = false; toast("Não deu para enviar: " + error.message, true); return; }
+      await salvarEvento(data.id, admin ? "publicada" : "enviada");
+      id = data.id;
     }
+    await carregarCorridas();
     SS.del("kohe.draft");
     go("/enviada/" + id);
   });
@@ -2276,10 +2340,13 @@ async function askDeletion(r, u) {
     reason: { label: "Por que excluir?", min: MIN_JUST, placeholder: "Ex.: a organização cancelou a prova." }
   });
   if (!motivo) return;
-  const t = new Date().toISOString();
-  r.pedidoExclusao = { t, por: u.id, motivo, status: "pendente" };
-  r.hist.push({ t, acao: "exclusao-pedida", por: u.id, obs: motivo });
-  DB.save(); render(); toast("Pedido de exclusão enviado para a administração.");
+  /* Vai por função do banco: assim o autor não precisa de permissão ampla para
+     editar uma corrida já publicada — ele só consegue fazer este pedido.     */
+  const { error } = await sb.rpc("pedir_exclusao", { p_race: r.id, p_motivo: motivo });
+  if (error) { toast(error.message, true); return; }
+  await salvarEvento(r.id, "exclusao-pedida", motivo);
+  await carregarCorridas();
+  render(); toast("Pedido de exclusão enviado para a administração.");
 }
 const plural = (n, s, p) => `${n} ${n === 1 ? s : p}`;
 
@@ -2414,22 +2481,25 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
     const r = DB.races.find(x => x.id === b.dataset.restore); if (!r) return;
     const ok = await confirmBox({ title: "Restaurar corrida?", ok: "Restaurar", text: `<b>${esc(r.nome)}</b> volta para ${r.exclusao && r.exclusao.antes === "pendente" ? "a fila de aprovação" : "o feed"}.` });
     if (!ok) return;
-    restoreRace(r, u); DB.save(); render(); toast("Corrida restaurada.");
+    if (await restoreRace(r, u)) { render(); toast("Corrida restaurada."); }
   }));
   $$("[data-dok]", view).forEach(b => b.addEventListener("click", async () => {
     const r = DB.races.find(x => x.id === b.dataset.dok); if (!r || !delPending(r)) return;
     const ok = await confirmBox({ title: "Excluir corrida?", ok: "Excluir", danger: true, text: `<b>${esc(r.nome)}</b> sai do Kohe e fica ${EXCLUIDA_DIAS} dias em Excluídas, onde dá para restaurar.` });
     if (!ok) return;
-    excludeRace(r, u, r.pedidoExclusao.motivo, "pedido"); DB.save(); render(); toast("Corrida excluída.");
+    if (await excludeRace(r, u, r.pedidoExclusao.motivo, "pedido")) { render(); toast("Corrida excluída."); }
   }));
   $$("[data-dkeep]", view).forEach(b => b.addEventListener("click", async () => {
     const r = DB.races.find(x => x.id === b.dataset.dkeep); if (!r || !delPending(r)) return;
     const ok = await confirmBox({ title: "Manter corrida?", ok: "Manter", text: `O pedido de exclusão é recusado e <b>${esc(r.nome)}</b> continua no Kohe.` });
     if (!ok) return;
     const t = new Date().toISOString();
-    Object.assign(r.pedidoExclusao, { status: "negado", decidido: t, decididoPor: u.id });
-    r.hist.push({ t, acao: "exclusao-recusada", por: u.id });
-    DB.save(); render(); toast("Pedido recusado. A corrida continua no Kohe.");
+    const pedido = Object.assign({}, r.pedidoExclusao, { status: "negado", decidido: t, decididoPor: u.id });
+    const { error } = await sb.from("races").update({ pedido_exclusao: pedido }).eq("id", r.id);
+    if (error) { toast("Não deu para recusar: " + error.message, true); return; }
+    await salvarEvento(r.id, "exclusao-recusada");
+    await carregarCorridas();
+    render(); toast("Pedido recusado. A corrida continua no Kohe.");
   }));
   $$("[data-upok]", view).forEach(b => b.addEventListener("click", async () => {
     const x = DB.ups.find(y => y.id === b.dataset.upok), p = x && userById(x.uid);
@@ -2476,9 +2546,11 @@ route(/^\/aprovar\/([\w-]+)$/, function vApprove(view, [id], q, u) {
   $("#approve").addEventListener("click", async () => {
     const ok = await confirmBox({ title: "Aprovar corrida?", ok: "Aprovar", text: `<b>${esc(r.nome)}</b> entra no feed para todos os perfis.` });
     if (!ok) return;
-    r.status = "publicada"; r.motivo = "";
-    r.hist.push({ t: new Date().toISOString(), acao: "aprovada", por: u.id });
-    DB.save(); toast("Corrida aprovada e publicada no feed."); go("/solicitacoes?ver=aprovar");
+    const { error } = await sb.from("races").update({ status: "publicada", motivo: "" }).eq("id", r.id);
+    if (error) { toast("Não deu para aprovar: " + error.message, true); return; }
+    await salvarEvento(r.id, "aprovada");
+    await carregarCorridas();
+    toast("Corrida aprovada e publicada no feed."); go("/solicitacoes?ver=aprovar");
   });
   $("#deny").addEventListener("click", async () => {
     const motivo = await confirmBox({
@@ -2487,9 +2559,11 @@ route(/^\/aprovar\/([\w-]+)$/, function vApprove(view, [id], q, u) {
       reason: { label: "Motivo da negativa", min: MIN_MOTIVO, placeholder: "Ex.: o link de inscrição não abre e o horário está diferente do site oficial." }
     });
     if (!motivo) return;
-    r.status = "negada"; r.motivo = motivo;
-    r.hist.push({ t: new Date().toISOString(), acao: "negada", por: u.id, obs: motivo });
-    DB.save(); toast("Corrida negada. O organizador vai ver o motivo."); go("/solicitacoes?ver=aprovar");
+    const { error } = await sb.from("races").update({ status: "negada", motivo }).eq("id", r.id);
+    if (error) { toast("Não deu para negar: " + error.message, true); return; }
+    await salvarEvento(r.id, "negada", motivo);
+    await carregarCorridas();
+    toast("Corrida negada. O organizador vai ver o motivo."); go("/solicitacoes?ver=aprovar");
   });
 }, { tab: "sol", roles: ["admin"] });
 /* ---------- konexões e Komunidades: base usada pelo perfil, busca e Komunidades ---------- */
@@ -3415,6 +3489,8 @@ if (window.visualViewport) {
      se a pessoa cai no login ou no feed.                                     */
   await carregarPerfil();
   await carregarPessoas();
+  await carregarCorridas();
+  purgeExcluded();
   render();
 
   /* Entrar, sair ou trocar de senha em outra aba recarrega o perfil aqui. O
@@ -3424,6 +3500,7 @@ if (window.visualViewport) {
     if (primeiro) { primeiro = false; return; }
     await carregarPerfil();
     await carregarPessoas();
+    await carregarCorridas();
     if (!$(".scrim")) render();
   });
 
