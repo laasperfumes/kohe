@@ -679,6 +679,25 @@ html.kb-open .chat{padding-bottom:84px}
    Safari do iPhone ignora. Então a garantia de verdade é esta — na horizontal
    o app sai da frente e fica o aviso. A altura máxima evita pegar computador
    e tablet, que são "paisagem" por natureza e continuam funcionando. */
+/* ---------- calendário das favoritas ---------- */
+.cal-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.cal-top .mes{font-size:19px;font-weight:750;text-transform:capitalize}
+.cal-cab,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-cab{margin-bottom:2px}
+.cal-cab span{text-align:center;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;color:var(--ink-3)}
+.cal-dia{aspect-ratio:1;border-radius:12px;border:1px solid var(--line);background:var(--surface);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:2px;color:var(--ink)}
+.cal-dia.vazio{border:0;background:none;pointer-events:none}
+.cal-dia .n{font-size:14.5px;font-weight:650;line-height:1;width:26px;height:26px;display:grid;place-items:center;border-radius:50%}
+.cal-dia.hoje .n{box-shadow:inset 0 0 0 1.5px var(--ink-3)}
+.cal-dia.cheio .n{background:var(--volt);color:var(--on-volt)}
+.cal-dia .barras{display:flex;gap:2px;height:3px}
+.cal-dia .barras i{width:7px;height:3px;border-radius:2px;background:var(--volt)}
+.cal-lista{display:flex;flex-direction:column}
+.cal-item{display:flex;flex-direction:column;gap:1px;padding:10px 0;border-top:1px solid var(--line);color:var(--ink);text-decoration:none}
+.cal-item:first-child{border-top:0}
+.cal-item b{font-size:14.5px}
+.cal-item span{font-size:12.5px;color:var(--ink-2)}
 #rotate{display:none}
 @media (orientation:landscape) and (max-height:520px){
   #app,#tabbar,#fab,#toastHost{display:none!important}
@@ -765,7 +784,8 @@ const EXCLUIDA_DIAS = 7;         // corridas excluídas ficam 7 dias com opção
 const RAIO_MAX = 300;            // fim da régua de raio (o campo aceita mais)
 const EXAMPLE_URL = "https://correriacampinas.com.br/calendario/";
 const MAIN_KMS = [5, 10, 21, 42];    // distâncias principais do filtro (o resto fica em "Outros")
-const SLIDES_GRATIS = 10;            // slides grátis por dia no Finder (Premium = ilimitado)
+const SLIDES_GRATIS = 5;             // favoritadas grátis por dia no Finder (Premium = ilimitado).
+                                     // Só deslizar para a DIREITA gasta: jogar na lixeira é livre.
 const CODIGO_TESTE = "123456";   // fase offline: não há e-mail de verdade
 const MAX_BUSCAS = 10;           // histórico de busca por conta
 
@@ -2618,7 +2638,7 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
   const MODES = ["aprovar", "minhas", "excluidas"];
   const mode = admin ? (MODES.includes(q.get("ver")) ? q.get("ver") : (nPend ? "aprovar" : "minhas")) : "minhas";
   const evT = (r, ...a) => (lastEvent(r, ...a) || (r.hist || [])[0] || { t: r.criado || "" }).t;
-  let body = "";
+  let body = "", montaAba = null;   // montaAba: troca de aba sem redesenhar a tela toda
 
   if (mode === "minhas") {
     const G = { pendente: [], publicada: [], finalizada: [], negada: [], excluida: [] };
@@ -2638,10 +2658,20 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
       negada: ["Nenhuma negada", "Se uma corrida for negada, você vê o motivo aqui e pode editar e reenviar."],
       excluida: ["Nenhuma excluída", ""]
     };
+    /* Monta uma aba por vez e guarda o resultado. Sua conta é autora de todas
+       as corridas, então redesenhar a tela inteira a cada clique significava
+       remontar mais de cem cartões — daí a travada.                         */
+    const cacheAbas = {};
+    montaAba = k => {
+      if (cacheAbas[k] == null) {
+        cacheAbas[k] = G[k].length ? G[k].map(r => myReqCard(r, admin)).join("")
+          : `<div class="empty"><h3>${EMPTY[k][0]}</h3><p>${EMPTY[k][1]}</p>${k === "pendente" ? `<a class="btn btn-sm btn-volt" href="#/nova">${ic("plus")} ${admin ? "Cadastrar corrida" : "Solicitar corrida"}</a>` : ""}</div>`;
+      }
+      return cacheAbas[k];
+    };
     body = `
       <div class="seg" role="tablist">${TABS.map(([k, l]) => `<button type="button" role="tab" data-aba="${k}"${k === aba ? ' class="on" aria-selected="true"' : ""}>${l}<span class="ct num">${G[k].length}</span></button>`).join("")}</div>
-      ${G[aba].length ? G[aba].map(r => myReqCard(r, admin)).join("")
-        : `<div class="empty"><h3>${EMPTY[aba][0]}</h3><p>${EMPTY[aba][1]}</p>${aba === "pendente" ? `<a class="btn btn-sm btn-volt" href="#/nova">${ic("plus")} ${admin ? "Cadastrar corrida" : "Solicitar corrida"}</a>` : ""}</div>`}`;
+      <div id="abaLista">${montaAba(aba)}</div>`;
   } else if (mode === "aprovar") {
     const races = DB.races.filter(r => r.status === "pendente").sort((a, b) => evT(a, "enviada", "reenviada").localeCompare(evT(b, "enviada", "reenviada")));
     const dels = DB.races.filter(delPending).sort((a, b) => a.pedidoExclusao.t.localeCompare(b.pedidoExclusao.t));
@@ -2695,8 +2725,25 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
     </section>`;
 
   $$("[data-mode]", view).forEach(b => b.addEventListener("click", () => redirect("/solicitacoes?ver=" + b.dataset.mode)));
-  $$("[data-aba]", view).forEach(b => b.addEventListener("click", () => redirect(`/solicitacoes?ver=minhas&aba=${b.dataset.aba}`)));
-  $$("[data-askdel]", view).forEach(b => b.addEventListener("click", () => { const r = DB.races.find(x => x.id === b.dataset.askdel); if (r) askDeletion(r, u); }));
+  /* Os cartões trazem botões próprios; HTML injetado depois não tem evento
+     ligado, então religamos a cada troca de aba.                            */
+  const ligarBotoesDaLista = () => {
+    $$("[data-askdel]", view).forEach(b => b.addEventListener("click", () => { const r = DB.races.find(x => x.id === b.dataset.askdel); if (r) askDeletion(r, u); }));
+  };
+  $$("[data-aba]", view).forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.aba, lista = $("#abaLista", view);
+    if (!montaAba || !lista) return redirect(`/solicitacoes?ver=minhas&aba=${k}`);
+    $$("[data-aba]", view).forEach(x => {
+      const on = x.dataset.aba === k;
+      x.classList.toggle("on", on);
+      x.setAttribute("aria-selected", on ? "true" : "false");
+    });
+    lista.innerHTML = montaAba(k);
+    ligarBotoesDaLista();
+    view.scrollTop = 0;
+    try { history.replaceState(null, "", `#/solicitacoes?ver=minhas&aba=${k}`); } catch (e) {}
+  }));
+  ligarBotoesDaLista();
   $$("[data-restore]", view).forEach(b => b.addEventListener("click", async () => {
     const r = DB.races.find(x => x.id === b.dataset.restore); if (!r) return;
     const ok = await confirmBox({ title: "Restaurar corrida?", ok: "Restaurar", text: `<b>${esc(r.nome)}</b> volta para ${r.exclusao && r.exclusao.antes === "pendente" ? "a fila de aprovação" : "o feed"}.` });
@@ -3066,11 +3113,75 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
 
 route(/^\/perfil\/favoritas$/, function vFavs(view, _, q, u) {
   const list = favRacesOf(u);
+  /* Agrupa por dia com o mesmo cabeçalho grande do feed: separa melhor o que
+     é de cada data.                                                         */
+  let corpo = "", ultimoDia = "";
+  list.forEach(r => {
+    if (r.data !== ultimoDia) {
+      ultimoDia = r.data;
+      const d = pDate(r.data), n = daysFrom(r.data);
+      corpo += `<div class="day"><span class="disp dnum num">${pad2(d.getDate())}</span><span class="dtxt"><span class="dname">${DOW_FULL[d.getDay()].replace("-feira", "")}</span><span class="eyebrow">${MON_FULL[d.getMonth()]} ${d.getFullYear()}</span></span><span class="eyebrow rel${n <= 3 && n >= 0 ? " soon" : ""}">${relDay(r.data)}</span></div>`;
+    }
+    corpo += raceCard(r, u, null, { from: "fav" });
+  });
   view.innerHTML = `${subHead("Favoritos", "#/perfil", "Perfil")}
     <section class="page">
-      ${list.length ? list.map(r => raceCard(r, u, null, { date: true, from: "fav" })).join("")
+      ${list.length ? `<a class="btn btn-sm btn-block" href="#/perfil/calendario">${ic("cal")} Meu calendário</a>` : ""}
+      ${list.length ? corpo
         : `<div class="empty"><h3>Nenhum favorito</h3><p>Toque no ${ic("heart")} de uma corrida para guardar aqui.</p><a class="btn btn-sm btn-volt" href="#/feed">Ver corridas</a></div>`}
     </section>`;
+}, { tab: "perfil" });
+
+/* Calendário das favoritas: o mês inteiro de domingo a sábado, com uma
+   barrinha por korrida curtida no dia. Acima de três, o número fica verde —
+   é o sinal de "dia cheio" sem precisar contar barrinha.                    */
+route(/^\/perfil\/calendario$/, function vCalendario(view, _, q, u) {
+  const porDia = {};
+  favRacesOf(u).forEach(r => { (porDia[r.data] = porDia[r.data] || []).push(r); });
+
+  const agora = new Date();
+  const pedido = /^\d{4}-\d{2}$/.test(q.get("m") || "") ? q.get("m") : `${agora.getFullYear()}-${pad2(agora.getMonth() + 1)}`;
+  const [ano, mes] = pedido.split("-").map(Number);
+  const mesRef = d => `${d.getFullYear()}-${pad2(d.getMonth() + 1)}`;
+  const antes = new Date(ano, mes - 2, 1), depois = new Date(ano, mes, 1);
+
+  const diasNoMes = new Date(ano, mes, 0).getDate();
+  const vazioAntes = new Date(ano, mes - 1, 1).getDay();   // 0 = domingo
+  const totalCelulas = Math.ceil((vazioAntes + diasNoMes) / 7) * 7;
+  const hojeISO = ymd(agora);
+
+  let celulas = "";
+  for (let i = 0; i < totalCelulas; i++) {
+    const dia = i - vazioAntes + 1;
+    if (dia < 1 || dia > diasNoMes) { celulas += `<span class="cal-dia vazio"></span>`; continue; }
+    const iso = `${ano}-${pad2(mes)}-${pad2(dia)}`;
+    const n = (porDia[iso] || []).length;
+    const rotulo = n === 0 ? "nenhuma korrida curtida" : n === 1 ? "1 korrida curtida" : `${n} korridas curtidas`;
+    celulas += `<button class="cal-dia${n > 3 ? " cheio" : ""}${iso === hojeISO ? " hoje" : ""}" type="button" data-dia="${iso}" aria-label="Dia ${dia}, ${rotulo}">`
+      + `<span class="n">${dia}</span><span class="barras">${"<i></i>".repeat(Math.min(n, 3))}</span></button>`;
+  }
+
+  view.innerHTML = `${subHead("Meu calendário", "#/perfil/favoritas", "Favoritos")}
+    <section class="page">
+      <div class="cal-top">
+        <button class="icon-btn" type="button" data-mes="${mesRef(antes)}" aria-label="Mês anterior">${ic("back")}</button>
+        <span class="mes">${MON_FULL[mes - 1]} ${ano}</span>
+        <button class="icon-btn" type="button" data-mes="${mesRef(depois)}" aria-label="Próximo mês">${ic("chev")}</button>
+      </div>
+      <div class="cal-cab" aria-hidden="true">${["dom", "seg", "ter", "qua", "qui", "sex", "sáb"].map(d => `<span>${d}</span>`).join("")}</div>
+      <div class="cal-grid">${celulas}</div>
+      <p class="eyebrow" style="text-align:center">Toque num dia para ver as korridas curtidas</p>
+    </section>`;
+
+  $$("[data-mes]", view).forEach(b => b.addEventListener("click", () => go("/perfil/calendario?m=" + b.dataset.mes)));
+  $$("[data-dia]", view).forEach(b => b.addEventListener("click", () => {
+    const iso = b.dataset.dia, rs = porDia[iso] || [], d = pDate(iso);
+    openSheet(`
+      <div class="sheet-head"><h2 class="disp">${d.getDate()} de ${MON_FULL[d.getMonth()]}</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+      ${rs.length
+        ? `<div class="cal-lista">${rs.map(r => `<a class="cal-item" href="#/corrida/${r.id}?de=fav"><b>${esc(r.nome)}</b><span>${esc(r.cidade)}${r.rua ? " · " + esc(r.rua) : ""}${r.hora ? " · " + esc(r.hora) : ""}</span></a>`).join("")}</div>`
+        : `<p class="muted">Nenhuma korrida curtida.</p>`}`);
+  }));
 }, { tab: "perfil" });
 
 route(/^\/perfil\/konexoes$/, function vKonexoes(view, _, q, u) {
@@ -3293,10 +3404,25 @@ function finderCardInner(r) {
       <span class="fcount">${ic("heart")}${favWord(favCount(r.id))}</span>
     </div>`;
 }
+/* O admin pode desligar o Finder enquanto alguém está deslizando. Antes, essa
+   pessoa continuava gastando crédito até recarregar a página. Agora cada
+   deslizada confere no servidor primeiro.                                    */
+async function finderAindaLigado() {
+  if (!sb) return true;
+  const { data, error } = await sb.from("app_config").select("finder").eq("id", true).maybeSingle();
+  if (error) return true;   // rede instável não deve travar quem está usando
+  const ligado = !!(data && data.finder);
+  if (!ligado) { DB.config.finder = false; DB.save(); }
+  return ligado;
+}
+function avisarFinderDesligado() {
+  toast("O Finder foi desativado pela administração. Recarregando…", true);
+  setTimeout(() => location.reload(), 1400);
+}
 function slidesOverPopup() {
   confirmBox({
-    title: "Slides grátis acabaram", ok: "Conhecer o Premium", cancel: "Agora não",
-    text: `Você usou os ${SLIDES_GRATIS} slides grátis de hoje. Eles voltam amanhã, ou dá para deslizar sem limite com o <b>Kohe Premium</b>.`
+    title: "Favoritadas de hoje acabaram", ok: "Conhecer o Premium", cancel: "Agora não",
+    text: `Você usou as ${SLIDES_GRATIS} favoritadas grátis de hoje. Elas voltam amanhã, ou dá para favoritar sem limite com o <b>Kohe Premium</b>. Jogar na lixeira continua livre.`
   }).then(ok => { if (ok) go("/premium?de=finder"); });
 }
 function favToast(r) {
@@ -3320,7 +3446,7 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
       <div class="finder-top">
         ${premium
           ? `<span class="role premium">${ic("bolt")}Premium · slides ilimitados</span>`
-          : `<div class="slidebar" role="progressbar" aria-label="Slides grátis de hoje" aria-valuemin="0" aria-valuemax="${SLIDES_GRATIS}" aria-valuenow="${left}"><i style="width:${(left / SLIDES_GRATIS) * 100}%"></i></div><span class="eyebrow num">${left}/${SLIDES_GRATIS}</span>`}
+          : `<div class="slidebar" role="progressbar" aria-label="Favoritadas grátis de hoje" aria-valuemin="0" aria-valuemax="${SLIDES_GRATIS}" aria-valuenow="${left}"><i style="width:${(left / SLIDES_GRATIS) * 100}%"></i></div><span class="eyebrow num">${left}/${SLIDES_GRATIS}</span>`}
       </div>
       ${r ? `
         <div class="deck">
@@ -3353,13 +3479,17 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
       back.style.opacity = (0.6 + 0.4 * k).toFixed(2);
     }
   };
-  const decide = dir => {
+  const decide = async dir => {
     if (busy) return;
     card.classList.remove("hinting");
-    if (!premium && finderState(u).usados >= SLIDES_GRATIS) { setT(0, 0, true); slidesOverPopup(); return; }
+    /* Confere ANTES de gastar crédito ou favoritar: se o Finder foi desligado
+       agora, nada acontece e a página recarrega.                            */
+    if (!(await finderAindaLigado())) { setT(0, 0, true); avisarFinderDesligado(); return; }
+    /* Só a direita (favoritar) gasta. Lixeira é livre e sem limite. */
+    if (dir > 0 && !premium && finderState(u).usados >= SLIDES_GRATIS) { setT(0, 0, true); slidesOverPopup(); return; }
     busy = true;
     const s = finderState(u);
-    if (!premium) s.usados++;
+    if (dir > 0 && !premium) s.usados++;
     s.vistas = [...new Set([...s.vistas, r.id])];
     salvarFinder(u);
     if (dir > 0 && !isFav(u, r.id)) {
