@@ -713,16 +713,71 @@ a.setting:hover{color:var(--ink)}
 .ajuda{display:flex;flex-direction:column;gap:14px;margin:0}
 .ajuda dt{font-weight:750;font-size:15px}
 .ajuda dd{margin:3px 0 0;font-size:14px;color:var(--ink-2)}
+/* "Kohendo com @X" virou botão: mesma aparência do selo, agora clicável */
+button.state-ok{width:100%;background:none;font:inherit;font-weight:800;cursor:pointer}
+/* barra de tempo da dica de instalação: a mesma barra neon do Finder */
+.tip-barra{flex:none;margin-top:-8px}
+.tip-barra i{transition:none}
+/* ---------- Treino (etapa C) ---------- */
+.busca-treino{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:0 16px;border-radius:99px;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink-2);font-weight:600;text-align:left}
+.busca-treino .i{width:20px;height:20px;flex:none}
+.busca-treino span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.seg .ct.alerta{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--danger);color:#fff;opacity:1;display:grid;place-items:center;font-weight:700}
+.papel{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:6px;white-space:nowrap}
+.papel .i{width:12px;height:12px;stroke-width:2.4}
+.papel.org{background:var(--volt);color:var(--on-volt)}
+.papel.par{box-shadow:inset 0 0 0 1.5px var(--line-2);color:var(--ink)}
+.tc .rc-foot{flex-wrap:wrap;justify-content:flex-start;gap:6px}
+.tc .conf{display:inline-flex;align-items:center;gap:5px;margin-right:auto;font-size:12.5px;color:var(--ink-2)}
+.tc .conf .i{width:14px;height:14px}
+.treino-head{display:grid;grid-template-columns:80px minmax(0,1fr);gap:14px;align-items:end}
+.treino-head .thumb{width:80px;height:100px;border-radius:12px;overflow:hidden;position:relative}
+.treino-head h1{font-size:40px;line-height:.9;overflow-wrap:anywhere}
+.dl dd .i{width:15px;height:15px;vertical-align:-2px}
+.dl dd .mapa{display:flex;align-items:center;gap:5px;width:max-content;margin-top:6px;font-size:13.5px;font-weight:700}
+.state-ok.espera{border-color:var(--line-2);color:var(--ink-2)}
+.req .prose,.corredor .prose{font-size:14.5px}
+.carregando{text-align:center;padding:24px 0}
+.gps-linha{display:flex;align-items:center;flex-wrap:wrap;gap:6px 12px;margin-top:-6px}
+.gps-linha .btn{margin-bottom:0}
+.gps-linha .hint{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2)}
+.gps-linha .hint .i{width:15px;height:15px;color:var(--ok)}
+.gps-linha .linkbtn{min-height:32px;font-size:12.5px}
+.corredor{gap:10px}
+.corredor .group-head h2{font-size:22px}
+.corredor .group-head .linkbtn{gap:6px;font-size:13px;min-height:36px}
+.corredor .group-head .linkbtn .i{width:16px;height:16px}
+/* ---------- edição de corrida publicada ---------- */
+.edicao-rodape{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:18px;border-top:1px solid var(--line)}
+.edicao-rodape .reason,.edicao-rodape .btn-row{align-self:stretch}
+.mudancas{gap:12px}
+.mudanca{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px 10px;padding-top:12px;border-top:1px solid var(--line)}
+.mudancas>.eyebrow+.mudanca{border-top:0;padding-top:0}
+.mudanca>b{grid-column:1/-1;font-size:14px}
+.mudanca .lado{display:flex;flex-direction:column;gap:4px;min-width:0;padding:9px 10px;border-radius:12px;font-size:13.5px;overflow-wrap:anywhere}
+.mudanca .antes{background:var(--danger-bg)}
+.mudanca .antes>div{color:var(--ink-2);text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--danger) 55%,transparent)}
+.mudanca .depois{background:var(--ok-bg)}
+.mudanca .prose{font-size:13.5px}
+.mini-arte{width:56px;height:70px;object-fit:cover;border-radius:8px;display:block}
 #rotate{display:none}
 @media (orientation:landscape) and (max-height:520px){
   #app,#tabbar,#fab,#toastHost{display:none!important}
   #rotate{position:fixed;inset:0;z-index:9999;background:var(--ground);color:var(--ink);
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:12px;padding:24px;text-align:center}
-  #rotate svg{color:var(--volt);transform:rotate(90deg)}
-  #rotate b{font-size:21px;font-weight:750}
-  #rotate span{font-size:14px;color:var(--ink-2);max-width:34ch}
+    gap:16px;padding:12px 16px 22px;text-align:center}
+  #rotate .giro-svg{height:min(72vh,290px);width:auto;aspect-ratio:1;overflow:visible}
+  #rotate .giro{transform-box:view-box;transform-origin:50% 50%;animation:girar 9s linear infinite}
+  #rotate .seta{fill:none;stroke:var(--volt);stroke-width:30}
+  #rotate .ponta{fill:var(--volt)}
+  #rotate .guia{fill:none;stroke:none}
+  #rotate text{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;fill:var(--on-volt)}
+  #rotate .cel{fill:none;stroke:var(--ink);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+  /* em destaque, com a faixa neon do logo por baixo */
+  #rotate b{position:relative;z-index:0;padding:0 6px;font-family:var(--display);font-stretch:68%;font-style:italic;font-weight:850;text-transform:uppercase;font-size:34px;line-height:.9}
+  #rotate b::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:9px;background:var(--volt);transform:skewX(-18deg);z-index:-1}
 }
+@keyframes girar{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -733,9 +788,24 @@ a.setting:hover{color:var(--ink)}
 <button id="fab" class="fab" type="button" aria-label="Nova corrida" hidden></button>
 <div id="toastHost" aria-live="polite"></div>
 <div id="rotate">
-  <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+  <!-- Duas setas grossas girando em sentido horário em volta do celular deitado.
+       Cada frase corre por dentro de uma seta (texto em curva), então as duas
+       giram juntas. O celular fica parado no centro. -->
+  <svg class="giro-svg" viewBox="0 0 300 300" role="img" aria-label="O Kohe foi feito para usar em pé. O pé foi feito para Koher.">
+    <g class="giro">
+      <path class="seta" d="M36.02 119.46A118 118 0 0 1 256.94 100.13"/>
+      <path class="ponta" d="M234.65 106.87L275.63 85.99L266.85 133.58Z"/>
+      <path id="giroA" class="guia" d="M40.37 120.62A113.5 113.5 0 0 1 252.87 102.03"/>
+      <text text-anchor="middle"><textPath href="#giroA" xlink:href="#giroA" startOffset="50%">O Kohe foi feito para usar em pé</textPath></text>
+      <path class="seta" d="M263.98 180.54A118 118 0 0 1 43.06 199.87"/>
+      <path class="ponta" d="M65.35 193.13L24.37 214.01L33.15 166.42Z"/>
+      <path id="giroB" class="guia" d="M259.63 179.38A113.5 113.5 0 0 1 47.13 197.97"/>
+      <text text-anchor="middle"><textPath href="#giroB" xlink:href="#giroB" startOffset="50%">O pé foi feito para Koher</textPath></text>
+    </g>
+    <rect class="cel" x="102" y="123" width="96" height="54" rx="11"/>
+    <path class="cel" d="M113 145.5v9"/>
+  </svg>
   <b>Gire o aparelho</b>
-  <span>O Kohe foi feito para usar em pé. Volte para a vertical para continuar.</span>
 </div>
 <!-- versão fixa de propósito: com "@2" a biblioteca poderia mudar sozinha sob o app -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
@@ -834,7 +904,8 @@ const ICONS = {
   link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/>',
   history: '<path d="M3.5 12a8.5 8.5 0 1 0 2.5-6M3 4v4h4M12 8v4.5l3 2"/>',
   down: '<path d="M6 9l6 6 6-6"/>',
-  chat: '<path d="M20 12a8 8 0 0 1-11.3 7.3L4 20.5l1.3-4.3A8 8 0 1 1 20 12z"/>'
+  chat: '<path d="M20 12a8 8 0 0 1-11.3 7.3L4 20.5l1.3-4.3A8 8 0 1 1 20 12z"/>',
+  run: '<circle cx="15.5" cy="4.5" r="2"/><path d="M13.8 8.2l-3 5.4 3.5 2-1.1 4.9M10.8 13.6l-2.6 2.8H4.8M13.3 9.3 9.5 9.7l-1.9 2.6M13.3 9.3l2.1 2.9h3.2"/>'
 };
 const ic = (n, cls = "") => `<svg class="i ${cls}" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ""}</svg>`;
 
@@ -990,6 +1061,8 @@ async function carregarPerfil() {
     nome: p.nome, nick: p.nick, email: session.user.email,
     role: p.role, privado: p.privado, komunidade: p.komunidade_id || null, premium: !!p.premium,
     foto: p.foto_url || null,
+    bio: p.bio || "", nivel: p.nivel || null, conversa: typeof p.conversa === "boolean" ? p.conversa : null,
+    hobbies: Array.isArray(p.hobbies) ? p.hobbies : [], corredorEm: p.perfil_corredor_em || null,
     tel: pv ? (pv.tel || "") : "", nasc: pv ? (pv.nasc || "") : "",
     end: pv ? { rua: pv.end_rua || "", num: pv.end_num || "", bairro: pv.end_bairro || "", cidade: pv.end_cidade || "" } : {}
   });
@@ -1007,7 +1080,7 @@ async function carregarPerfil() {
 
 const Session = {
   get: () => (CURRENT ? CURRENT.id : null),
-  clear: async () => { pararDeOuvir(); CURRENT = null; if (sb) await sb.auth.signOut(); }
+  clear: async () => { pararDeOuvir(); limparTreinos(); EDICOES = []; CURRENT = null; if (sb) await sb.auth.signOut(); }
 };
 const me = () => CURRENT;
 
@@ -1017,8 +1090,11 @@ const me = () => CURRENT;
    já a partir do KM 3.                                                        */
 async function carregarPessoas() {
   if (!sb || !CURRENT) return;
-  const { data, error } = await sb.from("profiles")
-    .select("id, nome, nick, privado, role, komunidade_id, premium, foto_url, criado_em");
+  const COLUNAS = "id, nome, nick, privado, role, komunidade_id, premium, foto_url, criado_em";
+  /* O perfil de korredor chegou na etapa C. Se o banco ainda não recebeu o SQL
+     dela, busca sem essas colunas em vez de deixar a busca de pessoas vazia. */
+  let { data, error } = await sb.from("profiles").select(COLUNAS + ", bio, nivel, conversa, hobbies");
+  if (error) ({ data, error } = await sb.from("profiles").select(COLUNAS));
   if (error || !data) return;
   data.forEach(p => {
     let local = DB.users.find(x => x.id === p.id);
@@ -1026,7 +1102,9 @@ async function carregarPessoas() {
     Object.assign(local, {
       nome: p.nome, nick: p.nick, privado: p.privado,
       role: p.role, komunidade: p.komunidade_id || null, premium: !!p.premium,
-      foto: p.foto_url || null, criado: p.criado_em
+      foto: p.foto_url || null, criado: p.criado_em,
+      bio: p.bio || "", nivel: p.nivel || null, conversa: typeof p.conversa === "boolean" ? p.conversa : null,
+      hobbies: Array.isArray(p.hobbies) ? p.hobbies : []
     });
   });
   const vivos = new Set(data.map(p => p.id));
@@ -1112,11 +1190,12 @@ async function carregarKonexoes() {
 
 async function carregarNotificacoes() {
   if (!sb || !CURRENT) return;
-  const { data, error } = await sb.from("notifications")
-    .select("id, para, tipo, de, criado_em, lida")
+  const pedir = colunas => sb.from("notifications").select(colunas)
     .order("criado_em", { ascending: false }).limit(50);
+  let { data, error } = await pedir("id, para, tipo, de, criado_em, lida, treino_id, resumo");
+  if (error) ({ data, error } = await pedir("id, para, tipo, de, criado_em, lida"));   // banco ainda sem a etapa C
   if (error || !data) return;
-  DB.notifs = data.map(n => ({ id: n.id, para: n.para, tipo: n.tipo, de: n.de, t: n.criado_em, lida: n.lida }));
+  DB.notifs = data.map(n => ({ id: n.id, para: n.para, tipo: n.tipo, de: n.de, t: n.criado_em, lida: n.lida, treino: n.treino_id || null, resumo: n.resumo || "" }));
   DB.save();
 }
 
@@ -1212,6 +1291,18 @@ async function carregarPedidos() {
   DB.save();
 }
 
+/* Edições de corrida publicada (a fila de aprovação e o histórico delas). A
+   regra do banco entrega as minhas, as feitas nas minhas corridas, ou todas
+   para o admin — a mesma consulta serve as três telas.                       */
+let EDICOES = [];
+async function carregarEdicoes() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("race_edits")
+    .select("id, race_id, autor_id, dados, status, motivo, criado_em, decidido_em, decidido_por").order("criado_em");
+  if (error) return;   // banco ainda sem o SQL 15: fica sem fila, e enviar avisa
+  EDICOES = data || [];
+}
+
 async function carregarChatsLimpos() {
   if (!sb || !CURRENT) return;
   const { data, error } = await sb.from("chat_limpo").select("outro_id, limpo_em");
@@ -1238,6 +1329,24 @@ async function carregarMensagens() {
   DB.msgs = data.map(m => ({ id: m.id, de: m.de, para: m.para, texto: m.texto, t: m.criado_em, lida: m.lida }));
   DB.save();
 }
+
+/* ---------- Treinos (etapa C) ----------
+   Diferente das corridas, treino não mora num cache com tudo: busca e detalhe
+   perguntam ao servidor na hora, porque é lá que se decide o que cada pessoa
+   pode ver. Aqui ficam só os MEUS treinos (badge da aba e lista) e com quem eu
+   vou treinar junto (é o que libera o chat sem Konexão).                     */
+let MEUS_TREINOS = [];
+const PARCEIROS = new Set();
+async function carregarTreinos() {
+  if (!sb || !CURRENT) return;
+  const [meus, parceiros] = await Promise.all([sb.rpc("meus_treinos"), sb.rpc("parceiros_de_treino")]);
+  if (!meus.error) MEUS_TREINOS = meus.data || [];
+  if (!parceiros.error) {
+    PARCEIROS.clear();
+    (parceiros.data || []).forEach(x => PARCEIROS.add(x && typeof x === "object" ? Object.values(x)[0] : x));
+  }
+}
+function limparTreinos() { MEUS_TREINOS = []; PARCEIROS.clear(); }
 
 /* ---------- tempo real (KM 7) ----------
    Uma assinatura só, ligada no login, ouvindo as mensagens endereçadas a você.
@@ -1602,7 +1711,8 @@ function purgeExcluded() {
   }
 }
 function pendingCount() {
-  return DB.races.filter(r => r.status === "pendente").length + DB.races.filter(delPending).length + DB.ups.filter(x => x.status === "pendente").length;
+  return DB.races.filter(r => r.status === "pendente").length + DB.races.filter(delPending).length + DB.ups.filter(x => x.status === "pendente").length
+    + EDICOES.filter(e => e.status === "pendente").length;
 }
 
 /* ---------- navegação ---------- */
@@ -1622,7 +1732,7 @@ function renderChrome(rt, u) {
   if (!u || rt.bare) { bar.hidden = true; fab.hidden = true; return; }
   /* O Finder saiu do menu: agora é um botão no topo do Início, junto das
      outras formas de descobrir corrida. O lugar dele no menu vai para Treino. */
-  const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0]];
+  const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0], ["treino", "#/treino", "run", "Treino", pedidosRecebidos()]];
   if (canCreate(u)) tabs.push(["sol", "#/solicitacoes", "list", "Solicitações", isAdmin(u) ? pendingCount() : 0]);
   tabs.push(["perfil", "#/perfil", "user", "Perfil", unreadCount(u)]);
   bar.innerHTML = tabs.map(([k, href, icn, label, badge]) =>
@@ -2273,6 +2383,97 @@ function notFoundHTML(title, text, href, label) {
   return `<section class="done"><h1 class="disp">${title}</h1><p>${text}</p><a class="btn btn-volt btn-block" href="${href}">${label}</a></section>`;
 }
 
+/* ---------- edição de corrida publicada ----------
+   Organizador edita as corridas que publicou; admin edita qualquer uma. A
+   edição nunca vai direto ao ar: vira pedido (race_edits) e a versão atual
+   segue no feed até a aprovação. Edição do admin também passa pela fila e é
+   aprovada numa segunda etapa, conferindo o antes e depois.                 */
+const EDITAVEIS = { nome: "nome", cidade: "cidade", data: "data", hora: "hora", mods: "mods", rua: "rua", cupom: "cupom", descricao: "desc", preco: "preco", insc: "insc", arte_url: "arte" };
+const ROTULO_CAMPO = { nome: "Nome", data: "Data", hora: "Horário", cidade: "Cidade", rua: "Rua de largada", mods: "Modalidades", preco: "Preço do kit básico", insc: "Inscrição", descricao: "Descrição", cupom: "Cupom", arte_url: "Arte" };
+const normCampo = (k, v) => k === "insc" ? JSON.stringify({ tipo: (v && v.tipo) || "site", url: (v && v.url) || "", app: (v && v.app) || "" })
+  : k === "mods" ? JSON.stringify(v || [])
+  : k === "preco" ? (v === null || v === undefined || v === "" ? "" : String(Number(v)))
+  : String(v ?? "");
+/* as duas no formato do app; devolve só o que mudou, no formato do banco */
+function mudancasCorrida(orig, nova) {
+  const a = paraLinha(orig), b = paraLinha(nova), dados = {};
+  Object.keys(EDITAVEIS).forEach(k => { if (normCampo(k, a[k]) !== normCampo(k, b[k])) dados[k] = b[k]; });
+  return dados;
+}
+function aplicarEdicao(r, dados) {
+  const nova = Object.assign({}, r);
+  Object.entries(dados || {}).forEach(([k, v]) => {
+    if (!EDITAVEIS[k]) return;
+    nova[EDITAVEIS[k]] = k === "hora" ? (v ? String(v).slice(0, 5) : null) : k === "preco" ? (v === null || v === "" ? null : Number(v)) : v;
+  });
+  return nova;
+}
+const podeEditarCorrida = (r, u) => !!r && raceState(r) === "publicada" && (isAdmin(u) || (r.autor === u.id && canCreate(u)));
+const edicaoPendente = id => EDICOES.find(e => e.race_id === id && e.status === "pendente") || null;
+const erroEdicao = error => {
+  const m = (error && error.message) || "";
+  return /schema cache|does not exist/i.test(m) ? "A edição de corridas ainda não foi ativada no servidor." : m || "Não deu para concluir agora. Tente de novo.";
+};
+function valorCampoHTML(k, r) {
+  const i = r.insc || {};
+  switch (k) {
+    case "nome": case "cidade": return esc(r[k]);
+    case "data": return esc(fmtLong(r.data));
+    case "hora": return r.hora || "A confirmar";
+    case "rua": case "cupom": return r[k] ? esc(r[k]) : "—";
+    case "descricao": return r.desc ? `<span class="prose">${esc(r.desc)}</span>` : "—";
+    case "mods": return (r.mods || []).length ? r.mods.map(esc).join(" · ") : "—";
+    case "preco": return hasPrice(r) ? brl(r.preco) : "A confirmar";
+    case "insc": return i.tipo === "app" ? `App ${esc(i.app || "?")}${i.url ? " · " + esc(i.url) : ""}` : i.url ? esc(i.url) : "Link a confirmar";
+    case "arte_url": return r.arte ? `<img class="mini-arte" src="${esc(r.arte)}" alt="Arte">` : "Capa automática";
+  }
+  return "";
+}
+function mudancasHTML(antes, dados) {
+  const depois = aplicarEdicao(antes, dados), campos = Object.keys(EDITAVEIS).filter(k => k in (dados || {}));
+  if (!campos.length) return "";
+  return `<div class="group mudancas"><span class="eyebrow">O que muda</span>${campos.map(k => `
+    <div class="mudanca"><b>${ROTULO_CAMPO[k]}</b>
+      <div class="lado antes"><span class="eyebrow">Antes</span><div>${valorCampoHTML(k, antes)}</div></div>
+      <div class="lado depois"><span class="eyebrow">Depois</span><div>${valorCampoHTML(k, depois)}</div></div>
+    </div>`).join("")}</div>`;
+}
+/* rodapé da página da corrida: o lápis, ou a edição que já está na fila */
+function edicaoRodapeHTML(r, u) {
+  const pend = edicaoPendente(r.id);
+  if (pend) {
+    const minha = pend.autor_id === u.id, autor = userById(pend.autor_id);
+    if (!(minha || isAdmin(u) || r.autor === u.id)) return "";
+    return `<div class="edicao-rodape">
+      <div class="reason warn"><b>Edição aguardando aprovação</b>${minha ? "Você enviou" : `@${esc(autor ? autor.nick : "?")} enviou`} em ${fmtStamp(pend.criado_em)}. A versão atual continua no feed até lá.</div>
+      <div class="btn-row">${isAdmin(u) ? `<a class="btn btn-sm btn-volt" href="#/aprovar-edicao/${pend.id}">Conferir edição ${ic("arrow")}</a>` : ""}${minha ? `<button class="btn btn-sm" type="button" id="edCancelar">Cancelar edição</button>` : ""}</div>
+    </div>`;
+  }
+  if (!podeEditarCorrida(r, u)) return "";
+  const minhas = EDICOES.filter(e => e.race_id === r.id && e.autor_id === u.id && e.status !== "pendente");
+  const ultima = minhas[minhas.length - 1];
+  const negada = ultima && ultima.status === "negada" && ultima.motivo && Date.now() - new Date(ultima.decidido_em).getTime() < 14 * 864e5 ? ultima : null;
+  return `<div class="edicao-rodape">
+    ${negada ? `<div class="reason"><b>Sua última edição foi negada</b>${esc(negada.motivo)}</div>` : ""}
+    <a class="icon-btn" href="#/nova?editar=${r.id}" aria-label="Editar corrida">${ic("edit")}</a>
+    <span class="eyebrow">Editar · passa por aprovação</span>
+  </div>`;
+}
+function ligarEdicaoRodape(view, r) {
+  const b = $("#edCancelar", view); if (!b) return;
+  b.addEventListener("click", async () => {
+    const pend = edicaoPendente(r.id); if (!pend) return;
+    const ok = await confirmBox({ title: "Cancelar edição?", ok: "Cancelar edição", cancel: "Voltar", text: `A edição sai da fila e <b>${esc(r.nome)}</b> segue como está.` });
+    if (!ok) return;
+    b.disabled = true;
+    const { error } = await sb.rpc("cancelar_edicao", { p_edicao: pend.id });
+    if (error) { b.disabled = false; toast(erroEdicao(error), true); return; }
+    const arteNova = pend.dados && pend.dados.arte_url;
+    if (arteNova && arteNova !== r.arte) apagarImagem(arteNova);   // arte que subiu só para esta edição
+    await carregarEdicoes(); render(); toast("Edição cancelada.");
+  });
+}
+
 route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
   const r = DB.races.find(x => x.id === id);
   const st = r && raceState(r);
@@ -2290,7 +2491,8 @@ route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
     <div class="cover top">${bibHTML(r, true)}
       <div class="cover-bar"><a class="glassbtn" href="${esc(back)}" aria-label="Voltar">${ic("back")}</a>${st !== "publicada" ? stPill(st) : ""}</div>
     </div>
-    <article class="detail">${raceBodyHTML(r, u)}</article>`;
+    <article class="detail">${raceBodyHTML(r, u)}${edicaoRodapeHTML(r, u)}</article>`;
+  ligarEdicaoRodape(view, r);
 }, { tab: "feed" });
 
 /* =====================================================================
@@ -2320,11 +2522,19 @@ function fieldsFromDraft(d) {
 
 route(/^\/nova$/, function vRaceForm(view, _, q, u) {
   const editId = q.get("editar"), admin = isAdmin(u);
-  let d = SS.get("kohe.draft"), orig = null;
+  let d = SS.get("kohe.draft"), orig = null, publicada = false;
   if (editId) {
-    orig = DB.races.find(x => x.id === editId && x.autor === u.id && x.status === "negada");
-    if (!orig || orig.envios >= MAX_ENVIOS) return redirect("/solicitacoes");
-    if (!d || d.id !== editId) d = draftFromRace(orig);
+    const alvo = DB.races.find(x => x.id === editId);
+    if (podeEditarCorrida(alvo, u)) {
+      /* corrida no ar: a edição vira pedido e só entra no feed depois de aprovada */
+      if (edicaoPendente(alvo.id)) { toast("Esta corrida já tem uma edição aguardando aprovação.", true); return redirect("/corrida/" + alvo.id); }
+      orig = alvo; publicada = true;
+      if (!d || d.id !== editId || !d.edicao) d = Object.assign(draftFromRace(orig), { edicao: true, arteOriginal: orig.arte || null });
+    } else {
+      orig = DB.races.find(x => x.id === editId && x.autor === u.id && x.status === "negada");
+      if (!orig || orig.envios >= MAX_ENVIOS) return redirect("/solicitacoes");
+      if (!d || d.id !== editId || d.edicao) d = draftFromRace(orig);
+    }
   } else if (!d || d.id) d = { tmpId: uid("r"), mods: [], inscTipo: "site" };
   const saveDraft = () => SS.set("kohe.draft", d);
   const collect = () => {
@@ -2336,8 +2546,8 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
 
   view.innerHTML = `
     <header class="topbar"><div class="topbar-in">
-      <a class="icon-btn" href="#/${editId ? "solicitacoes" : "feed"}" aria-label="Cancelar">${ic("x")}</a>
-      <div class="t"><span class="eyebrow">${admin ? "Publicação direta" : editId ? `Reenvio · ${left} restante${left === 1 ? "" : "s"}` : "Solicitação de corrida"}</span><h1 class="disp" style="font-size:30px">${editId ? "Editar corrida" : "Nova corrida"}</h1></div>
+      <a class="icon-btn" href="#/${publicada ? "corrida/" + editId : editId ? "solicitacoes" : "feed"}" aria-label="Cancelar">${ic("x")}</a>
+      <div class="t"><span class="eyebrow">${publicada ? "Edição · passa por aprovação" : admin ? "Publicação direta" : editId ? `Reenvio · ${left} restante${left === 1 ? "" : "s"}` : "Solicitação de corrida"}</span><h1 class="disp" style="font-size:30px">${editId ? "Editar corrida" : "Nova corrida"}</h1></div>
       <span class="eyebrow num">1/2</span>
     </div></header>
     <section class="page">
@@ -2418,33 +2628,43 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
          guarda só um endereço curto, e não a imagem inteira em texto */
       const url = await subirImagem("race-art", comprimida, "arte");
       if (!url) return;
-      apagarImagem(d.arte);   // trocou a arte: a anterior não fica ocupando espaço
+      /* trocou a arte: a anterior não fica ocupando espaço — menos a da corrida
+         no ar, que só sai quando a edição for aprovada */
+      if (d.arte !== d.arteOriginal) apagarImagem(d.arte);
       d.arte = url; rerender(); toast("Arte adicionada.");
     } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
   });
-  const rm = $("#arteRm"); if (rm) rm.addEventListener("click", () => { apagarImagem(d.arte); d.arte = null; rerender(); });
+  const rm = $("#arteRm"); if (rm) rm.addEventListener("click", () => { if (d.arte !== d.arteOriginal) apagarImagem(d.arte); d.arte = null; rerender(); });
 
   $("#rf").addEventListener("submit", e => {
     e.preventDefault(); collect();
+    /* Editando corrida no ar: o que já estava em branco na versão publicada pode
+       continuar em branco — as corridas do calendário entraram sem preço, rua ou
+       horário, e corrigir um nome não pode obrigar a inventar isso. O que estava
+       preenchido continua obrigatório.                                        */
+    const oi = (orig && orig.insc) || {};
+    const livre = v => publicada && !String(v ?? "").trim();
     if (!d.nome || d.nome.length < 3) bad("rf_nome");
     const now = new Date();
     if (!d.data) bad("rf_data");
     else if (d.data < ymd(now)) bad("rf_data", "Essa data já passou.");
-    if (!d.hora) bad("rf_hora");
+    if (!d.hora) { if (!livre(orig && orig.hora)) bad("rf_hora"); }
     else if (d.data === ymd(now) && d.hora <= `${pad2(now.getHours())}:${pad2(now.getMinutes())}`) bad("rf_hora", "Esse horário já passou.");
     if (!d.cidade) bad("rf_cidade");
-    if (!d.rua) bad("rf_rua");
-    if (!d.mods.length) bad("rf_mods");
+    if (!d.rua && !livre(orig && orig.rua)) bad("rf_rua");
+    if (!d.mods.length && !(publicada && !orig.mods.length)) bad("rf_mods");
     const p = parseBRL(d.preco);
-    if (!d.preco) bad("rf_preco"); else if (p == null || p < 0) bad("rf_preco", "Use só números. Ex.: 5 ou 89,90");
+    if (!d.preco) { if (!(publicada && !hasPrice(orig))) bad("rf_preco"); }
+    else if (p == null || p < 0) bad("rf_preco", "Use só números. Ex.: 5 ou 89,90");
     if (d.inscTipo === "app") {
-      if (!d.app) bad("rf_app");
+      if (!d.app && !livre(oi.app)) bad("rf_app");
       if (d.url) { d.url = fixUrl(d.url); if (!urlOk(d.url)) bad("rf_url"); }
     } else {
-      if (!d.url) bad("rf_url");
+      if (!d.url) { if (!livre(oi.url)) bad("rf_url"); }
       else { d.url = fixUrl(d.url); if (!urlOk(d.url)) bad("rf_url", "Esse link não parece válido. Ex.: https://site.com/inscricao"); }
     }
-    if (!d.desc) bad("rf_desc"); else if (d.desc.length < 10) bad("rf_desc", "Escreva pelo menos 10 caracteres.");
+    if (!d.desc) { if (!livre(orig && orig.desc)) bad("rf_desc"); }
+    else if (d.desc.length < 10) bad("rf_desc", "Escreva pelo menos 10 caracteres.");
     if (goFirstBad(view)) return;
     saveDraft();
     go("/revisao");
@@ -2455,25 +2675,43 @@ route(/^\/revisao$/, function vReview(view, _, q, u) {
   const d = SS.get("kohe.draft");
   if (!d || !d.nome) return redirect("/nova");
   const admin = isAdmin(u), editHref = "#/nova" + (d.id ? "?editar=" + d.id : "");
-  const r = Object.assign({ id: d.tmpId, autor: u.id, status: admin ? "publicada" : "pendente" }, fieldsFromDraft(d));
+  /* edição de corrida no ar: a prévia parte da versão publicada e só o que
+     mudou vai para a fila */
+  const orig = d.edicao ? DB.races.find(x => x.id === d.id) : null;
+  if (d.edicao && !podeEditarCorrida(orig, u)) { SS.del("kohe.draft"); return redirect(orig ? "/corrida/" + orig.id : "/feed"); }
+  const r = d.edicao
+    ? Object.assign({}, orig, fieldsFromDraft(d))
+    : Object.assign({ id: d.tmpId, autor: u.id, status: admin ? "publicada" : "pendente" }, fieldsFromDraft(d));
+  const dados = d.edicao ? mudancasCorrida(orig, r) : null, semMudanca = d.edicao && !Object.keys(dados).length;
   view.innerHTML = `
     <header class="topbar"><div class="topbar-in">
       <a class="icon-btn" href="${editHref}" aria-label="Voltar e editar">${ic("back")}</a>
-      <div class="t"><span class="eyebrow">Conferência</span><h1 class="disp" style="font-size:30px">Confira os dados</h1></div>
+      <div class="t"><span class="eyebrow">${d.edicao ? "Edição · passa por aprovação" : "Conferência"}</span><h1 class="disp" style="font-size:30px">Confira os dados</h1></div>
       <span class="eyebrow num">2/2</span>
     </div></header>
     <section class="page" style="gap:18px">
-      <div class="review-banner">${ic("alert")}<p>É assim que a corrida vai aparecer no feed${admin ? "" : " depois de aprovada"}. Viu algo errado? Volte e edite antes de ${admin ? "publicar" : "enviar"}.</p></div>
+      <div class="review-banner">${ic("alert")}<p>${d.edicao
+        ? "É assim que a corrida vai ficar depois de aprovada. Até lá, a versão atual continua no feed."
+        : `É assim que a corrida vai aparecer no feed${admin ? "" : " depois de aprovada"}. Viu algo errado? Volte e edite antes de ${admin ? "publicar" : "enviar"}.`}</p></div>
+      ${d.edicao ? (semMudanca ? `<div class="note">${ic("alert")}<span>Nada mudou em relação à versão publicada.</span></div>` : mudancasHTML(orig, dados)) : ""}
       <div class="cover" style="border-radius:var(--r-lg);height:280px">${bibHTML(r, true)}</div>
       ${raceBodyHTML(r, u, { preview: true })}
       <div class="actionbar">
-        <button class="btn btn-volt btn-block" type="button" id="send">${admin ? "Publicar corrida" : d.id ? "Reenviar para aprovação" : "Enviar para aprovação"} ${ic("send")}</button>
+        <button class="btn btn-volt btn-block" type="button" id="send"${semMudanca ? " disabled" : ""}>${d.edicao ? "Enviar edição para aprovação" : admin ? "Publicar corrida" : d.id ? "Reenviar para aprovação" : "Enviar para aprovação"} ${ic("send")}</button>
         <a class="btn btn-block" href="${editHref}">${ic("edit")} Voltar e editar</a>
       </div>
     </section>`;
   $("#send").addEventListener("click", async () => {
     const btn = $("#send"); btn.disabled = true;
     let id;
+    if (d.edicao) {
+      if (semMudanca) { toast("Nada mudou. Volte e edite algum campo.", true); return; }
+      const { data: edicaoId, error } = await sb.rpc("propor_edicao", { p_race: d.id, p_dados: dados });
+      if (error) { btn.disabled = false; toast("Não deu para enviar: " + erroEdicao(error), true); return; }
+      await carregarEdicoes();
+      SS.del("kohe.draft");
+      return go(`/enviada/${d.id}?edicao=${edicaoId}`);
+    }
     if (d.id) {
       const o = DB.races.find(x => x.id === d.id);
       if (!o || o.status !== "negada" || o.envios >= MAX_ENVIOS) { toast("Essa corrida não pode mais ser reenviada.", true); return go("/solicitacoes"); }
@@ -2497,9 +2735,25 @@ route(/^\/revisao$/, function vReview(view, _, q, u) {
   });
 }, { tab: "sol", roles: ["organizador", "admin"] });
 
-route(/^\/enviada\/([\w-]+)$/, function vSent(view, [id]) {
+route(/^\/enviada\/([\w-]+)$/, function vSent(view, [id], q, u) {
   const r = DB.races.find(x => x.id === id);
   if (!r) return redirect("/feed");
+  const edicao = q.get("edicao");
+  if (edicao) {
+    /* para o admin, o segundo passo fica a um toque: conferir e aprovar */
+    view.innerHTML = `<section class="done">
+      <div class="done-badge">${ic("edit")}</div>
+      <h1 class="disp">Edição enviada!</h1>
+      <p>A versão atual de <b>${esc(r.nome)}</b> continua no feed até ${isAdmin(u) ? "a edição ser aprovada" : "a administração aprovar a mudança"}.</p>
+      <div class="form">
+        ${isAdmin(u)
+          ? `<a class="btn btn-volt btn-block" href="#/aprovar-edicao/${encodeURIComponent(edicao)}">${ic("shield")} Conferir e aprovar</a>`
+          : `<a class="btn btn-volt btn-block" href="#/solicitacoes">Ver solicitações ${ic("arrow")}</a>`}
+        <a class="btn btn-block" href="#/corrida/${r.id}">Voltar à corrida</a>
+      </div>
+    </section>`;
+    return;
+  }
   const pub = r.status === "publicada";
   view.innerHTML = `<section class="done">
     <div class="done-badge">${ic(pub ? "bolt" : "send")}</div>
@@ -2542,8 +2796,10 @@ function myReqCard(r, admin) {
   else if (st === "excluida") foot = `Excluída · some em ${plural(diasRestantes(r), "dia", "dias")}`;
   const delWaiting = pe && pe.status === "pendente" && st !== "excluida";
   const canAskDel = !admin && (st === "publicada" || st === "pendente") && !delWaiting;
+  const ed = st === "publicada" ? edicaoPendente(r.id) : null;
   return `<article class="req">
     <div class="req-top"><div class="form" style="gap:5px;min-width:0"><span class="meta">${fmtShort(r.data)} · ${r.hora || "hora a confirmar"} · ${esc(r.cidade)}</span><h3>${esc(r.nome)}</h3></div>${stPill(st)}</div>
+    ${ed ? `<div class="reason warn"><b>Edição aguardando aprovação</b>Enviada em ${fmtStamp(ed.criado_em)}. A versão atual segue no feed até lá.</div>` : ""}
     ${st === "negada" && r.motivo ? `<div class="reason"><b>Motivo da negativa</b>${esc(r.motivo)}</div>` : ""}
     ${delWaiting ? `<div class="reason warn"><b>Exclusão solicitada · aguardando</b>${esc(pe.motivo)}</div>` : ""}
     ${pe && pe.status === "negado" && st !== "excluida" ? `<p class="eyebrow">Pedido de exclusão recusado em ${fmtStamp(pe.decidido)}</p>` : ""}
@@ -2617,6 +2873,19 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
     const races = DB.races.filter(r => r.status === "pendente").sort((a, b) => evT(a, "enviada", "reenviada").localeCompare(evT(b, "enviada", "reenviada")));
     const dels = DB.races.filter(delPending).sort((a, b) => a.pedidoExclusao.t.localeCompare(b.pedidoExclusao.t));
     const ups = DB.ups.filter(x => x.status === "pendente").sort((a, b) => a.criado.localeCompare(b.criado));
+    const edicoes = EDICOES.filter(e => e.status === "pendente");
+    const secaoEdicoes = `
+      <div class="section-title"><h2 class="disp">Edições</h2><span class="eyebrow num">${plural(edicoes.length, "pedido", "pedidos")}</span></div>
+      ${edicoes.length ? edicoes.map(e => {
+        const r = DB.races.find(x => x.id === e.race_id), a = userById(e.autor_id);
+        if (!r) return "";
+        const n = Object.keys(e.dados || {}).filter(k => EDITAVEIS[k]).length;
+        return `<article class="req">
+          <div class="req-top"><div class="form" style="gap:5px;min-width:0"><span class="meta">${fmtShort(r.data)} · ${r.hora || "hora a confirmar"} · ${esc(r.cidade)}</span><h3>${esc(r.nome)}</h3></div><span class="st st-pend">${plural(n, "campo", "campos")}</span></div>
+          <div class="byline">${avatarHTML(a, "mini-av")}<span><b>@${esc(a ? a.nick : "conta excluída")}</b>${e.autor_id === u.id ? " (você)" : ""} · ${fmtStamp(e.criado_em)}</span></div>
+          <a class="btn btn-sm btn-volt btn-block" href="#/aprovar-edicao/${e.id}">Conferir e decidir ${ic("arrow")}</a>
+        </article>`;
+      }).join("") : `<div class="empty sm"><h3>Sem edições</h3><p>Edições de corridas publicadas esperam aqui antes de irem ao ar.</p></div>`}`;
     body = `
       <div class="section-title"><h2 class="disp">Corridas</h2><span class="eyebrow num">${races.length} na fila</span></div>
       ${races.length ? races.map(r => {
@@ -2627,6 +2896,7 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
           <a class="btn btn-sm btn-volt btn-block" href="#/aprovar/${r.id}">Conferir e decidir ${ic("arrow")}</a>
         </article>`;
       }).join("") : `<div class="empty sm"><h3>Fila zerada</h3><p>Nenhuma corrida esperando aprovação agora.</p></div>`}
+      ${secaoEdicoes}
       <div class="section-title"><h2 class="disp">Exclusões</h2><span class="eyebrow num">${plural(dels.length, "pedido", "pedidos")}</span></div>
       ${dels.length ? dels.map(r => {
         const a = userById(r.pedidoExclusao.por);
@@ -2788,6 +3058,64 @@ route(/^\/aprovar\/([\w-]+)$/, function vApprove(view, [id], q, u) {
     toast("Corrida negada. O organizador vai ver o motivo."); go("/solicitacoes?ver=aprovar");
   });
 }, { tab: "sol", roles: ["admin"] });
+
+/* Conferir edição: o "segundo fator". Mostra o antes e depois de cada campo e
+   a prévia de como a corrida fica — inclusive quando quem editou foi o próprio
+   admin, que precisa passar por aqui para a mudança ir ao ar.               */
+route(/^\/aprovar-edicao\/([\w-]+)$/, function vApproveEdit(view, [id], q, u) {
+  const e = EDICOES.find(x => x.id === id && x.status === "pendente");
+  const r = e && DB.races.find(x => x.id === e.race_id);
+  if (!e || !r) { view.innerHTML = notFoundHTML("Nada para decidir", "Essa edição já foi decidida ou não existe mais.", "#/solicitacoes?ver=aprovar", "Voltar às solicitações"); return; }
+  const a = userById(e.autor_id), minha = e.autor_id === u.id, noAr = raceState(r) === "publicada";
+  const nova = aplicarEdicao(r, e.dados);
+  view.innerHTML = `
+    <header class="topbar"><div class="topbar-in">
+      <a class="icon-btn" href="#/solicitacoes?ver=aprovar" aria-label="Voltar">${ic("back")}</a>
+      <div class="t"><span class="eyebrow">Edição de corrida publicada</span><h1 class="disp" style="font-size:30px">Conferir edição</h1></div>
+    </div></header>
+    <section class="page" style="gap:18px">
+      ${minha ? `<div class="review-banner">${ic("shield")}<p>Esta edição é sua. Confira o antes e depois com calma: ela só vai ao ar quando for aprovada aqui.</p></div>` : ""}
+      ${noAr ? "" : `<div class="note">${ic("alert")}<span>A corrida não está mais no feed. Esta edição só pode ser negada.</span></div>`}
+      ${mudancasHTML(r, e.dados)}
+      <span class="eyebrow">Como a corrida vai ficar</span>
+      <div class="cover" style="border-radius:var(--r-lg);height:280px;margin-top:-10px">${bibHTML(nova, true)}</div>
+      ${raceBodyHTML(nova, u, { preview: true })}
+      <div class="group">
+        <span class="eyebrow">Quem editou</span>
+        <div class="person">${avatarHTML(a, "avatar", "width:48px;height:48px;border-radius:15px;font-size:22px")}<div class="who"><b>${esc(a ? a.nome : "Conta excluída")}${minha ? " (você)" : ""}</b><span>@${esc(a ? a.nick : "?")} · ${fmtStamp(e.criado_em)}</span></div></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-outline-danger" type="button" id="deny">${ic("x")} Negar</button>
+        ${noAr ? `<button class="btn btn-volt" type="button" id="approve">${ic("check")} Aprovar</button>` : ""}
+      </div>
+    </section>`;
+  const aprovar = $("#approve");
+  if (aprovar) aprovar.addEventListener("click", async () => {
+    const ok = await confirmBox({ title: "Aprovar edição?", ok: "Aprovar", text: `A nova versão de <b>${esc(r.nome)}</b> entra no feed na hora.` });
+    if (!ok) return;
+    aprovar.disabled = true;
+    const arteAntiga = r.arte;
+    const { error } = await sb.rpc("aprovar_edicao", { p_edicao: e.id });
+    if (error) { aprovar.disabled = false; toast("Não deu para aprovar: " + erroEdicao(error), true); return; }
+    if ("arte_url" in e.dados && arteAntiga && e.dados.arte_url !== arteAntiga) apagarImagem(arteAntiga);   // a arte antiga saiu do ar
+    await carregarCorridas(); await carregarEdicoes();
+    toast("Edição aprovada. A nova versão já está no feed."); go("/solicitacoes?ver=aprovar");
+  });
+  $("#deny").addEventListener("click", async () => {
+    const motivo = await confirmBox({
+      title: "Negar edição", ok: "Negar", danger: true,
+      text: `${minha ? "A edição é descartada" : `Diga a @${esc(a ? a.nick : "quem editou")} o que precisa mudar`}. <b>${esc(r.nome)}</b> continua como está no feed.`,
+      reason: { label: "Motivo", min: MIN_MOTIVO, placeholder: "Ex.: o novo horário não confere com o site oficial." }
+    });
+    if (!motivo) return;
+    const { error } = await sb.rpc("negar_edicao", { p_edicao: e.id, p_motivo: motivo });
+    if (error) { toast("Não deu para negar: " + erroEdicao(error), true); return; }
+    const arteNova = e.dados.arte_url;
+    if (arteNova && arteNova !== r.arte) apagarImagem(arteNova);   // arte que subiu só para a edição negada
+    await carregarEdicoes();
+    toast("Edição negada. A corrida segue como estava."); go("/solicitacoes?ver=aprovar");
+  });
+}, { tab: "sol", roles: ["admin"] });
 /* ---------- konexões e Komunidades: base usada pelo perfil, busca e Komunidades ---------- */
 const connBetween = (a, b) => DB.conns.find(c => (c.de === a && c.para === b) || (c.de === b && c.para === a));
 const isConnected = (a, b) => { const c = connBetween(a, b); return !!c && c.status === "ativa"; };
@@ -2890,6 +3218,7 @@ function abrirAjuda() {
       <div><dt>Finder</dt><dd>Fica no topo do Início. Deslize para a direita para favoritar e para a esquerda para descartar.</dd></div>
       <div><dt>Komunidades</dt><dd>Grupos de corrida. Você participa de uma por vez e sai pela tela da própria Komunidade.</dd></div>
       <div><dt>Konexões e mensagens</dt><dd>Toda Konexão precisa ser aprovada. Depois disso, vocês podem conversar.</dd></div>
+      <div><dt>Treinos</dt><dd>Procure um treino ou ofereça o seu na aba Treino. Antes do aceite, ninguém vê quem organiza nem o ponto exato de encontro. Depois, quem vai treinar junto pode conversar pelo chat.</dd></div>
       <div><dt>Perfil privado</dt><dd>Ligado, só suas Konexões veem suas favoritas e Konexões.</dd></div>
     </dl>`);
 }
@@ -2909,6 +3238,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
           ${u.foto ? `<button class="linkbtn" type="button" id="fotoRm" style="font-size:13px;min-height:32px;align-self:flex-start">Remover foto</button>` : ""}
         </div>
       </div>
+      ${corredorBlocoHTML(u, true)}
       <nav class="quick" aria-label="Seu conteúdo">
         <a class="qtile" href="#/perfil/favoritas">${ic("heart")}<b>Favoritos</b><span class="ct num">${nFav} ${nFav === 1 ? "corrida" : "corridas"}</span></a>
         <a class="qtile" href="#/mensagens">${ic("chat")}<b>Mensagens</b><span class="ct">${nMsgs ? `${nMsgs} nova${nMsgs === 1 ? "" : "s"}` : "Suas conversas"}</span>${nMsgs ? `<span class="badge-num">${nMsgs}</span>` : ""}</a>
@@ -3263,9 +3593,10 @@ route(/^\/perfil\/notificacoes$/, function vNotifs(view, _, q, u) {
       }).join("")}</div>` : `<div class="empty sm"><p>Nenhum pedido esperando você.</p></div>`}
       <div class="section-title"><h2 class="disp">Atividade</h2></div>
       ${acts.length ? `<div class="rows">${acts.map(n => {
-        const p = userById(n.de);
-        return `<a class="person-row" href="${p ? "#/u/" + encodeURIComponent(p.nick) + "?de=notif" : "#/perfil/notificacoes"}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p ? p.nick : "conta excluída")} aceitou sua konexão</b><span>${fmtStamp(n.t)}</span></span>${unreadIds.has(n.id) ? '<span class="badge-dot" aria-label="Nova"></span>' : ""}</a>`;
-      }).join("")}</div>` : `<div class="empty sm"><p>Quando alguém aceitar seu pedido de konexão, aparece aqui.</p></div>`}
+        const p = userById(n.de), nova = unreadIds.has(n.id) ? '<span class="badge-dot" aria-label="Nova"></span>' : "";
+        if (String(n.tipo).startsWith("treino_")) return avisoTreinoHTML(n, p, nova);
+        return `<a class="person-row" href="${p ? "#/u/" + encodeURIComponent(p.nick) + "?de=notif" : "#/perfil/notificacoes"}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p ? p.nick : "conta excluída")} aceitou sua konexão</b><span>${fmtStamp(n.t)}</span></span>${nova}</a>`;
+      }).join("")}</div>` : `<div class="empty sm"><p>Konexões aceitas e novidades dos seus treinos aparecem aqui.</p></div>`}
     </section>`;
   $$("[data-accept]", view).forEach(b => b.addEventListener("click", async () => {
     const c = DB.conns.find(x => x.id === b.dataset.accept); if (!c) return;
@@ -3310,15 +3641,19 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
   const BACKS = { konexoes: ["#/perfil/konexoes", "perfil"], notif: ["#/perfil/notificacoes", "perfil"], busca: ["#/buscar", "buscar"], mensagens: ["#/mensagens", "perfil"] };
   let back = "#/buscar", tab = "buscar";
   if (BACKS[from]) [back, tab] = BACKS[from];
-  else if (from.startsWith("komunidade:")) back = "#/komunidade/" + encodeURIComponent(from.slice(5));
-  else if (from.startsWith("koh:")) { back = "#/kohedores/" + encodeURIComponent(from.slice(4)); tab = "finder"; }
+  else if (from.startsWith("komunidade:")) back = "#/komunidade/" + encodeURIComponent(from.slice("komunidade:".length));
+  else if (from.startsWith("koh:")) { back = "#/kohedores/" + encodeURIComponent(from.slice(4)); tab = "feed"; }
+  else if (from.startsWith("treino:")) { back = "#/treino/" + encodeURIComponent(from.slice(7)); tab = "treino"; }
   if (tab !== "buscar") renderChrome({ tab }, u);
   const c = connBetween(u.id, p.id), see = canSeeProfile(u, p);
+  /* quem vai treinar junto conversa sem Konexão (até o fim do dia do treino) */
+  const treinam = PARCEIROS.has(p.id) && !(c && c.status === "ativa");
   let action;
   if (c && c.status === "ativa") action = `<a class="btn btn-volt btn-block" href="#/chat/${encodeURIComponent(p.nick)}?de=u">${ic("chat")} Mandar mensagem</a><div class="state-ok">${ic("check")} Vocês estão konectados</div><button class="linkbtn" type="button" id="kUndo" style="align-self:center;font-size:13px;color:var(--danger)">Desfazer konexão</button>`;
   else if (c && c.de === u.id) action = `<div class="state-ok" style="border-color:var(--line-2);color:var(--ink-2)">${ic("clock")} Pedido enviado. @${esc(p.nick)} precisa aprovar</div><button class="linkbtn" type="button" id="kCancel" style="align-self:center;font-size:13px">Cancelar pedido</button>`;
   else if (c) action = `<p class="muted" style="text-align:center">@${esc(p.nick)} quer se konectar com você.</p><div class="btn-row"><button class="btn" type="button" id="kDeny">Recusar</button><button class="btn btn-volt" type="button" id="kAccept">${ic("check")} Aceitar</button></div>`;
-  else action = `<button class="btn btn-volt btn-block" type="button" id="kGo">${ic("link")} Konectar</button><p class="eyebrow" style="text-align:center">@${esc(p.nick)} precisa aprovar o pedido</p>`;
+  else action = `<button class="btn ${treinam ? "" : "btn-volt "}btn-block" type="button" id="kGo">${ic("link")} Konectar</button><p class="eyebrow" style="text-align:center">@${esc(p.nick)} precisa aprovar o pedido</p>`;
+  if (treinam) action = `<a class="btn btn-volt btn-block" href="#/chat/${encodeURIComponent(p.nick)}?de=u">${ic("chat")} Mandar mensagem</a><p class="eyebrow" style="text-align:center;margin-top:-6px">Liberado porque vocês vão treinar juntos</p>${action}`;
   const kons = see ? konexoesOf(p.id).sort((a, b) => a.nick.localeCompare(b.nick)) : [];
   const favs = see ? favRacesOf(p) : [];
   const favsPorDia = see ? listaPorDia(favs, u, "u:" + p.nick) : "";
@@ -3336,6 +3671,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
         ${roleChipsHTML(p)}
         ${p.role === "organizador" ? `<button class="btn btn-sm btn-outline-danger" type="button" id="tiraCargo">${ic("shield")} Remover cargo de Organizador</button>` : ""}
       </div>` : ""}
+      ${see || PARCEIROS.has(p.id) ? corredorBlocoHTML(p, false) : ""}
       ${see ? `
         <div class="section-title"><h2 class="disp">Konexões</h2><span class="eyebrow num">${kons.length}</span></div>
         ${kons.length ? `<div class="rows">${kons.map(x => personRow(x, x.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(x.nick) + "?de=busca")).join("")}</div>` : `<div class="empty sm"><p>@${esc(p.nick)} ainda não tem Konexões.</p></div>`}
@@ -3736,8 +4072,8 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
     <section class="page">
       <div class="komunidade-hero">${komunidadeLogoHTML(k)}<h1 class="disp">${esc(k.nome)}</h1>${k.sigla ? `<span class="sigla">@${esc(k.sigla)}</span>` : ""}</div>
       ${mine
-        ? `<div class="state-ok">${ic("check")} Kohendo com ${esc(komunidadeTag(k))}</div>`
-        : `<button class="btn btn-volt btn-block" type="button" id="kJoin">${ic("users")} Koher junto</button>${other ? `<p class="eyebrow" style="text-align:center">Você está no ${esc(komunidadeTag(other))}. Ao entrar aqui, sai de lá.</p>` : ""}`}
+        ? `<button class="state-ok" type="button" id="kToggle" aria-label="Kohendo com ${esc(komunidadeTag(k))}. Toque para sair">${ic("check")} Kohendo com ${esc(komunidadeTag(k))}</button>`
+        : `<button class="btn btn-volt btn-block" type="button" id="kToggle">${ic("users")} Koher junto</button>${other ? `<p class="eyebrow" style="text-align:center">Você está na ${esc(komunidadeTag(other))}. Ao entrar aqui, sai de lá.</p>` : ""}`}
       <dl class="dl">
         <div><dt>${ic("pin")}Cidade</dt><dd>${esc(k.cidade)}</dd></div>
         <div><dt>${ic("cal")}Desde</dt><dd class="${k.desde ? "num" : "tbd"}">${k.desde ? esc(k.desde) : "Não informado"}</dd></div>
@@ -3747,10 +4083,19 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
       <div class="section-title"><h2 class="disp">Membros</h2><span class="eyebrow num">${members.length}</span></div>
       ${members.length ? `<div class="rows">${members.map(p => `<div class="person-row">${avatarHTML(p, "avatar av-sm")}<a class="who" href="${p.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(p.nick) + "?de=komunidade:" + k.id}" style="color:inherit;text-decoration:none"><b>@${esc(p.nick)}</b><span>${esc(p.nome)}${p.id === k.dono ? " · responsável" : ""}</span></a>${manage && p.id !== u.id ? `<button class="btn btn-sm" type="button" data-kick="${p.id}" aria-label="Remover @${esc(p.nick)} da Komunidade">Remover</button>` : ""}</div>`).join("")}</div>`
         : `<div class="empty sm"><p>Ninguém kohendo aqui ainda. Toque em Koher junto para ser a primeira pessoa.</p></div>`}
-      ${mine ? `<button class="linkbtn" type="button" id="kLeave" style="align-self:center;font-size:12.5px;color:var(--ink-3);margin-top:6px">Sair da Komunidade</button>` : ""}
     </section>`;
-  const join = $("#kJoin");
-  if (join) join.addEventListener("click", async () => {
+  /* Um botão só mostra o estado e troca entre entrar e sair — a saída não
+     fica mais longe, lá embaixo, separada da ação principal.               */
+  const toggle = $("#kToggle");
+  if (toggle) toggle.addEventListener("click", async () => {
+    if (mine) {
+      const ok = await confirmBox({ title: "Sair da Komunidade?", ok: "Sair", danger: true, text: `Você deseja sair da <b>${esc(komunidadeTag(k))}</b>? Você deixa de aparecer entre os membros.` });
+      if (!ok) return;
+      const { error } = await sb.from("profiles").update({ komunidade_id: null }).eq("id", u.id);
+      if (error) { toast("Não deu para sair agora. Tente de novo.", true); return; }
+      u.komunidade = null; DB.save(); render(); toast("Você saiu da Komunidade.");
+      return;
+    }
     if (other) {
       const ok = await confirmBox({ title: `Koher com ${komunidadeTag(k)}?`, ok: "Koher junto", text: `Você sai da <b>${esc(komunidadeTag(other))}</b> e entra na <b>${esc(komunidadeTag(k))}</b>. Dá para estar em uma Komunidade por vez.` });
       if (!ok) return;
@@ -3758,14 +4103,6 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
     const { error } = await sb.from("profiles").update({ komunidade_id: k.id }).eq("id", u.id);
     if (error) { toast("Não deu para entrar agora. Tente de novo.", true); return; }
     u.komunidade = k.id; DB.save(); render(); toast(`Agora você está kohendo com ${komunidadeTag(k)}.`);
-  });
-  const leave = $("#kLeave");
-  if (leave) leave.addEventListener("click", async () => {
-    const ok = await confirmBox({ title: "Sair da Komunidade?", ok: "Sair", danger: true, text: `Você deixará de aparecer entre os membros da <b>${esc(komunidadeTag(k))}</b>. Deseja sair da Komunidade?` });
-    if (!ok) return;
-    const { error } = await sb.from("profiles").update({ komunidade_id: null }).eq("id", u.id);
-    if (error) { toast("Não deu para sair agora. Tente de novo.", true); return; }
-    u.komunidade = null; DB.save(); render(); toast("Você saiu da Komunidade.");
   });
   $$("[data-kick]", view).forEach(b => b.addEventListener("click", async () => {
     const p = userById(b.dataset.kick); if (!p) return;
@@ -3898,8 +4235,15 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
   const p = DB.users.find(x => x.nick === decodeURIComponent(nickEnc).toLowerCase());
   if (!p || p.id === u.id) return redirect("/mensagens");
   const from = q.get("de") || "";
-  const back = from === "u" ? "#/u/" + encodeURIComponent(p.nick) : from.startsWith("koh:") ? "#/kohedores/" + from.slice(4) : "#/mensagens";
-  const connected = isConnected(u.id, p.id), ms = pairMsgs(u.id, p.id), key = "kohe.chat." + p.id;
+  const back = from === "u" ? "#/u/" + encodeURIComponent(p.nick)
+    : from.startsWith("koh:") ? "#/kohedores/" + from.slice(4)
+    : from.startsWith("treino:") ? "#/treino/" + encodeURIComponent(from.slice(7)) : "#/mensagens";
+  const aba = from.startsWith("treino:") ? "treino" : "perfil";
+  if (aba !== "perfil") renderChrome({ tab: aba }, u);
+  /* Konexão libera o chat; treino com aceite também, até o fim do dia do treino.
+     Quem garante de verdade é a regra msg_enviar no banco.                    */
+  const connected = isConnected(u.id, p.id), treinam = !connected && PARCEIROS.has(p.id);
+  const ms = pairMsgs(u.id, p.id), key = "kohe.chat." + p.id;
   let lastDay = "", log = "";
   ms.forEach(m => {
     const d = new Date(m.t), day = ymd(d);
@@ -3911,15 +4255,15 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
       <a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a>
       <a class="chat-who" href="#/u/${encodeURIComponent(p.nick)}?de=mensagens">${avatarHTML(p, "avatar av-xs")}<span class="chat-name"><b>@${esc(p.nick)}</b><span class="eyebrow">${esc(p.nome)}</span></span></a>
     </div></header>
-    <section class="chat" id="chatLog" aria-live="polite">${log || `<p class="chat-empty">${connected ? "Vocês estão konectados. Mande o primeiro oi." : "Nenhuma mensagem."}</p>`}</section>
-    ${connected
+    <section class="chat" id="chatLog" aria-live="polite">${log || `<p class="chat-empty">${connected ? "Vocês estão konectados. Mande o primeiro oi." : treinam ? "Vocês vão treinar juntos. Mande o primeiro oi." : "Nenhuma mensagem."}</p>`}</section>
+    ${connected || treinam
       ? `<form class="composer" id="chatForm"><textarea id="chatIn" class="input" rows="1" maxlength="1000" placeholder="Mensagem para @${esc(p.nick)}" aria-label="Mensagem para @${esc(p.nick)}"></textarea><button class="send" type="submit" aria-label="Enviar">${ic("send")}</button></form>`
       : `<div class="composer off">${ic("lock")}<span>Vocês não estão konectados. Konecte-se para conversar.</span></div>`}`;
   view.scrollTop = view.scrollHeight;
   const naoLidas = DB.msgs.filter(m => m.de === p.id && m.para === u.id && !m.lida);
   if (naoLidas.length) {
     naoLidas.forEach(m => { m.lida = true; });
-    DB.save(); renderChrome({ tab: "perfil" }, u);
+    DB.save(); renderChrome({ tab: aba }, u);
     /* marcar como lida não precisa segurar a tela: o badge já baixou */
     sb.from("messages").update({ lida: true }).in("id", naoLidas.map(m => m.id)).then(() => {});
   }
@@ -3934,12 +4278,18 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const texto = inp.value.trim(); if (!texto) return;
-    if (!isConnected(u.id, p.id)) { toast("Vocês não estão mais konectados.", true); render(); return; }
+    if (!isConnected(u.id, p.id) && !PARCEIROS.has(p.id)) { toast("Vocês não estão mais konectados.", true); render(); return; }
     const envio = $(".send", form); if (envio) envio.disabled = true;
     const { data, error } = await sb.from("messages")
       .insert({ de: u.id, para: p.id, texto }).select("id, de, para, texto, criado_em, lida").single();
     if (error) {
       if (envio) envio.disabled = false;
+      /* sem Konexão, o que liberava era o treino: talvez ele tenha sido
+         cancelado ou alguém desistiu. Confere antes de culpar a rede.        */
+      if (!isConnected(u.id, p.id)) {
+        await carregarTreinos();
+        if (!PARCEIROS.has(p.id)) { toast("O chat do treino não está mais liberado.", true); render(); return; }
+      }
       toast("Não deu para enviar. Tente de novo.", true); return;
     }
     /* O aviso em tempo real só chega para quem RECEBE, então a própria
@@ -3949,6 +4299,603 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
     const again = $("#chatIn"); if (again) again.focus();
   });
 }, { tab: "perfil" });
+/* =====================================================================
+   TELAS — Treino (etapa C)
+   Gente combinando de correr junto, no espírito do BlaBlaCar. Antes do aceite
+   ninguém sabe quem é quem: busca e pedido mostram só o treino e o perfil de
+   korredor, sem nome, foto ou @. Quem decide o que cada um vê é o servidor
+   (supabase/14-treinos.sql) — esta tela só não pede o que não pode mostrar.
+   ===================================================================== */
+
+/* ---------- perfil de korredor ----------
+   Pedido uma vez só, na primeira vez que a pessoa oferece ou pede um treino, e
+   editável depois em Perfil › Sobre você.                                   */
+const BIO_MAX = 160, HOBBIES_MAX = 5, HOBBY_MAX = 24;
+const NIVEIS = [["iniciante", "Iniciante"], ["intermediario", "Intermediário"], ["avancado", "Avançado"]];
+const NIVEL_TXT = Object.fromEntries(NIVEIS);
+const HOBBY_SUGESTOES = ["Trilha", "Ciclismo", "Natação", "Academia", "Música", "Leitura", "Café", "Pets"];
+const conversaTxt = v => v ? "Gosta de conversar" : "Prefere focar no treino";
+const temPerfilCorredor = u => !!(u && u.nivel && typeof u.conversa === "boolean");
+const corredorDe = u => ({ nivel: u.nivel || null, conversa: typeof u.conversa === "boolean" ? u.conversa : null, bio: u.bio || "", hobbies: [...(u.hobbies || [])], outro: false });
+const hobbiesHTML = lista => (lista || []).length ? `<div class="chips">${lista.map(h => `<span class="chip">${esc(h)}</span>`).join("")}</div>` : "";
+function corredorTagsHTML(p) {
+  return `<div class="chips-row">${p.nivel ? `<span class="role usuario">${ic("bolt")}${esc(NIVEL_TXT[p.nivel] || p.nivel)}</span>` : ""}${typeof p.conversa === "boolean" ? `<span class="role usuario">${ic("chat")}${conversaTxt(p.conversa)}</span>` : ""}</div>`;
+}
+/* o bloco que aparece em Sobre você (meu = true) e no perfil de outra pessoa */
+function corredorBlocoHTML(p, meu) {
+  if (!p.nivel) return meu
+    ? `<a class="qtile wide" href="#/perfil/corredor">${ic("run")}<b>Perfil de korredor</b><span class="ct">Completar</span>${ic("chev", "chev")}</a>`
+    : "";
+  return `<div class="group corredor">
+      <div class="group-head"><h2 class="disp">Perfil de korredor</h2>${meu ? `<a class="linkbtn" href="#/perfil/corredor">${ic("edit")}Editar</a>` : ""}</div>
+      ${corredorTagsHTML(p)}
+      ${p.bio ? `<p class="prose">${esc(p.bio)}</p>` : ""}
+      ${hobbiesHTML(p.hobbies)}
+    </div>`;
+}
+function corredorHobbiesHTML(d) {
+  const tem = h => d.hobbies.some(x => norm(x) === norm(h));
+  const opcoes = [...HOBBY_SUGESTOES, ...d.hobbies.filter(h => !HOBBY_SUGESTOES.some(s => norm(s) === norm(h)))];
+  return `<span class="label">Hobbies <span class="opt">(opcional, até ${HOBBIES_MAX})</span></span>
+    <div class="pick" id="cor_hob">${opcoes.map(h => `<button type="button" data-h="${esc(h)}"${tem(h) ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${tem(h) ? ic("check") : ""}${esc(h)}</button>`).join("")}<button type="button" data-outro${d.outro ? ' class="on" aria-pressed="true"' : ' aria-pressed="false"'}>${ic("plus")}Outro</button></div>
+    ${d.outro ? `<div class="other-row"><input id="cor_hobIn" class="input" maxlength="${HOBBY_MAX}" autocomplete="off" placeholder="Ex.: Fotografia" aria-label="Outro hobby"><button type="button" class="btn" id="cor_hobAdd">Adicionar</button></div>` : ""}`;
+}
+function corredorCamposHTML(d) {
+  return `
+    <div class="field" id="f-cor_nivel">
+      <label for="cor_nivel">Nível de corrida</label>
+      <div class="select-wrap"><select id="cor_nivel" class="input"><option value="">Escolha seu nível</option>${NIVEIS.map(([v, t]) => `<option value="${v}"${d.nivel === v ? " selected" : ""}>${t}</option>`).join("")}</select></div>
+      <div class="hint">Autodeclarado: é como você se vê hoje.</div>
+      <div class="msg">${ic("alert")}<span>Escolha seu nível.</span></div>
+    </div>
+    <div class="field" id="f-cor_conversa">
+      <span class="label">Gosta de conversar durante o treino?</span>
+      <div class="choice" id="cor_conversa">
+        <button type="button" data-v="sim"${d.conversa === true ? ' class="on"' : ""} aria-pressed="${d.conversa === true}">${ic("chat")} Sim, gosto</button>
+        <button type="button" data-v="nao"${d.conversa === false ? ' class="on"' : ""} aria-pressed="${d.conversa === false}">Prefiro focar</button>
+      </div>
+      <div class="msg">${ic("alert")}<span>Escolha uma das opções.</span></div>
+    </div>
+    <div class="field" id="f-cor_bio">
+      <label for="cor_bio">Mini biografia <span class="opt">(opcional)</span></label>
+      <textarea id="cor_bio" class="input" rows="3" maxlength="${BIO_MAX}" placeholder="Ex.: Corro há dois anos e gosto de treinar cedo.">${esc(d.bio)}</textarea>
+      <div class="counter" id="cor_bioN">${d.bio.length} / ${BIO_MAX}</div>
+    </div>
+    <div class="field" id="f-cor_hob">${corredorHobbiesHTML(d)}</div>`;
+}
+function ligarCorredor(scope, d) {
+  const bio = $("#cor_bio", scope), cont = $("#cor_bioN", scope);
+  bio.addEventListener("input", () => { d.bio = bio.value; cont.textContent = `${bio.value.length} / ${BIO_MAX}`; });
+  $("#cor_nivel", scope).addEventListener("change", e => { d.nivel = e.target.value || null; });
+  $("#cor_conversa", scope).addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    d.conversa = b.dataset.v === "sim";
+    $$("button", b.parentElement).forEach(x => { const on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on); });
+    $("#f-cor_conversa", scope).classList.remove("bad");
+  });
+  const campo = $("#f-cor_hob", scope);
+  const pintar = foco => { campo.innerHTML = corredorHobbiesHTML(d); const i = foco && $("#cor_hobIn", campo); if (i) i.focus(); };
+  const cheio = () => { toast(`Até ${HOBBIES_MAX} hobbies. Tire um para incluir outro.`, true); };
+  const adicionar = () => {
+    const i = $("#cor_hobIn", campo), h = i.value.replace(/\s+/g, " ").trim().slice(0, HOBBY_MAX);
+    if (!h) { i.focus(); return; }
+    if (!d.hobbies.some(x => norm(x) === norm(h))) {
+      if (d.hobbies.length >= HOBBIES_MAX) { cheio(); return; }
+      d.hobbies.push(h.charAt(0).toUpperCase() + h.slice(1));
+    }
+    d.outro = false; pintar();
+  };
+  campo.addEventListener("click", e => {
+    if (e.target.closest("#cor_hobAdd")) { adicionar(); return; }
+    const b = e.target.closest("#cor_hob button"); if (!b) return;
+    if (b.hasAttribute("data-outro")) { d.outro = !d.outro; pintar(d.outro); return; }
+    const h = b.dataset.h, on = d.hobbies.some(x => norm(x) === norm(h));
+    if (!on && d.hobbies.length >= HOBBIES_MAX) { cheio(); return; }
+    d.hobbies = on ? d.hobbies.filter(x => norm(x) !== norm(h)) : [...d.hobbies, h];
+    pintar();
+  });
+  campo.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "cor_hobIn") { e.preventDefault(); adicionar(); } });
+}
+function lerCorredor(scope, d) {
+  d.nivel = $("#cor_nivel", scope).value || null;
+  d.bio = $("#cor_bio", scope).value.trim();
+  $$(".field.bad", scope).forEach(f => f.classList.remove("bad"));
+  if (!d.nivel) bad("cor_nivel");
+  if (typeof d.conversa !== "boolean") bad("cor_conversa");
+  if (goFirstBad(scope)) return null;
+  return { nivel: d.nivel, conversa: d.conversa, bio: d.bio, hobbies: d.hobbies.slice(0, HOBBIES_MAX) };
+}
+async function salvarCorredor(u, v) {
+  const campos = { nivel: v.nivel, conversa: v.conversa, bio: v.bio || null, hobbies: v.hobbies };
+  if (!u.corredorEm) campos.perfil_corredor_em = new Date().toISOString();
+  const { error } = await sb.from("profiles").update(campos).eq("id", u.id);
+  if (error) { toast("Não deu para salvar o perfil de korredor. Tente de novo.", true); return false; }
+  Object.assign(u, { nivel: v.nivel, conversa: v.conversa, bio: v.bio, hobbies: v.hobbies, corredorEm: u.corredorEm || campos.perfil_corredor_em });
+  DB.save();
+  return true;
+}
+/* A primeira vez, no meio do caminho: abre por cima da tela e, salvo, a ação
+   que a pessoa tinha começado (publicar ou pedir) continua sozinha.          */
+function pedirPerfilCorredor(u, motivo) {
+  return new Promise(resolve => {
+    let salvo = false;
+    const d = corredorDe(u);
+    const sh = openSheet(`
+      <div class="sheet-head"><h2 class="disp">Antes do primeiro treino</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+      <p class="lead">${motivo === "pedir"
+        ? "Quem organiza vê isto no seu pedido, sem seu nome, foto ou @."
+        : "Quem você aceitar no treino vê isto no seu perfil."} Você preenche uma vez e muda quando quiser em Perfil.</p>
+      <form class="form" id="corForm" novalidate>${corredorCamposHTML(d)}<button class="btn btn-volt btn-block" type="submit">Salvar e continuar ${ic("arrow")}</button></form>`,
+      { onClose: () => resolve(salvo) });
+    ligarCorredor(sh.el, d);
+    const form = $("#corForm", sh.el);
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      const v = lerCorredor(sh.el, d); if (!v) return;
+      const b = $("button[type=submit]", form); b.disabled = true;
+      if (await salvarCorredor(u, v)) { salvo = true; sh.close(); }
+      else b.disabled = false;
+    });
+  });
+}
+
+route(/^\/perfil\/corredor$/, function vCorredor(view, _, q, u) {
+  const d = corredorDe(u);
+  view.innerHTML = `${subHead("Perfil de korredor", "#/perfil", "Sobre você")}
+    <section class="page">
+      <p class="privacy-note">Aparece no seu perfil. Quando você pede para entrar num treino, quem organiza vê só isto antes de aceitar, sem seu nome, foto ou @.</p>
+      <form class="form" id="corForm" novalidate>${corredorCamposHTML(d)}<button class="btn btn-volt btn-block" type="submit">Salvar</button></form>
+    </section>`;
+  ligarCorredor(view, d);
+  const form = $("#corForm");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const v = lerCorredor(view, d); if (!v) return;
+    const b = $("button[type=submit]", form); b.disabled = true;
+    if (await salvarCorredor(u, v)) { toast("Perfil de korredor salvo."); go("/perfil"); }
+    else b.disabled = false;
+  });
+}, { tab: "perfil" });
+
+/* ---------- treino: formatos e peças ---------- */
+const paceTxt = s => `${Math.floor(s / 60)}:${pad2(s % 60)}`;
+const PACES = Array.from({ length: 29 }, (_, i) => 180 + i * 15);   // 3:00 a 10:00 /km, de 15 em 15 s
+const PACES_BUSCA = [240, 270, 300, 330, 360, 390, 420, 450, 480];   // busca por "perto de", ±30 s
+const DIST_BUSCA = [["", "Qualquer", null, null], ["ate5", "Até 5 km", null, 5], ["5a10", "5 a 10 km", 5, 10], ["10a15", "10 a 15 km", 10, 15], ["15mais", "15 km ou mais", 15, null]];
+const DESC_MAX = 280;
+const horaTreino = t => String(t.hora || "").slice(0, 5);
+const kmTreino = t => kmTxt(Math.round(Number(t.distancia_km) * 100) / 100);
+const inicioTreino = t => startOf({ data: t.data, hora: horaTreino(t) });
+const treinoFuturo = t => inicioTreino(t) >= new Date();
+const confirmadosTxt = n => n === 1 ? "1 confirmado" : `${n || 0} confirmados`;
+function pedidosRecebidos() {
+  return MEUS_TREINOS.filter(t => t.papel === "organizador" && t.status === "ativo" && treinoFuturo(t))
+    .reduce((n, t) => n + (t.pendentes || 0), 0);
+}
+function erroTreino(error) {
+  const m = (error && error.message) || "";
+  if (/schema cache|function .* does not exist|relation .* does not exist/i.test(m)) return "Os treinos ainda não foram ativados no servidor.";
+  if (/row-level security/i.test(m)) return "Confira a data e o horário do treino e o seu perfil de korredor.";
+  return m || "Não deu para concluir agora. Tente de novo.";
+}
+const PAPEL_TAG = {
+  organizador: `<span class="papel org">${ic("flag")}Você organiza</span>`,
+  participante: `<span class="papel par">${ic("run")}Você participa</span>`
+};
+const PEDIDO_PILL = { pendente: ["st-pend", "Aguardando"], aceito: ["st-pub", "Confirmado"], recusado: ["st-neg", "Não aceito"] };
+const pedidoPill = s => PEDIDO_PILL[s] ? `<span class="st ${PEDIDO_PILL[s][0]}">${PEDIDO_PILL[s][1]}</span>` : "";
+
+/* O card de corrida serve de molde: a "arte" é o número de peito com a
+   distância do treino, igual às corridas sem imagem.                        */
+function treinoCard(t, { de = "", comData = false, extra = "" } = {}) {
+  const km = kmTreino(t);
+  return `<article class="rc tc">
+    <div class="thumb">${bibHTML({ id: t.id, mods: [km + " km"] })}</div>
+    <div class="body">
+      <div class="meta">${comData ? `<span>${ic("cal")}${fmtShort(t.data)}</span>` : ""}<span>${ic("clock")}${horaTreino(t)}</span><span>${ic("pin")}${esc(t.cidade)}</span></div>
+      <h3><a class="rc-link" href="#/treino/${t.id}${de ? "?de=" + de : ""}">${esc(t.local)}</a></h3>
+      <div class="chips"><span class="chip">${km} km</span><span class="chip">Pace ${paceTxt(t.pace_seg)}/km</span></div>
+      <div class="rc-foot"><span class="conf">${ic("users")}${confirmadosTxt(t.confirmados)}</span>${extra}</div>
+    </div>
+  </article>`;
+}
+function diaTreinoHTML(s) {
+  const d = pDate(s), n = daysFrom(s);
+  return `<div class="day"><span class="disp dnum num">${pad2(d.getDate())}</span><span class="dtxt"><span class="dname">${DOW_FULL[d.getDay()].replace("-feira", "")}</span><span class="eyebrow">${MON_FULL[d.getMonth()]} ${d.getFullYear()}</span></span><span class="eyebrow rel${n <= 3 && n >= 0 ? " soon" : ""}">${relDay(s)}</span></div>`;
+}
+function treinoTopo() {
+  return `<header class="topbar"><div class="topbar-in"><div class="t"><span class="eyebrow">Treinos em grupo</span><h1 class="disp" style="font-size:30px">Treino</h1></div></div></header>`;
+}
+function treinoAbas(aba) {
+  const n = pedidosRecebidos();
+  const b = (rota, rotulo, chave, extra = "") => `<button type="button" role="tab" data-treino-aba="${rota}"${aba === chave ? ' class="on" aria-selected="true"' : ' aria-selected="false"'}>${rotulo}${extra}</button>`;
+  return `<div class="seg" role="tablist" aria-label="Áreas do Treino">${b("/treino", "Procurar", "procurar")}${b("/treino/oferecer", "Oferecer", "oferecer")}${b("/treino/meus", "Meus treinos", "meus", n ? `<span class="ct alerta" aria-label="${n} ${n === 1 ? "solicitação" : "solicitações"} esperando">${n}</span>` : "")}</div>`;
+}
+function ligarTreinoAbas(view) {
+  $$("[data-treino-aba]", view).forEach(el => el.addEventListener("click", () => go(el.dataset.treinoAba)));
+}
+/* aviso de treino no sino — quem recusa ou cancela não se identifica */
+const AVISO_TREINO = {
+  treino_aceito: () => "Pedido de treino aceito",
+  treino_recusado: () => "Pedido de treino não aceito",
+  treino_cancelado: () => "Treino cancelado",
+  treino_desistencia: p => `@${p ? p.nick : "alguém"} desistiu do treino`
+};
+function avisoTreinoHTML(n, p, nova) {
+  const titulo = (AVISO_TREINO[n.tipo] || (() => "Novidade de treino"))(p);
+  const href = n.treino ? `#/treino/${n.treino}?de=notif` : "#/treino/meus";
+  const av = p ? avatarHTML(p, "avatar av-sm") : `<span class="avatar av-sm">${ic("run")}</span>`;
+  return `<a class="person-row" href="${href}">${av}<span class="who"><b>${esc(titulo)}</b><span>${n.resumo ? esc(n.resumo) + " · " : ""}${fmtStamp(n.t)}</span></span>${nova}</a>`;
+}
+
+/* ---------- Procurar ---------- */
+const BUSCA_TREINO = "kohe.treinoBusca";
+const buscaTreinoVazia = () => ({ cidade: "", local: "", data: "", hora: "", pace: "", dist: "" });
+const buscaTreino = () => Object.assign(buscaTreinoVazia(), SS.get(BUSCA_TREINO) || {});
+let RESULTADO_TREINOS = null;   // { chave, lista }: redesenha na hora enquanto a busca refaz
+
+function abrirBuscaTreino() {
+  const f = buscaTreino();
+  const sh = openSheet(`
+    <div class="sheet-head"><h2 class="disp">Procurar treino</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+    <form class="form" id="tbForm" novalidate>
+      ${F({ id: "tb_cidade", label: "Cidade", value: f.cidade, wrap: "city", ph: "Qualquer cidade", opt: true })}
+      ${F({ id: "tb_local", label: "Local ou bairro", value: f.local, ph: "Ex.: Taquaral", opt: true, attrs: 'maxlength="60" autocomplete="off"' })}
+      <div class="row2">
+        ${F({ id: "tb_data", label: "Data", type: "date", value: f.data, attrs: `min="${ymd(new Date())}"` })}
+        ${F({ id: "tb_hora", label: "A partir de", type: "time", value: f.hora })}
+      </div>
+      <div class="row2">
+        <div class="field"><label for="tb_pace">Pace (±30 s)</label><div class="select-wrap"><select id="tb_pace" class="input"><option value="">Qualquer</option>${PACES_BUSCA.map(s => `<option value="${s}"${String(s) === String(f.pace) ? " selected" : ""}>${paceTxt(s)} /km</option>`).join("")}</select></div></div>
+        <div class="field"><label for="tb_dist">Distância</label><div class="select-wrap"><select id="tb_dist" class="input">${DIST_BUSCA.map(([v, t]) => `<option value="${v}"${v === f.dist ? " selected" : ""}>${t}</option>`).join("")}</select></div></div>
+      </div>
+      <div class="btn-row"><button class="btn" type="button" id="tbLimpar">Limpar</button><button class="btn btn-volt" type="submit">${ic("search")} Ver treinos</button></div>
+    </form>`);
+  bindCity($("#tb_cidade", sh.el));
+  $("#tbLimpar", sh.el).addEventListener("click", () => { SS.set(BUSCA_TREINO, buscaTreinoVazia()); sh.close(); render(); });
+  $("#tbForm", sh.el).addEventListener("submit", e => {
+    e.preventDefault();
+    const c = findCity(val("tb_cidade"));
+    SS.set(BUSCA_TREINO, { cidade: c ? c.n : val("tb_cidade"), local: val("tb_local"), data: val("tb_data"), hora: val("tb_hora"), pace: val("tb_pace"), dist: val("tb_dist") });
+    sh.close(); render();
+  });
+}
+
+route(/^\/treino$/, function vTreinoProcurar(view, _, q, u) {
+  const f = buscaTreino(), dist = DIST_BUSCA.find(x => x[0] === f.dist) || DIST_BUSCA[0];
+  const chips = [];
+  if (f.cidade) chips.push(["cidade", f.cidade]);
+  if (f.local) chips.push(["local", `“${f.local}”`]);
+  if (f.data) chips.push(["data", fmtShort(f.data)]);
+  if (f.hora) chips.push(["hora", `a partir de ${f.hora}`]);
+  if (f.pace) chips.push(["pace", `pace ~${paceTxt(+f.pace)}`]);
+  if (f.dist) chips.push(["dist", dist[1]]);
+  view.innerHTML = `${treinoTopo()}
+    <section class="page">
+      ${treinoAbas("procurar")}
+      <button class="busca-treino" type="button" id="tbAbrir">${ic("search")}<span>${chips.length ? "Mudar a busca" : "Cidade, local, data, horário, pace…"}</span>${ic("sliders")}</button>
+      ${chips.length ? `<div class="active-filters">${chips.map(([k, l]) => `<button class="fchip" type="button" data-tbrm="${k}" aria-label="Remover filtro ${esc(l)}">${esc(l)}${ic("x")}</button>`).join("")}</div>` : ""}
+      <div id="tbOut" class="form" style="gap:14px"></div>
+    </section>`;
+  ligarTreinoAbas(view);
+  $("#tbAbrir").addEventListener("click", abrirBuscaTreino);
+  $$("[data-tbrm]", view).forEach(b => b.addEventListener("click", () => {
+    const nf = buscaTreino(); nf[b.dataset.tbrm] = ""; SS.set(BUSCA_TREINO, nf); render();
+  }));
+
+  const out = $("#tbOut"), chave = JSON.stringify(f);
+  const pintar = lista => {
+    if (!lista.length) {
+      out.innerHTML = `<div class="empty"><h3>${chips.length ? "Nada com essa busca" : "Nenhum treino por aqui"}</h3><p>${chips.length ? "Tente outra data, outro pace ou tire algum filtro." : "Ninguém ofereceu treino ainda. Que tal abrir o primeiro?"}</p><a class="btn btn-sm btn-volt" href="#/treino/oferecer">${ic("plus")} Oferecer treino</a></div>`;
+      return;
+    }
+    let html = "", ultimo = "";
+    lista.forEach(t => {
+      if (t.data !== ultimo) { ultimo = t.data; html += diaTreinoHTML(t.data); }
+      html += treinoCard(t, { de: "procurar", extra: t.meu_treino ? PAPEL_TAG.organizador : pedidoPill(t.meu_pedido) });
+    });
+    out.innerHTML = html;
+  };
+  if (RESULTADO_TREINOS && RESULTADO_TREINOS.chave === chave) pintar(RESULTADO_TREINOS.lista);
+  else out.innerHTML = `<p class="eyebrow carregando">Procurando treinos…</p>`;
+  sb.rpc("buscar_treinos", {
+    p_cidade: f.cidade || null, p_local: f.local || null, p_data: f.data || null, p_hora_de: f.hora || null,
+    p_pace_min: f.pace ? +f.pace - 30 : null, p_pace_max: f.pace ? +f.pace + 30 : null,
+    p_dist_min: dist[2], p_dist_max: dist[3]
+  }).then(({ data, error }) => {
+    if (!document.body.contains(out)) return;   // a tela já mudou
+    if (error) { out.innerHTML = `<div class="note">${ic("alert")}<span>${esc(erroTreino(error))}</span></div>`; return; }
+    RESULTADO_TREINOS = { chave, lista: data || [] };
+    pintar(RESULTADO_TREINOS.lista);
+  });
+}, { tab: "treino" });
+
+/* ---------- Oferecer ---------- */
+const RASCUNHO_TREINO = "kohe.treinoRascunho";
+route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
+  const d = Object.assign({ cidade: "", local: "", ponto: "", lat: null, lon: null, data: "", hora: "", pace: "", dist: "", desc: "" }, SS.get(RASCUNHO_TREINO) || {});
+  const guardar = () => SS.set(RASCUNHO_TREINO, d);
+  const coletar = () => ["cidade", "local", "ponto", "data", "hora", "pace", "dist", "desc"].forEach(k => {
+    const el = document.getElementById("tr_" + k); if (el) d[k] = el.value.trim();
+  });
+  const temGps = d.lat != null && d.lon != null;
+  view.innerHTML = `${treinoTopo()}
+    <section class="page">
+      ${treinoAbas("oferecer")}
+      <form class="form" id="trForm" novalidate>
+        ${F({ id: "tr_cidade", label: "Cidade", value: d.cidade, wrap: "city", ph: "Comece a digitar", err: "Informe a cidade." })}
+        ${F({ id: "tr_local", label: "Local do treino", value: d.local, ph: "Ex.: Parque Taquaral", attrs: 'maxlength="60" autocapitalize="words"', hint: "Aparece na busca. Use o nome de um lugar público.", err: "Informe o local do treino." })}
+        ${F({ id: "tr_ponto", label: "Ponto de encontro", value: d.ponto, ph: "Ex.: Portão 2, em frente ao quiosque", attrs: 'maxlength="160"', hint: "Só quem você aceitar vê. Não é o endereço da sua conta.", err: "Informe o ponto de encontro ou use sua localização atual." })}
+        <div class="gps-linha">
+          <button class="btn btn-sm" type="button" id="tr_gps">${ic("gps")} ${temGps ? "Atualizar localização" : "Usar localização atual"}</button>
+          <span class="hint" id="tr_gpsTxt">${temGps ? `${ic("check")}Localização salva <button type="button" class="linkbtn" id="tr_gpsRm">Remover</button>` : ""}</span>
+        </div>
+        <div class="row2">
+          ${F({ id: "tr_data", label: "Data", type: "date", value: d.data, attrs: `min="${ymd(new Date())}"`, err: "Escolha a data." })}
+          ${F({ id: "tr_hora", label: "Horário", type: "time", value: d.hora, err: "Informe o horário." })}
+        </div>
+        <div class="row2">
+          <div class="field" id="f-tr_pace"><label for="tr_pace">Pace previsto</label><div class="select-wrap"><select id="tr_pace" class="input"><option value="">Escolha</option>${PACES.map(s => `<option value="${s}"${String(s) === String(d.pace) ? " selected" : ""}>${paceTxt(s)} /km</option>`).join("")}</select></div><div class="msg">${ic("alert")}<span>Escolha o pace.</span></div></div>
+          <div class="field" id="f-tr_dist"><label for="tr_dist">Distância</label><div class="input-wrap km"><input id="tr_dist" class="input" inputmode="decimal" autocomplete="off" maxlength="5" placeholder="Ex.: 8" value="${esc(d.dist)}"><span class="post">km</span></div><div class="msg">${ic("alert")}<span>Informe a distância.</span></div></div>
+        </div>
+        <div class="field" id="f-tr_desc">
+          <label for="tr_desc">Descrição do treino <span class="opt">(opcional)</span></label>
+          <textarea id="tr_desc" class="input" maxlength="${DESC_MAX}" placeholder="Corrida leve, regenerativo, tempo run...">${esc(d.desc)}</textarea>
+          <div class="counter" id="tr_descN">${d.desc.length} / ${DESC_MAX}</div>
+        </div>
+        <div class="lock-card">${ic("lock")}<span>Na busca aparecem só local, data, horário, pace e distância. Quem você é, o ponto de encontro e a localização ficam visíveis apenas para quem você aceitar.</span></div>
+        <button class="btn btn-volt btn-block" type="submit">Publicar treino ${ic("arrow")}</button>
+      </form>
+    </section>`;
+
+  const refazer = () => { coletar(); guardar(); const sc = view.scrollTop; vTreinoOferecer(view, _, q, u); view.scrollTop = sc; };
+  ligarTreinoAbas(view);
+  bindCity($("#tr_cidade"));
+  const form = $("#trForm");
+  form.addEventListener("input", () => { clearTimeout(vTreinoOferecer.t); vTreinoOferecer.t = setTimeout(() => { coletar(); guardar(); }, 250); });
+  form.addEventListener("change", () => { coletar(); guardar(); });
+  const dist = $("#tr_dist");
+  dist.addEventListener("input", () => { const v = kmInput(dist.value); if (v !== dist.value) dist.value = v; });
+  const desc = $("#tr_desc");
+  desc.addEventListener("input", () => { $("#tr_descN").textContent = `${desc.value.length} / ${DESC_MAX}`; });
+  const rm = $("#tr_gpsRm");
+  if (rm) rm.addEventListener("click", () => { d.lat = null; d.lon = null; refazer(); });
+  /* Sem serviço de mapa: a coordenada fica guardada para quem for aceito e,
+     se a cidade estiver vazia, sugere a mais próxima da lista do Kohe.       */
+  $("#tr_gps").addEventListener("click", e => {
+    const b = e.currentTarget;
+    if (!navigator.geolocation) { toast("Este navegador não libera a localização.", true); return; }
+    b.disabled = true; $("#tr_gpsTxt").textContent = "Buscando sua localização…";
+    navigator.geolocation.getCurrentPosition(pos => {
+      coletar();
+      d.lat = Math.round(pos.coords.latitude * 1e5) / 1e5;
+      d.lon = Math.round(pos.coords.longitude * 1e5) / 1e5;
+      if (!d.cidade) {
+        const perto = CITIES.map(c => ({ c, km: distKm(d, c) })).sort((x, y) => x.km - y.km)[0];
+        if (perto && perto.km <= 40) d.cidade = perto.c.n;
+      }
+      if (!location.hash.startsWith("#/treino/oferecer")) { guardar(); return; }
+      refazer(); toast("Localização salva. Só quem você aceitar vê.");
+    }, () => {
+      if (!document.body.contains(b)) return;
+      b.disabled = false; $("#tr_gpsTxt").textContent = "";
+      toast("Não deu para acessar a localização. Escreva o ponto de encontro.", true);
+    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  });
+
+  form.addEventListener("submit", async e => {
+    e.preventDefault(); coletar(); guardar();
+    /* recomeça do zero: um campo pode ter ficado certo sem ser digitado (a data
+       mudou e o horário deixou de ser passado, ou a localização supriu o ponto) */
+    $$(".field.bad", form).forEach(f => f.classList.remove("bad"));
+    const agora = new Date(), km = parseFloat(String(d.dist).replace(",", "."));
+    if (!d.cidade) bad("tr_cidade");
+    if (d.local.length < 2) bad("tr_local", d.local ? "Use pelo menos 2 letras." : "Informe o local do treino.");
+    if (!d.ponto && d.lat == null) bad("tr_ponto");
+    if (!d.data) bad("tr_data");
+    else if (d.data < ymd(agora)) bad("tr_data", "Essa data já passou.");
+    if (!d.hora) bad("tr_hora");
+    else if (d.data === ymd(agora) && d.hora <= `${pad2(agora.getHours())}:${pad2(agora.getMinutes())}`) bad("tr_hora", "Esse horário já passou.");
+    if (!d.pace) bad("tr_pace");
+    if (!d.dist) bad("tr_dist");
+    else if (!(km > 0 && km <= 100)) bad("tr_dist", "Use um valor entre 0,1 e 100 km.");
+    if (goFirstBad(view)) return;
+    if (!temPerfilCorredor(u) && !(await pedirPerfilCorredor(u, "oferecer"))) return;
+    const btn = $("button[type=submit]", form); btn.disabled = true;
+    const cidade = findCity(d.cidade);
+    const { data, error } = await sb.from("treinos").insert({
+      organizador_id: u.id, cidade: cidade ? cidade.n : d.cidade, local: d.local,
+      ponto_encontro: d.ponto || null, lat: d.lat, lon: d.lon, data: d.data, hora: d.hora,
+      pace_seg: +d.pace, distancia_km: Math.round(km * 100) / 100, descricao: d.desc || null
+    }).select("id").single();
+    if (error) { btn.disabled = false; toast("Não deu para publicar: " + erroTreino(error), true); return; }
+    clearTimeout(vTreinoOferecer.t);   // senão o salvamento atrasado recria o rascunho já publicado
+    SS.del(RASCUNHO_TREINO);
+    await carregarTreinos();
+    toast("Treino publicado. Os pedidos aparecem em Meus treinos.");
+    go("/treino/" + data.id + "?de=meus");
+  });
+}, { tab: "treino" });
+
+/* ---------- Meus treinos ---------- */
+route(/^\/treino\/meus$/, function vTreinoMeus(view, _, q, u) {
+  const token = vTreinoMeus.token = (vTreinoMeus.token || 0) + 1;
+  const pintar = () => {
+    const futuros = MEUS_TREINOS.filter(t => t.status === "ativo" && treinoFuturo(t));
+    const organizo = futuros.filter(t => t.papel === "organizador");
+    const recebidas = organizo.filter(t => t.pendentes > 0);
+    const semPedido = organizo.filter(t => !(t.pendentes > 0));
+    const participo = futuros.filter(t => t.papel === "participante" && t.pedido === "aceito");
+    const enviadas = futuros.filter(t => t.papel === "participante" && (t.pedido === "pendente" || t.pedido === "recusado"));
+    const historico = MEUS_TREINOS
+      .filter(t => (!treinoFuturo(t) || t.status === "cancelado")
+        && (t.papel === "organizador" || t.pedido === "aceito" || (t.status === "cancelado" && t.pedido === "pendente")))
+      .sort((a, b) => inicioTreino(b) - inicioTreino(a));
+    const fim = t => t.status === "cancelado" ? `<span class="st st-rem">Cancelado</span>`
+      : t.papel === "organizador" && !t.confirmados ? `<span class="st st-fin">Sem confirmados</span>`
+      : `<span class="st st-pub">Realizado</span>`;
+    const secao = (titulo, lista, extra) => lista.length
+      ? `<div class="section-title"><h2 class="disp">${titulo}</h2><span class="eyebrow num">${lista.length}</span></div>${lista.map(t => treinoCard(t, { de: "meus", comData: true, extra: extra(t) })).join("")}`
+      : "";
+    const nada = !(recebidas.length || semPedido.length || participo.length || enviadas.length || historico.length);
+    view.innerHTML = `${treinoTopo()}
+      <section class="page">
+        ${treinoAbas("meus")}
+        ${nada ? `<div class="empty"><h3>Nenhum treino ainda</h3><p>Procure um treino para correr junto ou ofereça o seu.</p><div class="btn-row" style="align-self:stretch"><a class="btn btn-sm" href="#/treino">${ic("search")} Procurar</a><a class="btn btn-sm btn-volt" href="#/treino/oferecer">${ic("plus")} Oferecer</a></div></div>` : ""}
+        ${secao("Solicitações recebidas", recebidas, t => `<span class="st st-pend">${t.pendentes} ${t.pendentes === 1 ? "pedido" : "pedidos"}</span>${PAPEL_TAG.organizador}`)}
+        ${secao("Próximos que você organiza", semPedido, () => PAPEL_TAG.organizador)}
+        ${secao("Próximos em que você participa", participo, () => PAPEL_TAG.participante)}
+        ${secao("Solicitações enviadas", enviadas, t => pedidoPill(t.pedido))}
+        ${secao("Histórico", historico, t => fim(t) + (t.papel === "organizador" ? PAPEL_TAG.organizador : t.pedido === "aceito" ? PAPEL_TAG.participante : ""))}
+      </section>`;
+    ligarTreinoAbas(view);
+  };
+  pintar();
+  carregarTreinos().then(() => {
+    if (vTreinoMeus.token !== token || location.hash !== "#/treino/meus") return;
+    renderChrome({ tab: "treino" }, u);
+    const sc = view.scrollTop; pintar(); view.scrollTop = sc;
+  });
+}, { tab: "treino" });
+
+/* ---------- detalhe do treino ---------- */
+const DETALHE_TREINO = {};   // id -> { t, pedidos }: redesenha na hora enquanto recarrega
+route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/, function vTreinoDetalhe(view, [id], q, u) {
+  const VOLTA = { procurar: ["#/treino", "treino"], meus: ["#/treino/meus", "treino"], notif: ["#/perfil/notificacoes", "perfil"] };
+  const [back, aba] = VOLTA[q.get("de")] || ["#/treino/meus", "treino"];
+  if (aba !== "treino") renderChrome({ tab: aba }, u);
+  const token = vTreinoDetalhe.token = (vTreinoDetalhe.token || 0) + 1;
+  const vivo = () => vTreinoDetalhe.token === token && location.hash.startsWith("#/treino/" + id);
+  const topo = (pill = "") => `<header class="topbar"><div class="topbar-in"><a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a><div class="t"><span class="eyebrow">Treino</span></div>${pill}</div></header>`;
+
+  async function buscar() {
+    const { data: t, error } = await sb.rpc("detalhe_treino", { p_treino: id });
+    if (error) return { erro: erroTreino(error) };
+    if (!t) return { t: null };
+    let pedidos = [];
+    if (t.sou_organizador) {
+      const r = await sb.rpc("pedidos_do_treino", { p_treino: id });
+      if (!r.error) pedidos = r.data || [];
+    }
+    if (t.sou_organizador || t.estou_confirmado) {
+      /* perfil e chat de quem vai precisam dessas pessoas no cache, e o chat
+         precisa saber que agora vocês treinam juntos */
+      const ids = [t.organizador && t.organizador.id, ...(t.participantes || []).map(x => x.id)].filter(Boolean);
+      await Promise.all([carregarTreinos(), ids.some(x => !userById(x)) ? carregarPessoas() : null]);
+    }
+    return { t, pedidos };
+  }
+  async function atualizar() {
+    const r = await buscar();
+    if (!vivo()) return;
+    if (r.t) DETALHE_TREINO[id] = r; else delete DETALHE_TREINO[id];
+    renderChrome({ tab: aba }, u);
+    const sc = view.scrollTop; pintar(r); view.scrollTop = sc;
+  }
+  function pintar({ t, pedidos = [], erro }) {
+    if (erro) { view.innerHTML = `${topo()}<section class="page"><div class="note">${ic("alert")}<span>${esc(erro)}</span></div></section>`; return; }
+    if (!t) { view.innerHTML = notFoundHTML("Treino não encontrado", "Esse endereço não leva a nenhum treino.", "#/treino", "Procurar treinos"); return; }
+    const km = kmTreino(t), futuro = treinoFuturo(t), cancelado = t.status === "cancelado";
+    const org = !!t.sou_organizador, conf = !!t.estou_confirmado, envolvido = org || conf;
+    const chatAberto = !cancelado && t.data >= ymd(new Date());   // a regra do banco vale até o fim do dia
+    const pendentes = pedidos.filter(x => x.status === "pendente");
+    const aviso = txt => `<div class="note">${ic("alert")}<span>${txt}</span></div>`;
+
+    let acao;
+    if (cancelado) acao = aviso(org ? "Você cancelou este treino." : "Este treino foi cancelado.");
+    else if (org) acao = `<div class="state-ok">${ic("flag")} Você organiza este treino</div>`;
+    else if (!futuro) acao = conf ? `<div class="state-ok">${ic("check")} Você participou deste treino</div>` : aviso("Este treino já aconteceu.");
+    else if (conf) acao = `<div class="state-ok">${ic("check")} Presença confirmada</div><button class="linkbtn small-link" type="button" id="trSair" style="color:var(--danger)">Desistir do treino</button>`;
+    else if (t.meu_pedido === "pendente") acao = `<div class="state-ok espera">${ic("clock")} Pedido enviado · aguardando resposta</div><button class="linkbtn small-link" type="button" id="trDesistirPedido">Cancelar pedido</button>`;
+    else if (t.meu_pedido === "recusado") acao = aviso("Quem organiza não aceitou seu pedido para este treino.");
+    else acao = `<button class="btn btn-volt btn-block" type="button" id="trPedir">${ic("run")} Solicitar participação</button>
+      <p class="privacy-note">Antes de aceitar, quem organiza vê só seu nível, se você gosta de conversar, sua mini biografia e seus hobbies, sem nome, foto ou @. O ponto de encontro e quem vai aparecem depois do aceite.</p>`;
+
+    const mapa = t.lat != null && t.lon != null
+      ? `<a class="mapa" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.lat + "," + t.lon)}" target="_blank" rel="noopener">${ic("external")}Abrir no mapa</a>` : "";
+    const ponto = envolvido
+      ? `<dd>${t.ponto_encontro ? esc(t.ponto_encontro) : "Na localização marcada"}${mapa}</dd>`
+      : `<dd class="tbd">${ic("lock")} Liberado para quem for aceito</dd>`;
+
+    const pedidoCard = x => `<div class="req">
+        <div class="req-top"><span class="eyebrow">Pedido · ${fmtStamp(x.criado_em)}</span><span class="st st-pend">Aguardando</span></div>
+        ${corredorTagsHTML(x)}
+        ${x.bio ? `<p class="prose">${esc(x.bio)}</p>` : `<p class="muted" style="font-size:13.5px">Sem mini biografia.</p>`}
+        ${hobbiesHTML(x.hobbies)}
+        <div class="btn-row"><button class="btn btn-sm" type="button" data-recusar="${x.pedido_id}">Recusar</button><button class="btn btn-sm btn-volt" type="button" data-aceitar="${x.pedido_id}">${ic("check")} Aceitar</button></div>
+      </div>`;
+    const pessoa = (pp, papel) => {
+      if (!pp) return "";
+      if (pp.id === u.id) return `<div class="person-row">${avatarHTML(u, "avatar av-sm")}<span class="who"><b>@${esc(u.nick)}</b><span>${papel} · você</span></span></div>`;
+      const x = userById(pp.id) || { nick: pp.nick, foto: pp.foto }, nick = encodeURIComponent(x.nick);
+      return `<div class="person-row">${avatarHTML(x, "avatar av-sm")}<a class="who" href="#/u/${nick}?de=treino:${t.id}" style="color:inherit;text-decoration:none"><b>@${esc(x.nick)}</b><span>${papel}</span></a>${chatAberto ? `<a class="btn btn-sm" href="#/chat/${nick}?de=treino:${t.id}" aria-label="Mandar mensagem para @${esc(x.nick)}">${ic("chat")}</a>` : ""}</div>`;
+    };
+    const quemVai = envolvido ? [pessoa(t.organizador, "Organiza"), ...(t.participantes || []).map(pp => pessoa(pp, "Presença confirmada"))].filter(Boolean) : [];
+
+    view.innerHTML = `${topo(cancelado ? `<span class="st st-rem">Cancelado</span>` : !futuro ? `<span class="st st-fin">Encerrado</span>` : "")}
+      <section class="page">
+        <div class="treino-head">
+          <div class="thumb">${bibHTML({ id: t.id, mods: [km + " km"] })}</div>
+          <div class="form" style="gap:8px;min-width:0">
+            <span class="eyebrow">${fmtLong(t.data)}${futuro && !cancelado ? " · " + relDay(t.data) : ""}</span>
+            <h1 class="disp">${esc(t.local)}</h1>
+            <span class="komunidade-line">${ic("pin")}${esc(t.cidade)}</span>
+          </div>
+        </div>
+        <dl class="dl">
+          <div><dt>${ic("clock")}Horário</dt><dd class="num">${horaTreino(t)}</dd></div>
+          <div><dt>${ic("bolt")}Pace previsto</dt><dd class="num">${paceTxt(t.pace_seg)} /km</dd></div>
+          <div><dt>${ic("flag")}Distância</dt><dd class="num">${km} km</dd></div>
+          <div><dt>${ic("users")}Confirmados</dt><dd class="num">${t.confirmados || 0}</dd></div>
+          <div class="wide"><dt>${ic("pin")}Ponto de encontro</dt>${ponto}</div>
+        </dl>
+        ${t.descricao ? `<div class="field"><span class="label">Sobre o treino</span><p class="prose">${esc(t.descricao)}</p></div>` : ""}
+        ${acao}
+        ${org && !cancelado && futuro ? `<div class="section-title"><h2 class="disp">Solicitações</h2><span class="eyebrow num">${pendentes.length}</span></div>${pendentes.length ? pendentes.map(pedidoCard).join("") : `<div class="empty sm"><p>Nenhuma solicitação esperando você.</p></div>`}` : ""}
+        ${quemVai.length ? `<div class="section-title"><h2 class="disp">Quem vai</h2><span class="eyebrow num">${quemVai.length}</span></div><div class="rows">${quemVai.join("")}</div>` : ""}
+        ${org && !cancelado && futuro ? `<button class="linkbtn small-link" type="button" id="trCancelar" style="color:var(--danger)">Cancelar treino</button>` : ""}
+      </section>`;
+
+    const ao = (sel, fn) => { const b = $(sel, view); if (b) b.addEventListener("click", ev => fn(ev.currentTarget)); };
+    const rodar = async (b, funcao, args, ok) => {
+      b.disabled = true;
+      const { error } = await sb.rpc(funcao, args);
+      if (error) { b.disabled = false; toast(erroTreino(error), true); return; }
+      toast(ok);
+      /* antes de redesenhar: badge da aba, Meus treinos e chat liberado mudam
+         com qualquer uma dessas ações (inclusive para quem deixou de participar) */
+      await carregarTreinos();
+      await atualizar();
+    };
+    ao("#trPedir", async b => {
+      if (!temPerfilCorredor(u) && !(await pedirPerfilCorredor(u, "pedir"))) return;
+      rodar(b, "pedir_treino", { p_treino: t.id }, "Pedido enviado. Você recebe um aviso quando responderem.");
+    });
+    ao("#trDesistirPedido", async b => {
+      if (!(await confirmBox({ title: "Cancelar pedido?", ok: "Cancelar pedido", cancel: "Voltar", text: "Seu pedido sai da lista de quem organiza. Se mudar de ideia, dá para pedir de novo." }))) return;
+      rodar(b, "cancelar_pedido_treino", { p_treino: t.id }, "Pedido cancelado.");
+    });
+    ao("#trSair", async b => {
+      if (!(await confirmBox({ title: "Desistir do treino?", ok: "Desistir", cancel: "Voltar", danger: true, text: "Quem organiza recebe um aviso de que você não vai, e o chat liberado pelo treino deixa de valer." }))) return;
+      rodar(b, "cancelar_pedido_treino", { p_treino: t.id }, "Você saiu do treino.");
+    });
+    ao("#trCancelar", async b => {
+      if (!(await confirmBox({ title: "Cancelar treino?", ok: "Cancelar treino", cancel: "Voltar", danger: true, text: "Quem pediu para participar e quem já foi aceito recebem um aviso. Não dá para desfazer." }))) return;
+      rodar(b, "cancelar_treino", { p_treino: t.id }, "Treino cancelado.");
+    });
+    $$("[data-aceitar]", view).forEach(b => b.addEventListener("click", () =>
+      rodar(b, "decidir_pedido_treino", { p_pedido: b.dataset.aceitar, p_aceitar: true }, "Pedido aceito. Agora vocês podem conversar pelo chat.")));
+    $$("[data-recusar]", view).forEach(b => b.addEventListener("click", async () => {
+      if (!(await confirmBox({ title: "Recusar pedido?", ok: "Recusar", cancel: "Voltar", danger: true, text: "A pessoa recebe um aviso, sem saber quem organiza, e não pode pedir de novo para este treino." }))) return;
+      rodar(b, "decidir_pedido_treino", { p_pedido: b.dataset.recusar, p_aceitar: false }, "Pedido recusado.");
+    }));
+  }
+
+  if (DETALHE_TREINO[id]) pintar(DETALHE_TREINO[id]);
+  else view.innerHTML = `${topo()}<section class="page"><p class="eyebrow carregando">Carregando treino…</p></section>`;
+  atualizar();
+}, { tab: "treino" });
+
 function installAppIcon(onlyTouch = false) {
   const draw = size => {
     const c = document.createElement("canvas"); c.width = c.height = size;
@@ -4022,20 +4969,33 @@ function maybeInstallTip() {
         ? `<li>Toque em <b>Compartilhar</b> ${ic("share")} na barra do Safari.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li>`
         : `<li>Toque no menu ${ic("dots")} do Chrome.</li><li>Escolha <b>Adicionar à tela inicial</b> (ou <b>Instalar app</b>) e confirme.</li>`}<li>Abra o Kohe pelo ícone verde.</li></ol>
       ${ios ? "" : `<button class="btn btn-volt btn-block" type="button" id="tipInstall"${INSTALL_EVT ? "" : " hidden"}>${ic("plus")} Adicionar à tela inicial</button>`}
-      <button class="btn${ios ? " btn-volt" : ""} btn-block" type="button" data-close id="tipOk" disabled>Entendi (${TRAVA})</button>`, {
+      <button class="btn${ios ? " btn-volt" : ""} btn-block" type="button" data-close id="tipOk" disabled>Entendi (${TRAVA})</button>
+      <div class="slidebar tip-barra" id="tipBarraTrilho" aria-hidden="true"><i id="tipBarra" style="width:100%"></i></div>`, {
       travarPor: TRAVA * 1000,
       aoDestravar: () => {
         if (contagem) clearInterval(contagem);
         const x = $("#tipX"); if (x) x.style.visibility = "";
         const ok = $("#tipOk"); if (ok) { ok.disabled = false; ok.textContent = "Entendi"; }
+        const trilho = $("#tipBarraTrilho"); if (trilho) trilho.style.visibility = "hidden";   // some sem pular o layout
       },
       onClose: () => { if (contagem) clearInterval(contagem); }
     });
     let resta = TRAVA;
+    /* A barra esvazia junto com a contagem. Com "reduzir movimento" ligado, o
+       app anula transições — então ela desce em degraus a cada segundo, em vez
+       de sumir de uma vez enquanto o botão ainda conta.                       */
+    const barra = $("#tipBarra");
+    const suave = !reducedMotion();
+    if (barra && suave) {
+      void barra.offsetWidth;   // desenha os 100% antes de começar a esvaziar
+      barra.style.transition = `width ${TRAVA}s linear`;
+      barra.style.width = "0%";
+    }
     contagem = setInterval(() => {
       resta -= 1;
       const ok = $("#tipOk");
       if (ok && resta > 0) ok.textContent = `Entendi (${resta})`;
+      if (barra && !suave) barra.style.width = `${Math.max(0, resta) / TRAVA * 100}%`;
     }, 1000);
     sh.el.addEventListener("click", ev => { if (ev.target.closest("[data-close]")) { Prefs.d.dicaTela = true; Prefs.save(); } });
     const tipBtn = $("#tipInstall", sh.el);
@@ -4098,6 +5058,8 @@ if (window.visualViewport) {
   await carregarConfig();
   await carregarFinder();
   await carregarPedidos();
+  await carregarEdicoes();
+  await carregarTreinos();
   ouvirMensagens();
   ouvirConfig();
   purgeExcluded();
@@ -4120,6 +5082,8 @@ if (window.visualViewport) {
     await carregarConfig();
     await carregarFinder();
     await carregarPedidos();
+    await carregarEdicoes();
+    await carregarTreinos();
     ouvirMensagens();
     ouvirConfig();
     if (!$(".scrim")) render();
