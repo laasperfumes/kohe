@@ -275,6 +275,12 @@ textarea.input{height:auto;min-height:112px;padding:14px 16px;resize:vertical;li
 .swipe .rc{touch-action:pan-y;transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .swipe .rc.drag{transition:none}
 .swipe-hint{display:flex;align-items:center;gap:8px}
+/* linha de conversa arrastável: precisa de fundo próprio, senão o vermelho de
+   baixo aparece através dela enquanto desliza */
+.swipe .person-row{touch-action:pan-y;transition:transform .22s cubic-bezier(.2,.8,.2,1);background:var(--surface);border-top:1px solid var(--line)}
+.swipe .person-row.drag{transition:none}
+.rows .swipe{border-radius:0}
+.rows>.swipe:first-child .person-row,.rows>.person-row:first-child{border-top:0}
 
 /* ---------- tab bar + fab ---------- */
 .tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:40;width:min(420px,calc(100% - 28px));height:var(--nav-h);border-radius:24px;background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);border:1px solid var(--glass-line);box-shadow:var(--shade);display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);padding:6px;gap:4px}
@@ -1145,6 +1151,29 @@ async function carregarNotificacoes() {
   DB.save();
 }
 
+/* ---------- limpar conversa (só para mim) ----------
+   Guarda a hora em que limpei cada conversa. Não é exclusão: a mensagem é uma
+   linha só, compartilhada pelos dois, e apagá-la apagaria para o outro também. */
+const CHATS_LIMPOS = {};   // id da outra pessoa -> quando eu limpei
+
+async function carregarChatsLimpos() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("chat_limpo").select("outro_id, limpo_em");
+  if (error || !data) return;
+  Object.keys(CHATS_LIMPOS).forEach(k => { delete CHATS_LIMPOS[k]; });
+  data.forEach(r => { CHATS_LIMPOS[r.outro_id] = r.limpo_em; });
+}
+
+async function limparConversa(outroId) {
+  if (!sb || !CURRENT) return false;
+  const limpo_em = new Date().toISOString();
+  const { error } = await sb.from("chat_limpo")
+    .upsert({ user_id: CURRENT.id, outro_id: outroId, limpo_em }, { onConflict: "user_id,outro_id" });
+  if (error) { toast("Não deu para limpar a conversa. Tente de novo.", true); return false; }
+  CHATS_LIMPOS[outroId] = limpo_em;
+  return true;
+}
+
 async function carregarMensagens() {
   if (!sb || !CURRENT) return;
   const { data, error } = await sb.from("messages")
@@ -1569,6 +1598,7 @@ async function resetAll() {
   await carregarPerfil(); await carregarPessoas(); await carregarKomunidades();
   await carregarCorridas(); await carregarFavoritas();
   await carregarKonexoes(); await carregarNotificacoes(); await carregarMensagens();
+  await carregarChatsLimpos();
   toast("Dados iniciais restaurados."); go("/feed");
 }
 
@@ -1948,10 +1978,13 @@ route(/^\/feed$/, function vFeed(view, _, q, u) {
   if (admin) bindSwipe(view, u);
 }, { tab: "feed", fab: true });
 
-function bindSwipe(view, u) {
+/* O gesto não sabe o que está arrastando: recebe o seletor do elemento que
+   desliza. Assim o mesmo código serve o card de corrida e a linha de conversa. */
+function bindSwipe(view, u, sel = ".rc") {
   const OPEN = -92;
   $$("[data-swipe]", view).forEach(w => {
-    const card = $(".rc", w);
+    const card = $(sel, w);
+    if (!card) return;
     let x0 = 0, y0 = 0, dx = 0, down = false, axis = null;
     const set = x => { card.style.transform = x ? `translateX(${x}px)` : ""; };
     card.addEventListener("pointerdown", e => {
@@ -1974,9 +2007,10 @@ function bindSwipe(view, u) {
       if (!down) return; down = false; card.classList.remove("drag");
       if (axis === "x") {
         const base = w.classList.contains("open") ? OPEN : 0, open = base + dx < OPEN / 2;
-        $$(".swipe.open", view).forEach(o => { if (o !== w) { o.classList.remove("open", "dragging"); $(".rc", o).style.transform = ""; } });
+        $$(".swipe.open", view).forEach(o => { if (o !== w) { o.classList.remove("open", "dragging"); const outro = $(sel, o); if (outro) outro.style.transform = ""; } });
         w.classList.toggle("open", open); set(open ? OPEN : 0);
-        $("[data-del]", w).tabIndex = open ? 0 : -1;
+        /* o botão de baixo muda conforme a tela; sem a guarda, isto estoura */
+        const acao = $("[data-del], [data-limpar]", w); if (acao) acao.tabIndex = open ? 0 : -1;
         card.dataset.moved = "1"; setTimeout(() => { delete card.dataset.moved; }, 80);
         setTimeout(() => { if (!w.classList.contains("open")) w.classList.remove("dragging"); }, 240);
       }
@@ -3470,21 +3504,56 @@ route(/^\/premium$/, function vPremium(view, _, q, u) {
 /* =====================================================================
    TELAS — mensagens entre Konexões
    ===================================================================== */
-const pairMsgs = (a, b) => DB.msgs.filter(m => (m.de === a && m.para === b) || (m.de === b && m.para === a)).sort((x, y) => x.t.localeCompare(y.t));
+/* Esconde o que é anterior à minha marca de limpeza. Como é filtro e não
+   exclusão, o outro lado continua com a conversa inteira e mensagens novas
+   aparecem normalmente para os dois.                                        */
+const pairMsgs = (a, b) => {
+  const eu = me();
+  const corte = eu && eu.id === a ? CHATS_LIMPOS[b] : eu && eu.id === b ? CHATS_LIMPOS[a] : null;
+  return DB.msgs
+    .filter(m => (m.de === a && m.para === b) || (m.de === b && m.para === a))
+    .filter(m => !corte || m.t > corte)
+    .sort((x, y) => x.t.localeCompare(y.t));
+};
 function shortStamp(iso) { const d = new Date(iso); return ymd(d) === ymd(new Date()) ? `${pad2(d.getHours())}:${pad2(d.getMinutes())}` : `${d.getDate()} ${MON[d.getMonth()]}`; }
 
 route(/^\/mensagens$/, function vInbox(view, _, q, u) {
   const ids = new Set(konexoesOf(u.id).map(p => p.id));
-  DB.msgs.forEach(m => { if (m.de === u.id) ids.add(m.para); else if (m.para === u.id) ids.add(m.de); });
+  /* Quem não é Konexão só aparece se ainda houver mensagem visível: conversa
+     limpa não fica sobrando na lista como linha vazia.                       */
+  const outros = new Set();
+  DB.msgs.forEach(m => { if (m.de === u.id) outros.add(m.para); else if (m.para === u.id) outros.add(m.de); });
+  outros.forEach(id => { if (!ids.has(id) && pairMsgs(u.id, id).length) ids.add(id); });
   const rows = [...ids].map(id => userById(id)).filter(Boolean).map(p => {
     const ms = pairMsgs(u.id, p.id);
     return { p, last: ms[ms.length - 1], unread: ms.filter(m => m.para === u.id && !m.lida).length };
   }).sort((a, b) => (b.last ? b.last.t : "").localeCompare(a.last ? a.last.t : "") || a.p.nick.localeCompare(b.p.nick));
   view.innerHTML = `${subHead("Mensagens", "#/perfil", "Perfil")}
     <section class="page">
-      ${rows.length ? `<div class="rows">${rows.map(({ p, last, unread }) => `<a class="person-row" href="#/chat/${encodeURIComponent(p.nick)}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p.nick)}</b><span>${last ? (last.de === u.id ? "Você: " : "") + esc(last.texto) : "Mande o primeiro oi"}</span></span>${unread ? `<span class="badge-num">${unread}</span>` : last ? `<span class="eyebrow">${shortStamp(last.t)}</span>` : ""}</a>`).join("")}</div>`
+      ${rows.some(r => r.last) ? `<p class="eyebrow swipe-hint">${ic("trash")} Arraste uma conversa para a esquerda para limpar</p>` : ""}
+      ${rows.length ? `<div class="rows">${rows.map(({ p, last, unread }) => {
+        const linha = `<a class="person-row" href="#/chat/${encodeURIComponent(p.nick)}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p.nick)}</b><span>${last ? (last.de === u.id ? "Você: " : "") + esc(last.texto) : "Mande o primeiro oi"}</span></span>${unread ? `<span class="badge-num">${unread}</span>` : last ? `<span class="eyebrow">${shortStamp(last.t)}</span>` : ""}</a>`;
+        /* só oferece limpar onde há o que limpar */
+        return last
+          ? `<div class="swipe" data-swipe="${p.id}"><div class="under"><button type="button" data-limpar="${p.id}" aria-label="Limpar conversa com @${esc(p.nick)}" tabindex="-1">${ic("trash")}<span>Limpar</span></button></div>${linha}</div>`
+          : linha;
+      }).join("")}</div>`
         : `<div class="empty"><h3>Nenhuma conversa</h3><p>Konecte-se com alguém para trocar mensagens. No Finder, veja quem favoritou as mesmas corridas.</p><a class="btn btn-sm btn-volt" href="#/buscar">${ic("search")} Buscar pessoas</a></div>`}
     </section>`;
+
+  bindSwipe(view, u, ".person-row");
+  $$("[data-limpar]", view).forEach(b => b.addEventListener("click", async () => {
+    const p = userById(b.dataset.limpar); if (!p) return;
+    const w = b.closest(".swipe");
+    const fechar = () => { w.classList.remove("open", "dragging"); const l = $(".person-row", w); if (l) l.style.transform = ""; };
+    const ok = await confirmBox({
+      title: "Limpar esta conversa?", ok: "Limpar", danger: true,
+      text: `As mensagens somem <b>só para você</b>. @${esc(p.nick)} continua com a conversa inteira, e vocês podem seguir trocando mensagens normalmente.`
+    });
+    if (!ok) { fechar(); return; }
+    if (await limparConversa(p.id)) { render(); toast("Conversa limpa para você."); }
+    else fechar();
+  }));
 }, { tab: "perfil" });
 
 route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
@@ -3668,6 +3737,7 @@ if (window.visualViewport) {
   await carregarKonexoes();
   await carregarNotificacoes();
   await carregarMensagens();
+  await carregarChatsLimpos();
   ouvirMensagens();
   purgeExcluded();
   render();
@@ -3685,6 +3755,7 @@ if (window.visualViewport) {
     await carregarKonexoes();
     await carregarNotificacoes();
     await carregarMensagens();
+    await carregarChatsLimpos();
     ouvirMensagens();
     if (!$(".scrim")) render();
   });
