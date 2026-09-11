@@ -674,6 +674,21 @@ html.kb-open .chat{padding-bottom:84px}
 /* ---------- Finder: a próxima corrida entra por trás ---------- */
 .fcard.back.enter{animation:backIn .38s cubic-bezier(.2,.8,.2,1) both}
 @keyframes backIn{from{transform:translateY(46px) scale(.86);opacity:0}}
+/* ---------- só na vertical ----------
+   O manifesto pede portrait, mas isso só vale em app instalado no Android: o
+   Safari do iPhone ignora. Então a garantia de verdade é esta — na horizontal
+   o app sai da frente e fica o aviso. A altura máxima evita pegar computador
+   e tablet, que são "paisagem" por natureza e continuam funcionando. */
+#rotate{display:none}
+@media (orientation:landscape) and (max-height:520px){
+  #app,#tabbar,#fab,#toastHost{display:none!important}
+  #rotate{position:fixed;inset:0;z-index:9999;background:var(--ground);color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:12px;padding:24px;text-align:center}
+  #rotate svg{color:var(--volt);transform:rotate(90deg)}
+  #rotate b{font-size:21px;font-weight:750}
+  #rotate span{font-size:14px;color:var(--ink-2);max-width:34ch}
+}
 </style>
 </head>
 <body>
@@ -683,6 +698,11 @@ html.kb-open .chat{padding-bottom:84px}
 <nav id="tabbar" class="tabbar" aria-label="Menu principal" hidden></nav>
 <button id="fab" class="fab" type="button" aria-label="Nova corrida" hidden></button>
 <div id="toastHost" aria-live="polite"></div>
+<div id="rotate">
+  <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+  <b>Gire o aparelho</b>
+  <span>O Kohe foi feito para usar em pé. Volte para a vertical para continuar.</span>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
@@ -1002,7 +1022,8 @@ async function carregarPerfil() {
 
   Object.assign(local, {
     nome: p.nome, nick: p.nick, email: session.user.email,
-    role: p.role, privado: p.privado, komunidade: p.komunidade_id || null,
+    role: p.role, privado: p.privado, komunidade: p.komunidade_id || null, premium: !!p.premium,
+    foto: p.foto_url || null,
     tel: pv ? (pv.tel || "") : "", nasc: pv ? (pv.nasc || "") : "",
     end: pv ? { rua: pv.end_rua || "", num: pv.end_num || "", bairro: pv.end_bairro || "", cidade: pv.end_cidade || "" } : {}
   });
@@ -1053,14 +1074,15 @@ async function makeTestUser(a) {
 async function carregarPessoas() {
   if (!sb || !CURRENT) return;
   const { data, error } = await sb.from("profiles")
-    .select("id, nome, nick, privado, role, komunidade_id, criado_em");
+    .select("id, nome, nick, privado, role, komunidade_id, premium, foto_url, criado_em");
   if (error || !data) return;
   data.forEach(p => {
     let local = DB.users.find(x => x.id === p.id);
     if (!local) { local = { id: p.id, favs: [], buscas: [], finder: null, komunidade: null, premium: false, foto: null }; DB.users.push(local); }
     Object.assign(local, {
       nome: p.nome, nick: p.nick, privado: p.privado,
-      role: p.role, komunidade: p.komunidade_id || null, criado: p.criado_em
+      role: p.role, komunidade: p.komunidade_id || null, premium: !!p.premium,
+      foto: p.foto_url || null, criado: p.criado_em
     });
   });
   const vivos = new Set(data.map(p => p.id));
@@ -1158,6 +1180,64 @@ async function carregarNotificacoes() {
    Guarda a hora em que limpei cada conversa. Não é exclusão: a mensagem é uma
    linha só, compartilhada pelos dois, e apagá-la apagaria para o outro também. */
 const CHATS_LIMPOS = {};   // id da outra pessoa -> quando eu limpei
+
+/* ---------- imagens no Storage (KM 8) ----------
+   Até aqui a foto virava texto e engordava o mesmo JSON do aparelho, que tem
+   uns 5 MB no total. Agora o arquivo vai para o Storage e o banco guarda só o
+   endereço dele. A compressão que o app já fazia continua valendo: ela é o que
+   mantém o upload leve.                                                      */
+function dataUrlParaBlob(dataUrl) {
+  const [cabecalho, base64] = String(dataUrl).split(",");
+  const tipo = (cabecalho.match(/:(.*?);/) || [])[1] || "image/jpeg";
+  const binario = atob(base64);
+  const bytes = new Uint8Array(binario.length);
+  for (let i = 0; i < binario.length; i++) bytes[i] = binario.charCodeAt(i);
+  return new Blob([bytes], { type: tipo });
+}
+
+async function subirImagem(balde, dataUrl, nome) {
+  if (!sb || !CURRENT) return null;
+  const blob = dataUrlParaBlob(dataUrl);
+  const ext = blob.type === "image/png" ? "png" : "jpg";
+  /* o caminho começa com o seu id: é assim que a regra do Storage garante que
+     ninguém escreve na pasta de outra pessoa */
+  const caminho = CURRENT.id + "/" + nome + "-" + Date.now().toString(36) + "." + ext;
+  const { error } = await sb.storage.from(balde).upload(caminho, blob, { contentType: blob.type, upsert: true });
+  if (error) { toast("Não deu para enviar a imagem: " + error.message, true); return null; }
+  return sb.storage.from(balde).getPublicUrl(caminho).data.publicUrl;
+}
+
+/* ---------- Finder e configuração global (KM 8) ---------- */
+async function carregarConfig() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("app_config").select("finder").eq("id", true).maybeSingle();
+  if (error || !data) return;
+  DB.config = Object.assign({}, DB.config, { finder: !!data.finder });
+  DB.save();
+}
+
+async function carregarFinder() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("finder_state")
+    .select("dia, usados, vistas, hint").eq("user_id", CURRENT.id).maybeSingle();
+  if (error) return;
+  CURRENT.finder = data
+    ? { dia: data.dia, usados: data.usados, vistas: data.vistas || [], hint: !!data.hint }
+    : null;
+  DB.save();
+}
+
+/* Sem await de propósito: o card do Finder não pode travar esperando a rede no
+   meio do gesto. A contagem já saiu do aparelho, que era o ponto — não dá mais
+   para ganhar slides limpando o navegador.                                   */
+function salvarFinder(u) {
+  if (!sb || !u || !u.finder) return;
+  const f = u.finder;
+  sb.from("finder_state")
+    .upsert({ user_id: u.id, dia: f.dia, usados: f.usados, vistas: f.vistas || [], hint: !!f.hint },
+            { onConflict: "user_id" })
+    .then(({ error }) => { if (error) console.warn("Kohe: Finder não salvo —", error.message); });
+}
 
 async function carregarChatsLimpos() {
   if (!sb || !CURRENT) return;
@@ -1601,7 +1681,7 @@ async function resetAll() {
   await carregarPerfil(); await carregarPessoas(); await carregarKomunidades();
   await carregarCorridas(); await carregarFavoritas();
   await carregarKonexoes(); await carregarNotificacoes(); await carregarMensagens();
-  await carregarChatsLimpos();
+  await carregarChatsLimpos(); await carregarConfig(); await carregarFinder();
   toast("Dados iniciais restaurados."); go("/feed");
 }
 
@@ -2372,8 +2452,14 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
   $("#inscTipo").addEventListener("click", e => { const b = e.target.closest("button"); if (!b || b.dataset.t === d.inscTipo) return; collect(); d.inscTipo = b.dataset.t; rerender(); });
   $("#arteIn").addEventListener("change", async e => {
     const file = e.target.files && e.target.files[0]; if (!file) return;
-    try { d.arte = await compressImage(file); rerender(); toast("Arte adicionada."); }
-    catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
+    try {
+      const comprimida = await compressImage(file);
+      /* sobe na hora em vez de esperar o envio da corrida: assim o rascunho
+         guarda só um endereço curto, e não a imagem inteira em texto */
+      const url = await subirImagem("race-art", comprimida, "arte");
+      if (!url) return;
+      d.arte = url; rerender(); toast("Arte adicionada.");
+    } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
   });
   const rm = $("#arteRm"); if (rm) rm.addEventListener("click", () => { d.arte = null; rerender(); });
 
@@ -2875,20 +2961,29 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
       text: on ? "Todos os perfis deste aparelho passam a deslizar corridas na aba Finder." : "A aba Finder volta a mostrar “Novidades em breve” para todos os perfis."
     });
     if (!ok) return;
-    DB.config.finder = on; DB.save(); render(); toast(on ? "Finder ativado para todos." : "Finder desativado para todos.");
+    const { error } = await sb.from("app_config").update({ finder: on }).eq("id", true);
+    if (error) { toast("Não deu para mudar agora: " + error.message, true); return; }
+    DB.config.finder = on; DB.save(); render();
+    toast(on ? "Finder ativado para todos." : "Finder desativado para todos.");
   });
 
   $("#fotoIn").addEventListener("change", async ev => {
     const file = ev.target.files && ev.target.files[0]; if (!file) return;
     try {
-      const foto = await compressImage(file, { max: 320, q: 0.8, square: true }), old = u.foto;
-      u.foto = foto;
-      if (!DB.save()) { u.foto = old; return; }
-      render(); toast("Foto atualizada.");
+      const comprimida = await compressImage(file, { max: 320, q: 0.8, square: true });
+      const url = await subirImagem("avatars", comprimida, "perfil");
+      if (!url) return;
+      const { error } = await sb.from("profiles").update({ foto_url: url }).eq("id", u.id);
+      if (error) { toast("A imagem subiu, mas não deu para salvar no perfil. Tente de novo.", true); return; }
+      u.foto = url; DB.save(); render(); toast("Foto atualizada.");
     } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
   });
   const fotoRm = $("#fotoRm");
-  if (fotoRm) fotoRm.addEventListener("click", () => { u.foto = null; DB.save(); render(); toast("Foto removida."); });
+  if (fotoRm) fotoRm.addEventListener("click", async () => {
+    const { error } = await sb.from("profiles").update({ foto_url: null }).eq("id", u.id);
+    if (error) { toast("Não deu para remover agora. Tente de novo.", true); return; }
+    u.foto = null; DB.save(); render(); toast("Foto removida.");
+  });
 
   const ask = $("#askUp");
   if (ask) ask.addEventListener("click", async () => {
@@ -3240,7 +3335,7 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
       <div class="fav-toast" id="favToast" hidden></div>
     </section>`;
   const redo = $("#fRedo");
-  if (redo) redo.addEventListener("click", () => { st.vistas = []; DB.save(); render(); });
+  if (redo) redo.addEventListener("click", () => { st.vistas = []; DB.save(); salvarFinder(u); render(); });
   const card = $("#fcard");
   if (!card) return;
   let x0 = 0, y0 = 0, dx = 0, dy = 0, down = false, moved = false, busy = false;
@@ -3266,6 +3361,7 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
     const s = finderState(u);
     if (!premium) s.usados++;
     s.vistas = [...new Set([...s.vistas, r.id])];
+    salvarFinder(u);
     if (dir > 0 && !isFav(u, r.id)) {
       u.favs = [...favsOf(u), r.id];
       /* sem await: o card não pode travar esperando a rede no meio do gesto */
@@ -3304,7 +3400,7 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
   $("#fLike").addEventListener("click", () => decide(1));
   $("#fNope").addEventListener("click", () => decide(-1));
   if (!st.hint) {   // primeira vez: mostra o gesto sem executar nada
-    st.hint = true; DB.save();
+    st.hint = true; DB.save(); salvarFinder(u);
     if (!reducedMotion()) card.classList.add("hinting");
   }
 }, { tab: "finder" });
@@ -3500,9 +3596,18 @@ route(/^\/premium$/, function vPremium(view, _, q, u) {
     <a class="btn btn-volt btn-block" href="#/premium?de=${from}&passo=pagar">Quero ser Premium ${ic("arrow")}</a>`;
   view.innerHTML = `${subHead("Premium", back, "Kohe")}<section class="page">${body}</section>`;
   const goP = $("#prGo");
-  if (goP) goP.addEventListener("click", () => { u.premium = true; DB.save(); go("/premium?de=" + from); toast("Pronto: agora você é Premium."); });
+  const mudarPremium = async valor => {
+    const { error } = await sb.from("profiles").update({ premium: valor }).eq("id", u.id);
+    if (error) { toast("Não deu para mudar o plano agora. Tente de novo.", true); return false; }
+    u.premium = valor; DB.save(); return true;
+  };
+  if (goP) goP.addEventListener("click", async () => {
+    if (await mudarPremium(true)) { go("/premium?de=" + from); toast("Pronto: agora você é Premium."); }
+  });
   const off = $("#prOff");
-  if (off) off.addEventListener("click", () => { u.premium = false; DB.save(); render(); toast("Plano grátis de volta (teste)."); });
+  if (off) off.addEventListener("click", async () => {
+    if (await mudarPremium(false)) { render(); toast("Plano grátis de volta (teste)."); }
+  });
 }, { tab: "perfil" });
 /* =====================================================================
    TELAS — mensagens entre Konexões
@@ -3594,9 +3699,8 @@ route(/^\/chat\/([^/]+)$/, function vChat(view, [nickEnc], q, u) {
   const grow = () => { inp.style.height = "auto"; inp.style.height = Math.min(120, Math.max(46, inp.scrollHeight)) + "px"; };
   inp.value = SS.get(key) || ""; grow();
   inp.addEventListener("input", () => { SS.set(key, inp.value); grow(); });
-  inp.addEventListener("keydown", e => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (form.requestSubmit) form.requestSubmit(); else form.dispatchEvent(new Event("submit", { cancelable: true })); }
-  });
+  /* Enter quebra linha; enviar é só pelo botão. Sem ninguém interceptar a
+     tecla, o textarea já faz isso sozinho.                                  */
   form.addEventListener("submit", async e => {
     e.preventDefault();
     const texto = inp.value.trim(); if (!texto) return;
@@ -3741,6 +3845,8 @@ if (window.visualViewport) {
   await carregarNotificacoes();
   await carregarMensagens();
   await carregarChatsLimpos();
+  await carregarConfig();
+  await carregarFinder();
   ouvirMensagens();
   purgeExcluded();
   render();
@@ -3759,9 +3865,17 @@ if (window.visualViewport) {
     await carregarNotificacoes();
     await carregarMensagens();
     await carregarChatsLimpos();
+    await carregarConfig();
+    await carregarFinder();
     ouvirMensagens();
     if (!$(".scrim")) render();
   });
+
+  /* Trava de verdade, onde o navegador permite (app instalado no Android).
+     No Safari não existe: lá quem resolve é o aviso de girar, no CSS.      */
+  try {
+    if (screen.orientation && screen.orientation.lock) screen.orientation.lock("portrait").catch(() => {});
+  } catch (e) {}
 
   setupInstall();
   maybeInstallTip();
