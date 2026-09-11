@@ -1127,6 +1127,24 @@ async function carregarFavoritas() {
   DB.save();
 }
 
+async function carregarKonexoes() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("connections").select("id, de, para, status, criado_em, aceito_em");
+  if (error || !data) return;
+  DB.conns = data.map(c => ({ id: c.id, de: c.de, para: c.para, status: c.status, t: c.criado_em, t2: c.aceito_em }));
+  DB.save();
+}
+
+async function carregarNotificacoes() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("notifications")
+    .select("id, para, tipo, de, criado_em, lida")
+    .order("criado_em", { ascending: false }).limit(50);
+  if (error || !data) return;
+  DB.notifs = data.map(n => ({ id: n.id, para: n.para, tipo: n.tipo, de: n.de, t: n.criado_em, lida: n.lida }));
+  DB.save();
+}
+
 async function salvarEvento(race_id, acao, obs) {
   await sb.from("race_events").insert({ race_id, acao, por: CURRENT ? CURRENT.id : null, obs: obs || null });
 }
@@ -1512,6 +1530,7 @@ async function resetAll() {
   await seedDB(); SS.del("kohe.draft"); SIGNUP = null; RECOVERY = null;
   await carregarPerfil(); await carregarPessoas(); await carregarKomunidades();
   await carregarCorridas(); await carregarFavoritas();
+  await carregarKonexoes(); await carregarNotificacoes();
   toast("Dados iniciais restaurados."); go("/feed");
 }
 
@@ -2609,7 +2628,25 @@ route(/^\/aprovar\/([\w-]+)$/, function vApprove(view, [id], q, u) {
 /* ---------- konexões e Komunidades: base usada pelo perfil, busca e Komunidades ---------- */
 const connBetween = (a, b) => DB.conns.find(c => (c.de === a && c.para === b) || (c.de === b && c.para === a));
 const isConnected = (a, b) => { const c = connBetween(a, b); return !!c && c.status === "ativa"; };
-const konexoesOf = id => DB.conns.filter(c => c.status === "ativa" && (c.de === id || c.para === id)).map(c => userById(c.de === id ? c.para : c.de)).filter(Boolean);
+/* As MINHAS Konexões vêm do cache. As de outra pessoa, não: a regra de
+   segurança só me deixa ver as linhas em que eu apareço, e é assim que tem
+   que ser. Para o perfil dos outros, quem responde é uma função do servidor,
+   que aplica a regra de privacidade lá dentro; a resposta fica em KONS_DE.  */
+const KONS_DE = {};
+const konexoesOf = id => {
+  const eu = me();
+  if (eu && id === eu.id) {
+    return DB.conns.filter(c => c.status === "ativa" && (c.de === id || c.para === id))
+      .map(c => userById(c.de === id ? c.para : c.de)).filter(Boolean);
+  }
+  return (KONS_DE[id] || []).map(userById).filter(Boolean);
+};
+async function carregarKonexoesDe(id) {
+  if (!sb || KONS_DE[id]) return false;
+  const { data, error } = await sb.rpc("konexoes_de", { p_user: id });
+  KONS_DE[id] = error ? [] : (data || []).map(x => (x && typeof x === "object") ? Object.values(x)[0] : x);
+  return true;
+};
 const canSeeProfile = (viewer, other) => !other.privado || viewer.id === other.id || isConnected(viewer.id, other.id);
 const komunidadeById = id => (id && DB.komunidades.find(k => k.id === id)) || null;
 const komunidadeTag = k => k.sigla ? "@" + k.sigla : k.nome;
@@ -2620,13 +2657,20 @@ function komunidadeLineHTML(user, from) {
 function personRow(p, href) {
   return `<a class="person-row" href="${href}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p.nick)}</b><span>${esc(p.nome)}</span></span>${p.privado ? ic("lock", "lock-i") : ""}</a>`;
 }
-function acceptConn(c, u) {
-  const t = new Date().toISOString();
-  c.status = "ativa"; c.t2 = t;
-  DB.notifs.push({ id: uid("n"), para: c.de, tipo: "aceita", de: u.id, t, lida: false });
-  DB.save();
+async function acceptConn(c, u) {
+  const { error } = await sb.from("connections").update({ status: "ativa" }).eq("id", c.id);
+  if (error) { toast("Não deu para aceitar agora. Tente de novo.", true); return false; }
+  /* A notificação de "aceitou sua konexão" nasce de um gatilho no banco, não
+     aqui. É o que impede alguém de inventar aviso na caixa de outra pessoa. */
+  await carregarKonexoes(); await carregarNotificacoes();
+  return true;
 }
-function removeConn(c) { DB.conns = DB.conns.filter(x => x.id !== c.id); DB.save(); }
+async function removeConn(c) {
+  const { error } = await sb.from("connections").delete().eq("id", c.id);
+  if (error) { toast("Não deu para concluir agora. Tente de novo.", true); return false; }
+  await carregarKonexoes();
+  return true;
+}
 function subHead(title, back, eyebrow) {
   return `<header class="topbar"><div class="topbar-in"><a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a><div class="t">${eyebrow ? `<span class="eyebrow">${eyebrow}</span>` : ""}<h1 class="disp" style="font-size:30px">${title}</h1></div></div></header>`;
 }
@@ -2888,15 +2932,20 @@ route(/^\/perfil\/notificacoes$/, function vNotifs(view, _, q, u) {
         return `<a class="person-row" href="${p ? "#/u/" + encodeURIComponent(p.nick) + "?de=notif" : "#/perfil/notificacoes"}">${avatarHTML(p, "avatar av-sm")}<span class="who"><b>@${esc(p ? p.nick : "conta excluída")} aceitou sua konexão</b><span>${fmtStamp(n.t)}</span></span>${unreadIds.has(n.id) ? '<span class="badge-dot" aria-label="Nova"></span>' : ""}</a>`;
       }).join("")}</div>` : `<div class="empty sm"><p>Quando alguém aceitar seu pedido de konexão, aparece aqui.</p></div>`}
     </section>`;
-  $$("[data-accept]", view).forEach(b => b.addEventListener("click", () => {
+  $$("[data-accept]", view).forEach(b => b.addEventListener("click", async () => {
     const c = DB.conns.find(x => x.id === b.dataset.accept); if (!c) return;
-    const p = userById(c.de); acceptConn(c, u); render(); toast(`Konectado com @${p ? p.nick : ""}.`);
+    const p = userById(c.de);
+    if (await acceptConn(c, u)) { render(); toast(`Konectado com @${p ? p.nick : ""}.`); }
   }));
-  $$("[data-deny]", view).forEach(b => b.addEventListener("click", () => {
+  $$("[data-deny]", view).forEach(b => b.addEventListener("click", async () => {
     const c = DB.conns.find(x => x.id === b.dataset.deny); if (!c) return;
-    removeConn(c); render(); toast("Pedido recusado.");
+    if (await removeConn(c)) { render(); toast("Pedido recusado."); }
   }));
-  if (unreadIds.size) { DB.notifs.forEach(n => { if (unreadIds.has(n.id)) n.lida = true; }); DB.save(); renderChrome({ tab: "perfil" }, u); }
+  if (unreadIds.size) {
+    DB.notifs.forEach(n => { if (unreadIds.has(n.id)) n.lida = true; });
+    DB.save(); renderChrome({ tab: "perfil" }, u);
+    sb.from("notifications").update({ lida: true }).in("id", [...unreadIds]).then(() => {});
+  }
 }, { tab: "perfil" });
 
 /* =====================================================================
@@ -2909,10 +2958,12 @@ function roleChipsHTML(u, extra = "") {
   return `<span class="chips-row"><span class="role ${u.role}">${ic(ROLE_ICON[u.role] || "user")}${ROLE_LABEL[u.role] || "Usuário"}</span>${u.premium ? `<span class="role premium">${ic("bolt")}Premium</span>` : ""}${extra}</span>`;
 }
 // toda konexão precisa de aprovação, com perfil público ou privado
-function askKonexao(u, p) {
+async function askKonexao(u, p) {
   if (!p || p.id === u.id || connBetween(u.id, p.id)) return false;
-  DB.conns.push({ id: uid("c"), de: u.id, para: p.id, status: "pendente", t: new Date().toISOString() });
-  DB.save(); toast(`Pedido enviado. @${p.nick} precisa aprovar.`);
+  const { error } = await sb.from("connections").insert({ de: u.id, para: p.id, status: "pendente" });
+  if (error) { toast("Não deu para enviar o pedido. Tente de novo.", true); return false; }
+  await carregarKonexoes();
+  toast(`Pedido enviado. @${p.nick} precisa aprovar.`);
   return true;
 }
 
@@ -2953,15 +3004,22 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
       : `<div class="lock-card">${ic("lock")}<span>Perfil privado. Só as Konexões de @${esc(p.nick)} veem as corridas favoritas e as Konexões.</span></div>`}
     </section>`;
   const on = (id, fn) => { const b = document.getElementById(id); if (b) b.addEventListener("click", fn); };
-  on("kGo", () => { if (askKonexao(u, p)) render(); });
-  on("kCancel", () => { removeConn(c); render(); toast("Pedido cancelado."); });
-  on("kAccept", () => { acceptConn(c, u); render(); toast(`Konectado com @${p.nick}.`); });
-  on("kDeny", () => { removeConn(c); render(); toast("Pedido recusado."); });
+  on("kGo", async () => { if (await askKonexao(u, p)) render(); });
+  on("kCancel", async () => { if (await removeConn(c)) { render(); toast("Pedido cancelado."); } });
+  on("kAccept", async () => { if (await acceptConn(c, u)) { render(); toast(`Konectado com @${p.nick}.`); } });
+  on("kDeny", async () => { if (await removeConn(c)) { render(); toast("Pedido recusado."); } });
   on("kUndo", async () => {
     const ok = await confirmBox({ title: "Desfazer konexão?", ok: "Desfazer", danger: true, text: `Você e <b>@${esc(p.nick)}</b> deixam de aparecer nas Konexões um do outro.` });
     if (!ok) return;
-    removeConn(c); render(); toast("Konexão desfeita.");
+    if (await removeConn(c)) { render(); toast("Konexão desfeita."); }
   });
+  /* As Konexões desta pessoa não estão no cache: busca no servidor e redesenha
+     quando chegarem. A tela aparece na hora, com a lista preenchendo depois.  */
+  if (see && p.id !== u.id && !KONS_DE[p.id]) {
+    carregarKonexoesDe(p.id).then(veio => {
+      if (veio && location.hash.startsWith("#/u/" + encodeURIComponent(p.nick))) render();
+    });
+  }
 }, { tab: "buscar" });
 
 function searchAll(term, u) {
@@ -3339,7 +3397,7 @@ route(/^\/kohedores\/([\w-]+)$/, function vKohedores(view, [id], q, u) {
         }).join("")}</div>`
         : `<div class="empty"><h3>Ninguém ainda</h3><p>Ninguém mais favoritou essa corrida por enquanto. Quem favoritar aparece aqui.</p><a class="btn btn-sm" href="#/corrida/${r.id}?de=finder">Saber mais da corrida</a></div>`}
     </section>`;
-  $$("[data-kon]", view).forEach(b => b.addEventListener("click", () => { if (askKonexao(u, userById(b.dataset.kon))) render(); }));
+  $$("[data-kon]", view).forEach(b => b.addEventListener("click", async () => { if (await askKonexao(u, userById(b.dataset.kon))) render(); }));
 }, { tab: "finder" });
 
 route(/^\/premium$/, function vPremium(view, _, q, u) {
@@ -3556,6 +3614,8 @@ if (window.visualViewport) {
   await carregarKomunidades();
   await carregarCorridas();
   await carregarFavoritas();   // depois de carregarPessoas: preenche u.favs de cada um
+  await carregarKonexoes();
+  await carregarNotificacoes();
   purgeExcluded();
   render();
 
@@ -3569,6 +3629,8 @@ if (window.visualViewport) {
     await carregarKomunidades();
     await carregarCorridas();
     await carregarFavoritas();
+    await carregarKonexoes();
+    await carregarNotificacoes();
     if (!$(".scrim")) render();
   });
 
