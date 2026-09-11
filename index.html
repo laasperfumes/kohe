@@ -674,11 +674,49 @@ html.kb-open .chat{padding-bottom:84px}
 <nav id="tabbar" class="tabbar" aria-label="Menu principal" hidden></nav>
 <button id="fab" class="fab" type="button" aria-label="Nova corrida" hidden></button>
 <div id="toastHost" aria-live="polite"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
 /* =====================================================================
-   KOHE — protótipo HTML (fase de testes, dados salvos só no aparelho)
+   KOHE — migração para Supabase em andamento (KM 2 de 9)
+   Os dados ainda ficam no aparelho; o que existe agora é a conexão com
+   o servidor. Cada etapa seguinte move uma área para o banco.
    ===================================================================== */
+
+/* ---------- Supabase: conexão ----------
+   A chave abaixo é a "anon" e foi feita para ficar em código público: quem
+   protege os dados são as políticas RLS do banco, não o segredo da chave.
+   A chave "service_role" NUNCA pode aparecer aqui.                          */
+const SB_URL  = "https://xbdublxvdwbqqjfwsqgh.supabase.co";
+const SB_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhiZHVibHh2ZHdicXFqZndzcWdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkwODY0MzUsImV4cCI6MjEwNDY2MjQzNX0.AgRXqbF6tkQDa3zHSJ6T3-GLrc39WxRro7MIEn9kucY";
+
+/* O app navega pelo que vem depois do "#" (#/feed, #/perfil). O modo "pkce"
+   faz o link de confirmação de e-mail chegar em "?code=...", na outra parte
+   do endereço, para os dois não brigarem pelo mesmo espaço.                  */
+const sb = window.supabase
+  ? window.supabase.createClient(SB_URL, SB_ANON, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        flowType: "pkce",
+        detectSessionInUrl: true
+      }
+    })
+  : null;
+
+/* ---------- diagnóstico da conexão (provisório: sai no KM 9) ----------
+   Digite koheDiag() no console do navegador para conferir a conexão.        */
+async function koheDiag() {
+  if (!sb) { console.error("Kohe: a biblioteca do Supabase não carregou."); return false; }
+  const t0 = performance.now();
+  const { data, error } = await sb.from("app_config").select("finder").limit(1);
+  const ms = Math.round(performance.now() - t0);
+  if (error) { console.error("Kohe: o banco respondeu com erro —", error.message); return false; }
+  console.info(`Kohe: conectado ao Supabase em ${ms} ms. Linhas visíveis: ${data.length}`
+    + (data.length === 0 ? " (zero é o certo enquanto não há login: a RLS está trabalhando)." : "."));
+  return true;
+}
+window.koheDiag = koheDiag;
 
 /* ---------- utils ---------- */
 const $ = (s, r = document) => r.querySelector(s);
@@ -3251,6 +3289,7 @@ if (window.visualViewport) {
   render();
   setupInstall();
   maybeInstallTip();
+  koheDiag();   // provisório (KM 2): confirma a conexão no console, sem afetar a tela
 })();
 </script>
 </body>
