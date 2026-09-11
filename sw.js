@@ -1,9 +1,15 @@
 // Kohe — service worker simples.
 // Sempre busca a versão nova na internet; sem conexão, usa a última cópia salva.
-const CACHE = "kohe-v1";
+const CACHE = "kohe-v2";
 
 self.addEventListener("install", () => self.skipWaiting());
-self.addEventListener("activate", event => event.waitUntil(self.clients.claim()));
+// Ao ativar, joga fora caches de versões antigas antes de assumir as abas.
+// Sem isto, cada troca de versão deixaria o cache anterior ocupando espaço.
+self.addEventListener("activate", event => event.waitUntil(
+  caches.keys()
+    .then(nomes => Promise.all(nomes.filter(n => n !== CACHE).map(n => caches.delete(n))))
+    .then(() => self.clients.claim())
+));
 
 self.addEventListener("fetch", event => {
   const req = event.request;

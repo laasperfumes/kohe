@@ -729,7 +729,8 @@ html.kb-open .chat{padding-bottom:84px}
   <b>Gire o aparelho</b>
   <span>O Kohe foi feito para usar em pé. Volte para a vertical para continuar.</span>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- versão fixa de propósito: com "@2" a biblioteca poderia mudar sozinha sob o app -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
 <script>
 "use strict";
 /* =====================================================================
@@ -759,20 +760,6 @@ const sb = window.supabase
     })
   : null;
 
-/* ---------- diagnóstico da conexão (provisório: sai no KM 9) ----------
-   Digite koheDiag() no console do navegador para conferir a conexão.        */
-async function koheDiag() {
-  if (!sb) { console.error("Kohe: a biblioteca do Supabase não carregou."); return false; }
-  const t0 = performance.now();
-  const { data, error } = await sb.from("app_config").select("finder").limit(1);
-  const ms = Math.round(performance.now() - t0);
-  if (error) { console.error("Kohe: o banco respondeu com erro —", error.message); return false; }
-  console.info(`Kohe: conectado ao Supabase em ${ms} ms. Linhas visíveis: ${data.length}`
-    + (data.length === 0 ? " (zero é o certo enquanto não há login: a RLS está trabalhando)." : "."));
-  return true;
-}
-window.koheDiag = koheDiag;
-
 /* ---------- utils ---------- */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -793,7 +780,6 @@ const EXAMPLE_URL = "https://correriacampinas.com.br/calendario/";
 const MAIN_KMS = [5, 10, 21, 42];    // distâncias principais do filtro (o resto fica em "Outros")
 const SLIDES_GRATIS = 5;             // favoritadas grátis por dia no Finder (Premium = ilimitado).
                                      // Só deslizar para a DIREITA gasta: jogar na lixeira é livre.
-const CODIGO_TESTE = "123456";   // fase offline: não há e-mail de verdade
 const MAX_BUSCAS = 10;           // histórico de busca por conta
 
 /* ---------- ícones (traço, grade 24) ---------- */
@@ -926,61 +912,6 @@ const TEST_ACCOUNTS = [
   { id: "u-admin", nick: "admin", email: "admin@kohe.com", pass: null, role: "admin", nome: "Admin Kohe" }
 ];
 
-/* ---------- corridas iniciais (hardcoded) ---------- */
-const SEED_RACES = [
-  ["Ryze Run – Campinas", "Campinas", "2026-09-12", null, ["4 km", "8 km"], "Shopping Parque das Bandeiras", "",
-    "A Corrida Ryze Run é um circuito nacional que passará por 6 estados. A etapa Campinas será dia 12 de setembro de 2026 no Shopping Parque das Bandeiras, nas distâncias de 4 km e 8 km."],
-  ["II Corrida da Linguiça – Bragança Paulista", "Bragança Paulista", "2026-09-12", "19:00", ["5 km", "10 km"], "", "CORRERIA10",
-    "A II Corrida da Linguiça será no dia 12 de setembro de 2026 às 19:00 em Bragança Paulista, com percursos de 5 km e 10 km."],
-  ["Circuito das Estações 2026 Primavera – Campinas", "Campinas", "2026-09-13", null, ["5 km", "10 km"], "", "",
-    "A etapa Campinas do Circuito das Estações 2026 Primavera será no dia 13 de setembro de 2026 nas distâncias de 5 km e 10 km."],
-  ["Super Action – Sorocaba", "Sorocaba", "2026-09-13", "06:30", ["5 km"], "", "CORRERIACAMPINAS10",
-    "A Super Action etapa Sorocaba será no dia 13 de setembro de 2026 às 06:30. A corrida terá a distância de 5 km."],
-  ["Super Run – Sorocaba", "Sorocaba", "2026-09-13", "06:30", ["5 km"], "", "",
-    "A Corrida Super Run será no dia 13 de setembro de 2026 às 06:30 em Sorocaba, na distância de 5 km."],
-  ["10º Corrida Avenida Brasil – Americana", "Americana", "2026-09-13", "07:00", ["5 km", "10 km", "Caminhada 5 km"], "", "CORRERIA10",
-    "A corrida mais tradicional de Americana-SP chega na sua 10ª edição. Dia 13 de setembro às 07:00, a Corrida Avenida Brasil terá as modalidades Corrida 5 km e 10 km e Caminhada 5 km."],
-  ["Meia Maratona de Limeira", "Limeira", "2026-09-13", "07:00", ["21 km", "10 km", "5 km"], "Em frente ao Parque Cidade", "CORRERIACAMPINAS",
-    "A Meia Maratona de Limeira será no dia 13 de setembro de 2026 às 07:00, nas modalidades de 21 km, 10 km e 5 km, com largada em frente ao Parque Cidade."],
-  ["Corrida do Gigante – Itu", "Itu", "2026-09-13", "07:00", ["5 km", "Caminhada 5 km"], "Avenida Galileu Bicudo", "CORRERIACAMPINAS",
-    "A Corrida do Gigante acontece no dia 13 de setembro de 2026 às 07:00 na Avenida Galileu Bicudo, em Itu. Terá a distância de 5 km para corrida e caminhada."],
-  ["5º Ação Solidária NHL – Monte Mor", "Monte Mor", "2026-09-13", "07:00", ["5 km"], "", "",
-    "A 5ª edição da Corrida Ação Solidária NHL será no dia 13 de setembro de 2026 às 07:00 em Monte Mor, na distância de 5 km."],
-  ["Corrida do Coração – Jundiaí", "Jundiaí", "2026-09-13", "07:00", ["10 km", "5 km", "Caminhada 3 km"], "Av. 9 de Julho", "CORRERIA10",
-    "A Corrida do Coração será no dia 13 de setembro de 2026 às 07 horas na Av. 9 de Julho, em Jundiaí/SP. Modalidades: 10 km, 5 km e Caminhada 3 km."],
-  ["Track&Field Experience – Paulínia", "Paulínia", "2026-09-13", "07:00", ["5 km", "10 km"], "", "CORRERIA10",
-    "A Corrida Track&Field Experience etapa Paulínia será no dia 13 de setembro de 2026 às 07:00, nas modalidades de 5 km e 10 km.", { tipo: "app", app: "TF Sports" }],
-  ["Maprun Quebrando o Silêncio – Atibaia", "Atibaia", "2026-09-13", "07:00", ["5 km", "Caminhada 3 km"], "", "",
-    "A Corrida Maprun Quebrando o Silêncio será no dia 13 de setembro de 2026 às 07:05 em Atibaia-SP. Modalidades: Corrida 5 km e Caminhada 3 km."],
-  ["Corrida e Caminhada Drogal Geração em Movimento – Piracicaba", "Piracicaba", "2026-09-13", "07:00", ["5 km", "10 km", "Caminhada 5 km"], "", "",
-    "A Corrida e Caminhada Drogal Geração em Movimento será no dia 13 de setembro de 2026 às 7 horas em Piracicaba-SP. Modalidades: Corrida 5 km e 10 km e Caminhada 5 km."],
-  ["Corrida Good Run – Sumaré", "Sumaré", "2026-09-13", "07:00", ["10 km", "5 km", "Caminhada 5 km"], "Avenida Rebouças", "",
-    "A Corrida Good Run etapa Sumaré será no dia 13 de setembro de 2026 às 07 horas na Avenida Rebouças. Modalidades: Corrida 10 km e Corrida 5 km ou Caminhada 5 km."],
-  ["Circuito Transformar Campinas", "Campinas", "2026-09-13", "07:00", ["5 km", "10 km"], "Parque Ecológico Monsenhor Salim", "",
-    "A Corrida Circuito Transformar etapa Campinas será no dia 13 de setembro de 2026 às 07 horas no Parque Ecológico Monsenhor Salim. Modalidades: 5 km e 10 km."],
-  ["Corrida e Caminhada GUS Running – São Roque", "São Roque", "2026-09-13", "08:00", ["5 km", "Caminhada 3 km"], "", "",
-    "A Corrida e Caminhada GUS Running será no dia 13 de setembro de 2026 às 08:00 em São Roque, na distância de 5 km (corrida) e 3 km (caminhada)."],
-  ["6º Corrida Inclusiva Blue Angels – Rio Claro", "Rio Claro", "2026-09-13", "08:00", ["5 km", "10 km", "Caminhada 5 km", "Kids"], "", "",
-    "A 6ª Corrida Inclusiva Blue Angels acontecerá no dia 13 de setembro de 2026 às 08:00 em Rio Claro-SP. Modalidades: Corrida 5 km, Corrida 10 km, Caminhada 5 km e Corrida Kids."],
-  ["Corrida e Caminhada em Louvor a São Francisco de Assis – Boituva", "Boituva", "2026-09-19", "07:30", ["3 km", "5 km"], "", "",
-    "A Corrida e Caminhada em Louvor a São Francisco de Assis será no dia 19 de setembro de 2026 às 07:30 em Boituva-SP, nas distâncias de 3 km e 5 km."],
-  ["Corrida dos Distritos – Etapa Barão Geraldo", "Campinas", "2026-09-19", "17:00", ["6 km"], "Praça Durval Pattaro", "",
-    "A etapa Barão Geraldo da tradicional Corrida dos Distritos de Campinas acontecerá no dia 19 de setembro de 2026 às 17:00 na Praça Durval Pattaro, com distância única de 6 km.", { plataforma: "Ticket Sports" }],
-  ["Aero Night Run – GWM Dahruj – Etapa Jundiaí", "Jundiaí", "2026-09-19", "19:00", ["6 km", "Caminhada 3 km"], "", "",
-    "A Aero Night Run GWM Dahruj Etapa Jundiaí é parte do circuito de corridas nos aeroportos de Jundiaí, Campinas e Sorocaba. Será realizada no dia 19 de setembro de 2026 às 19:00, com as modalidades Caminhada 3 km e Corrida 6 km."],
-  ["SRUN – Limeira", "Limeira", "2026-09-20", null, ["5 km", "10 km"], "", "",
-    "O Circuito SRun Santander chegará em Limeira no dia 20 de setembro e terá as distâncias de 5 km e 10 km."],
-  ["Half Marathon – Sorocaba", "Sorocaba", "2026-09-20", "06:00", ["21 km", "7,9 km", "Caminhada 4 km"], "Parque das Águas", "CORRERIACAMPINAS",
-    "A Corrida Half Marathon acontecerá no dia 20 de setembro de 2026 às 06:00 no Parque das Águas, em Sorocaba. Modalidades: Corrida 21 km e 7,9 km, e Caminhada 4 km."],
-  ["Corrida Track&Field Run Series – Dom Pedro Shopping Campinas", "Campinas", "2026-09-20", "06:30", ["5 km", "10 km"], "Dom Pedro Shopping", "CORRERIA10",
-    "A Corrida Track&Field Run Series etapa Dom Pedro Shopping será realizada no dia 20 de setembro de 2026 às 06:45 em Campinas, com as modalidades de 5 km e 10 km.", { tipo: "app", app: "TF Sports" }]
-].map(([nome, cidade, data, hora, mods, rua, cupom, desc, insc], i) => ({
-  id: "r-" + pad2(i + 1), nome, cidade, data, hora, mods, rua, cupom, desc,
-  preco: null, insc: Object.assign({ tipo: "site", url: EXAMPLE_URL, app: "", plataforma: "", exemplo: true }, insc || {}),
-  arte: null, status: "publicada", autor: "u-admin", criado: "2026-09-01T12:00:00.000Z",
-  envios: 1, motivo: "", hist: [{ t: "2026-09-01T12:00:00.000Z", acao: "publicada", por: "u-admin" }]
-}));
-
 /* ---------- armazenamento local ---------- */
 const mem = {};
 const LS = {
@@ -1072,28 +1003,6 @@ const Session = {
 };
 const me = () => CURRENT;
 
-async function hashPass(pass, salt) {
-  const data = new TextEncoder().encode(salt + "::" + pass);
-  if (window.crypto && crypto.subtle) {
-    try { const buf = await crypto.subtle.digest("SHA-256", data); return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join(""); } catch (e) {}
-  }
-  let h1 = 0x811c9dc5, h2 = 0x9747b28c;
-  for (const b of data) { h1 = Math.imul(h1 ^ b, 16777619); h2 = Math.imul(h2 ^ b, 2246822507) ^ (h2 >>> 13); }
-  return "f" + (h1 >>> 0).toString(16) + (h2 >>> 0).toString(16);
-}
-const BRC_LOGO = "";   // logo do Barão Running Club (data URL), usada só na tela e não gravada no aparelho
-const SEED_KOMUNIDADES = [
-  { id: "k-brc", nome: "Barão Running Club", sigla: "BRC", cidade: "Campinas", local: "Caixa d'água da FEA – Barão Geraldo", horario: "", desde: "2024", dono: "u-mod", criado: "2026-09-01T12:00:00.000Z" }
-];
-async function makeTestUser(a) {
-  const salt = uid("s");
-  return {
-    id: a.id, nome: a.nome, nick: a.nick, email: a.email, tel: "+55 (19) 90000-0000", nasc: "1990-01-01",
-    end: { rua: "Conta de teste", num: "0", bairro: "Centro", cidade: "Campinas" },
-    role: a.role, salt, hash: await hashPass(a.pass, salt), criado: "2026-09-01T12:00:00.000Z", teste: true,
-    favs: [], foto: null, privado: false, komunidade: a.komunidade || null, buscas: [], premium: false, finder: null
-  };
-}
 /* Traz todo mundo que tem perfil no Supabase para o cache local, preservando
    o que ainda é do aparelho (favoritas, Komunidade, Finder, buscas, Premium, foto).
    É o que faz a busca de pessoas enxergar contas criadas em outros celulares
@@ -1280,6 +1189,21 @@ function salvarFinder(u) {
     .then(({ error }) => { if (error) console.warn("Kohe: Finder não salvo —", error.message); });
 }
 
+/* Pedidos de promoção de cargo. A regra do banco já devolve só os meus, ou
+   todos se eu for admin — a mesma consulta serve as duas telas.            */
+async function carregarPedidos() {
+  if (!sb || !CURRENT) return;
+  const { data, error } = await sb.from("role_requests")
+    .select("id, user_id, de, para, status, criado_em, decidido_em").order("criado_em");
+  if (error || !data) return;
+  /* "decidido" alimenta o aviso de último pedido negado no perfil */
+  DB.ups = data.map(x => ({
+    id: x.id, uid: x.user_id, de: x.de, para: x.para,
+    status: x.status, criado: x.criado_em, decidido: x.decidido_em
+  }));
+  DB.save();
+}
+
 async function carregarChatsLimpos() {
   if (!sb || !CURRENT) return;
   const { data, error } = await sb.from("chat_limpo").select("outro_id, limpo_em");
@@ -1365,38 +1289,6 @@ async function seedDB() {
   DB.races = [];   // desde o KM 4 as corridas vêm do Supabase, não de semente local
   DB.komunidades = [];   // desde o KM 5 as Komunidades vêm do Supabase
   DB.ups = []; DB.conns = []; DB.notifs = []; DB.msgs = []; DB.config = { finder: false };
-  DB.v = 4;
-  DB.save();
-}
-async function migrateDB() {
-  if (DB.v >= 4) return;
-  if (DB.v < 2) {   // dados gravados pela 1ª versão do protótipo
-    const seedIds = new Set(SEED_RACES.map(r => r.id));
-    DB.races.forEach(r => {
-      if (seedIds.has(r.id) && r.autor === "u-admin" && r.insc && !r.insc.url) { r.insc.url = EXAMPLE_URL; r.insc.exemplo = true; if (!r.insc.tipo) r.insc.tipo = "site"; }
-      if (r.status === "removida") {
-        const h = [...(r.hist || [])].reverse().find(x => x.acao === "removida") || {};
-        r.status = "excluida"; r.exclusao = { t: h.t || new Date().toISOString(), por: h.por || "", motivo: "", via: "admin", antes: "publicada" };
-      }
-    });
-  }
-  // v3: Komunidades, Konexões, perfil privado, histórico de busca e conta de moderador
-  DB.users.forEach(u => {
-    if (!Array.isArray(u.favs)) u.favs = [];
-    if (u.privado === undefined) u.privado = false;
-    if (u.komunidade === undefined) u.komunidade = null;
-    if (!Array.isArray(u.buscas)) u.buscas = [];
-  });
-  // (desde o KM 5 nenhuma Komunidade é criada localmente: elas vêm do Supabase)
-  // (desde o KM 3 nenhuma conta é criada localmente: elas vêm do Supabase)
-  // v4: Finder, Premium, chat e moderação de Komunidades que continua depois do upgrade
-  DB.users.forEach(u => {
-    if (u.premium === undefined) u.premium = false;
-    if (u.role === "moderador") u.role = "usuario";   // o cargo deixou de existir
-    if (u.finder === undefined) u.finder = null;
-  });
-  if (!Array.isArray(DB.msgs)) DB.msgs = [];
-  if (!DB.config) DB.config = { finder: false };
   DB.v = 4;
   DB.save();
 }
@@ -1738,20 +1630,6 @@ document.addEventListener("touchmove", e => { if (e.touches && e.touches.length 
 /* =====================================================================
    TELAS — acesso
    ===================================================================== */
-async function resetAll() {
-  const ok = await confirmBox({
-    title: "Restaurar dados deste aparelho?", danger: true, ok: "Restaurar",
-    text: "Volta as corridas iniciais e a Komunidade BRC e apaga favoritos, Konexões e rascunhos guardados <b>neste aparelho</b>. As contas ficam no servidor e não são afetadas: você continua logado."
-  });
-  if (!ok) return;
-  await seedDB(); SS.del("kohe.draft"); SIGNUP = null; RECOVERY = null;
-  await carregarPerfil(); await carregarPessoas(); await carregarKomunidades();
-  await carregarCorridas(); await carregarFavoritas();
-  await carregarKonexoes(); await carregarNotificacoes(); await carregarMensagens();
-  await carregarChatsLimpos(); await carregarConfig(); await carregarFinder();
-  toast("Dados iniciais restaurados."); go("/feed");
-}
-
 route(/^\/login$/, function vLogin(view, _, q) {
   view.innerHTML = `<section class="auth login">
     <div class="brand"><div class="brand-wrap"><h1 class="disp wordmark">Kohe</h1></div></div>
@@ -1807,11 +1685,6 @@ route(/^\/login$/, function vLogin(view, _, q) {
 
 /* ---------- esqueci minha senha ---------- */
 let RECOVERY = null;   // "perfil" quando a troca de senha começou dentro do app
-function maskEmail(e) {
-  const [l, d = ""] = String(e).split("@"), dot = d.indexOf(".");
-  const dn = dot > 0 ? d.slice(0, dot) : d, tld = dot > 0 ? d.slice(dot) : "";
-  return `${l.charAt(0)}${"*".repeat(Math.max(3, Math.min(6, l.length - 1)))}@${dn.charAt(0)}***${tld}`;
-}
 route(/^\/esqueci$/, function vForgot(view) {
   view.innerHTML = `<section class="auth">
     <div class="steps-top"><a class="icon-btn" href="#/login" aria-label="Voltar">${ic("back")}</a></div>
@@ -2819,17 +2692,31 @@ route(/^\/solicitacoes$/, function vRequests(view, _, q, u) {
     if (!x) return;
     const ok = await confirmBox({ title: "Aprovar pedido?", ok: "Aprovar", text: p ? `<b>@${esc(p.nick)}</b> passa a ser <b>${ROLE_LABEL[x.para]}</b>.` : "A conta foi excluída; o pedido será encerrado." });
     if (!ok) return;
-    x.decidido = new Date().toISOString(); x.por = u.id;
-    if (p && p.role === x.de) { p.role = x.para; x.status = "aprovada"; } else x.status = "cancelada";
-    DB.save(); render(); toast(x.status === "aprovada" ? `@${p.nick} agora é ${ROLE_LABEL[x.para]}.` : "Pedido encerrado.");
+    /* Promove primeiro; só fecha o pedido se o cargo realmente mudou. Se a
+       pessoa já não estiver no cargo de origem, o pedido perdeu sentido.    */
+    const virou = !!(p && p.role === x.de);
+    if (virou) {
+      const alvo = await sb.from("profiles").update({ role: x.para }).eq("id", p.id);
+      if (alvo.error) { toast("Não deu para promover: " + alvo.error.message, true); return; }
+      p.role = x.para;
+    }
+    const { error } = await sb.from("role_requests")
+      .update({ status: virou ? "aprovado" : "negado", decidido_por: u.id, decidido_em: new Date().toISOString() })
+      .eq("id", x.id);
+    if (error) { toast("Cargo alterado, mas o pedido não foi encerrado.", true); }
+    await carregarPedidos(); await carregarPessoas();
+    render(); toast(virou ? `@${p.nick} agora é ${ROLE_LABEL[x.para]}.` : "Pedido encerrado.");
   }));
   $$("[data-updeny]", view).forEach(b => b.addEventListener("click", async () => {
     const x = DB.ups.find(y => y.id === b.dataset.updeny), p = x && userById(x.uid);
     if (!x) return;
     const ok = await confirmBox({ title: "Negar pedido?", ok: "Negar", danger: true, text: `${p ? `<b>@${esc(p.nick)}</b> continua como ${ROLE_LABEL[x.de]}` : "O pedido será encerrado"} e pode pedir de novo depois.` });
     if (!ok) return;
-    x.status = "negada"; x.decidido = new Date().toISOString(); x.por = u.id;
-    DB.save(); render(); toast("Pedido negado.");
+    const { error } = await sb.from("role_requests")
+      .update({ status: "negado", decidido_por: u.id, decidido_em: new Date().toISOString() })
+      .eq("id", x.id);
+    if (error) { toast("Não deu para negar agora. Tente de novo.", true); return; }
+    await carregarPedidos(); render(); toast("Pedido negado.");
   }));
 }, { tab: "sol", roles: ["organizador", "admin"] });
 
@@ -2932,6 +2819,20 @@ function favRacesOf(u) {
   const rs = favsOf(u).map(id => DB.races.find(r => r.id === id)).filter(r => r && r.status === "publicada");
   return [...rs.filter(r => !isOver(r)).sort((a, b) => startOf(a) - startOf(b)), ...rs.filter(isOver).sort((a, b) => startOf(b) - startOf(a))];
 }
+/* Cabeçalho grande de data + as corridas daquele dia embaixo, como no feed.
+   Usado nas favoritas do meu perfil e nas de outra pessoa.                  */
+function listaPorDia(list, u, origem) {
+  let html = "", ultimo = "";
+  list.forEach(r => {
+    if (r.data !== ultimo) {
+      ultimo = r.data;
+      const d = pDate(r.data), n = daysFrom(r.data);
+      html += `<div class="day"><span class="disp dnum num">${pad2(d.getDate())}</span><span class="dtxt"><span class="dname">${DOW_FULL[d.getDay()].replace("-feira", "")}</span><span class="eyebrow">${MON_FULL[d.getMonth()]} ${d.getFullYear()}</span></span><span class="eyebrow rel${n <= 3 && n >= 0 ? " soon" : ""}">${relDay(r.data)}</span></div>`;
+    }
+    html += raceCard(r, u, null, { from: origem });
+  });
+  return html;
+}
 
 /* =====================================================================
    TELAS — perfil e configurações
@@ -2955,7 +2856,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
       <button class="btn btn-sm btn-plain" type="button" id="cancelUp" style="align-self:flex-start">Cancelar pedido</button>
     </div>`;
   else if (next) upgrade = `<div class="upgrade">
-      <span class="eyebrow">${last && last.status === "negada" ? `Último pedido negado em ${fmtStamp(last.decidido)}` : "Upgrade de perfil"}</span>
+      <span class="eyebrow">${last && last.status === "negado" && last.decidido ? `Último pedido negado em ${fmtStamp(last.decidido)}` : "Upgrade de perfil"}</span>
       <h2 class="disp">Quero ser ${ROLE_LABEL[next]}</h2>
       <p>${UPGRADE_COPY[next]}</p>
       <button class="btn btn-ink btn-block" type="button" id="askUp">Solicitar upgrade ${ic("arrow")}</button>
@@ -3076,14 +2977,18 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
   if (ask) ask.addEventListener("click", async () => {
     const ok = await confirmBox({ title: `Virar ${ROLE_LABEL[next]}?`, ok: "Enviar pedido", text: "O pedido vai para a administração do Kohe. Você continua usando o app normalmente enquanto espera." });
     if (!ok) return;
-    DB.ups.push({ id: uid("up"), uid: u.id, de: u.role, para: next, status: "pendente", criado: new Date().toISOString() });
-    DB.save(); render(); toast("Pedido de upgrade enviado.");
+    const { error } = await sb.from("role_requests")
+      .insert({ user_id: u.id, de: u.role, para: next, status: "pendente" });
+    if (error) { toast("Não deu para enviar o pedido. Tente de novo.", true); return; }
+    await carregarPedidos(); render(); toast("Pedido de upgrade enviado.");
   });
   const cancel = $("#cancelUp");
   if (cancel) cancel.addEventListener("click", async () => {
     const ok = await confirmBox({ title: "Cancelar pedido?", ok: "Cancelar pedido", cancel: "Manter", danger: true, text: "Você pode pedir de novo quando quiser." });
     if (!ok) return;
-    DB.ups = DB.ups.filter(x => x.id !== pend.id); DB.save(); render(); toast("Pedido cancelado.");
+    const { error } = await sb.from("role_requests").delete().eq("id", pend.id);
+    if (error) { toast("Não deu para cancelar agora. Tente de novo.", true); return; }
+    await carregarPedidos(); render(); toast("Pedido cancelado.");
   });
 
   $("#pf").addEventListener("submit", async ev => {
@@ -3153,17 +3058,7 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
 
 route(/^\/perfil\/favoritas$/, function vFavs(view, _, q, u) {
   const list = favRacesOf(u);
-  /* Agrupa por dia com o mesmo cabeçalho grande do feed: separa melhor o que
-     é de cada data.                                                         */
-  let corpo = "", ultimoDia = "";
-  list.forEach(r => {
-    if (r.data !== ultimoDia) {
-      ultimoDia = r.data;
-      const d = pDate(r.data), n = daysFrom(r.data);
-      corpo += `<div class="day"><span class="disp dnum num">${pad2(d.getDate())}</span><span class="dtxt"><span class="dname">${DOW_FULL[d.getDay()].replace("-feira", "")}</span><span class="eyebrow">${MON_FULL[d.getMonth()]} ${d.getFullYear()}</span></span><span class="eyebrow rel${n <= 3 && n >= 0 ? " soon" : ""}">${relDay(r.data)}</span></div>`;
-    }
-    corpo += raceCard(r, u, null, { from: "fav" });
-  });
+  const corpo = listaPorDia(list, u, "fav");
   view.innerHTML = `${subHead("Favoritos", "#/perfil", "Perfil")}
     <section class="page">
       ${list.length ? `<a class="btn btn-sm btn-block" href="#/perfil/calendario">${ic("cal")} Meu calendário</a>` : ""}
@@ -3174,10 +3069,13 @@ route(/^\/perfil\/favoritas$/, function vFavs(view, _, q, u) {
 
 /* Calendário das favoritas: o mês inteiro de domingo a sábado, com uma
    barrinha por korrida curtida no dia. Acima de três, o número fica verde —
-   é o sinal de "dia cheio" sem precisar contar barrinha.                    */
-route(/^\/perfil\/calendario$/, function vCalendario(view, _, q, u) {
+   é o sinal de "dia cheio" sem precisar contar barrinha.
+
+   Serve tanto o meu calendário quanto o de outra pessoa, então recebe de quem
+   são as favoritas e para onde voltar.                                      */
+function telaCalendario(view, dono, q, o) {
   const porDia = {};
-  favRacesOf(u).forEach(r => { (porDia[r.data] = porDia[r.data] || []).push(r); });
+  favRacesOf(dono).forEach(r => { (porDia[r.data] = porDia[r.data] || []).push(r); });
 
   const agora = new Date();
   const pedido = /^\d{4}-\d{2}$/.test(q.get("m") || "") ? q.get("m") : `${agora.getFullYear()}-${pad2(agora.getMonth() + 1)}`;
@@ -3201,7 +3099,7 @@ route(/^\/perfil\/calendario$/, function vCalendario(view, _, q, u) {
       + `<span class="n">${dia}</span><span class="barras">${"<i></i>".repeat(Math.min(n, 3))}</span></button>`;
   }
 
-  view.innerHTML = `${subHead("Meu calendário", "#/perfil/favoritas", "Favoritos")}
+  view.innerHTML = `${subHead(o.titulo, o.voltar, o.eyebrow)}
     <section class="page">
       <div class="cal-top">
         <button class="icon-btn" type="button" data-mes="${mesRef(antes)}" aria-label="Mês anterior">${ic("back")}</button>
@@ -3213,16 +3111,36 @@ route(/^\/perfil\/calendario$/, function vCalendario(view, _, q, u) {
       <p class="eyebrow" style="text-align:center">Toque num dia para ver as korridas curtidas</p>
     </section>`;
 
-  $$("[data-mes]", view).forEach(b => b.addEventListener("click", () => go("/perfil/calendario?m=" + b.dataset.mes)));
+  $$("[data-mes]", view).forEach(b => b.addEventListener("click", () => go(o.base + "?m=" + b.dataset.mes)));
   $$("[data-dia]", view).forEach(b => b.addEventListener("click", () => {
     const iso = b.dataset.dia, rs = porDia[iso] || [], d = pDate(iso);
     openSheet(`
       <div class="sheet-head"><h2 class="disp">${d.getDate()} de ${MON_FULL[d.getMonth()]}</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
       ${rs.length
-        ? `<div class="cal-lista">${rs.map(r => `<a class="cal-item" href="#/corrida/${r.id}?de=fav"><b>${esc(r.nome)}</b><span>${esc(r.cidade)}${r.rua ? " · " + esc(r.rua) : ""}${r.hora ? " · " + esc(r.hora) : ""}</span></a>`).join("")}</div>`
+        ? `<div class="cal-lista">${rs.map(r => `<a class="cal-item" href="#/corrida/${r.id}?de=${o.origem}"><b>${esc(r.nome)}</b><span>${esc(r.cidade)}${r.rua ? " · " + esc(r.rua) : ""}${r.hora ? " · " + esc(r.hora) : ""}</span></a>`).join("")}</div>`
         : `<p class="muted">Nenhuma korrida curtida.</p>`}`);
   }));
+}
+
+route(/^\/perfil\/calendario$/, function vMeuCalendario(view, _, q, u) {
+  telaCalendario(view, u, q, { titulo: "Meu calendário", voltar: "#/perfil/favoritas", eyebrow: "Favoritos", base: "/perfil/calendario", origem: "fav" });
 }, { tab: "perfil" });
+
+/* Calendário de outra pessoa. A mesma regra de privacidade do perfil vale
+   aqui: perfil privado só abre para quem é Konexão.                        */
+route(/^\/u\/([^/]+)\/calendario$/, function vCalendarioDe(view, [nickEnc], q, u) {
+  const p = DB.users.find(x => x.nick === decodeURIComponent(nickEnc).toLowerCase());
+  if (!p) return redirect("/buscar");
+  if (p.id === u.id) return redirect("/perfil/calendario");
+  if (!canSeeProfile(u, p)) return redirect("/u/" + encodeURIComponent(p.nick));
+  telaCalendario(view, p, q, {
+    titulo: "Calendário do korredor",
+    voltar: "#/u/" + encodeURIComponent(p.nick),
+    eyebrow: "@" + p.nick,
+    base: "/u/" + encodeURIComponent(p.nick) + "/calendario",
+    origem: "u:" + p.nick
+  });
+}, { tab: "buscar" });
 
 route(/^\/perfil\/konexoes$/, function vKonexoes(view, _, q, u) {
   const list = konexoesOf(u.id).sort((a, b) => a.nick.localeCompare(b.nick));
@@ -3307,6 +3225,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
   else action = `<button class="btn btn-volt btn-block" type="button" id="kGo">${ic("link")} Konectar</button><p class="eyebrow" style="text-align:center">@${esc(p.nick)} precisa aprovar o pedido</p>`;
   const kons = see ? konexoesOf(p.id).sort((a, b) => a.nick.localeCompare(b.nick)) : [];
   const favs = see ? favRacesOf(p) : [];
+  const favsPorDia = see ? listaPorDia(favs, u, "u:" + p.nick) : "";
   view.innerHTML = `
     <header class="topbar"><div class="topbar-in"><a class="icon-btn" href="${back}" aria-label="Voltar">${ic("back")}</a><div class="t"><span class="eyebrow">Perfil</span></div></div></header>
     <section class="page">
@@ -3317,14 +3236,30 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
         ${komunidadeLineHTML(p, "u:" + p.nick)}
       </div>
       ${action}
+      ${isAdmin(u) ? `<div style="display:flex;flex-direction:column;align-items:center;gap:8px">
+        ${roleChipsHTML(p)}
+        ${p.role === "organizador" ? `<button class="btn btn-sm btn-outline-danger" type="button" id="tiraCargo">${ic("shield")} Remover cargo de Organizador</button>` : ""}
+      </div>` : ""}
       ${see ? `
         <div class="section-title"><h2 class="disp">Konexões</h2><span class="eyebrow num">${kons.length}</span></div>
         ${kons.length ? `<div class="rows">${kons.map(x => personRow(x, x.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(x.nick) + "?de=busca")).join("")}</div>` : `<div class="empty sm"><p>@${esc(p.nick)} ainda não tem Konexões.</p></div>`}
         <div class="section-title"><h2 class="disp">Favoritos</h2><span class="eyebrow num">${favs.length}</span></div>
-        ${favs.length ? favs.map(r => raceCard(r, u, null, { date: true, from: "u:" + p.nick })).join("") : `<div class="empty sm"><p>Nenhuma corrida favoritada.</p></div>`}`
+        ${favs.length ? `<a class="btn btn-sm btn-block" href="#/u/${encodeURIComponent(p.nick)}/calendario">${ic("cal")} Calendário do korredor</a>${favsPorDia}` : `<div class="empty sm"><p>Nenhuma corrida favoritada.</p></div>`}`
       : `<div class="lock-card">${ic("lock")}<span>Perfil privado. Só as Konexões de @${esc(p.nick)} veem as corridas favoritas e as Konexões.</span></div>`}
     </section>`;
   const on = (id, fn) => { const b = document.getElementById(id); if (b) b.addEventListener("click", fn); };
+  /* Só admin vê e só admin consegue: a regra do banco já recusa a troca de
+     cargo vinda de qualquer outra pessoa, inclusive de organizador.        */
+  on("tiraCargo", async () => {
+    const ok = await confirmBox({
+      title: "Remover cargo?", ok: "Remover", danger: true,
+      text: `<b>@${esc(p.nick)}</b> deixa de ser Organizador e volta a ser Usuário. As corridas que ele já publicou continuam no feed.`
+    });
+    if (!ok) return;
+    const { error } = await sb.from("profiles").update({ role: "usuario" }).eq("id", p.id);
+    if (error) { toast("Não deu para remover o cargo: " + error.message, true); return; }
+    p.role = "usuario"; DB.save(); render(); toast(`@${p.nick} voltou a ser Usuário.`);
+  });
   on("kGo", async () => { if (await askKonexao(u, p)) render(); });
   on("kCancel", async () => { if (await removeConn(c)) { render(); toast("Pedido cancelado."); } });
   on("kAccept", async () => { if (await acceptConn(c, u)) { render(); toast(`Konectado com @${p.nick}.`); } });
@@ -3583,9 +3518,8 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
 const komunidadeMembers = id => DB.users.filter(x => x.komunidade === id);
 const canManageKomunidade = (u, k) => isAdmin(u) || (!!k && k.dono === u.id);
 function komunidadeLogoHTML(k, cls = "") {
-  const src = k.foto || (k.id === "k-brc" ? BRC_LOGO : "");
+  const src = k.foto || "";
   if (src) return `<span class="komunidade-logo ${cls}"><img src="${src}" alt="Logo do ${esc(k.nome)}"></span>`;
-  if (k.id === "k-brc") return `<span class="komunidade-logo brc ${cls}" aria-hidden="true">brc_</span>`;
   const ini = (k.sigla || k.nome.split(/\s+/).map(w => w.charAt(0)).join("")).slice(0, 3).toUpperCase();
   return `<span class="komunidade-logo ${cls}" aria-hidden="true">${esc(ini)}</span>`;
 }
@@ -4021,7 +3955,7 @@ if (window.visualViewport) {
 
 (async function boot() {
   Prefs.load(); applyTheme();
-  if (!DB.load()) await seedDB(); else await migrateDB();
+  if (!DB.load()) await seedDB();   // o cache local é refeito a partir do servidor
   purgeExcluded();
   $("#fab").addEventListener("click", () => { SS.del("kohe.draft"); go("/nova"); });
   window.addEventListener("storage", ev => {
@@ -4046,6 +3980,7 @@ if (window.visualViewport) {
   await carregarChatsLimpos();
   await carregarConfig();
   await carregarFinder();
+  await carregarPedidos();
   ouvirMensagens();
   ouvirConfig();
   purgeExcluded();
@@ -4067,6 +4002,7 @@ if (window.visualViewport) {
     await carregarChatsLimpos();
     await carregarConfig();
     await carregarFinder();
+    await carregarPedidos();
     ouvirMensagens();
     ouvirConfig();
     if (!$(".scrim")) render();
@@ -4080,7 +4016,6 @@ if (window.visualViewport) {
 
   setupInstall();
   maybeInstallTip();
-  koheDiag();   // provisório (KM 2): confirma a conexão no console, sem afetar a tela
 })();
 </script>
 </body>
