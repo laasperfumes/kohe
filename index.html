@@ -705,6 +705,14 @@ html.kb-open .chat{padding-bottom:84px}
 .klogo-campo .cam{position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-radius:50%;
   background:var(--volt);color:var(--on-volt);display:grid;place-items:center;border:2px solid var(--ground);pointer-events:none}
 .klogo-campo .cam .i{width:14px;height:14px}
+/* linhas clicáveis da Conta: as mesmas linhas de configuração, agora como link */
+a.setting,button.setting{color:var(--ink);text-decoration:none;width:100%;background:none;border:0;padding:0;font:inherit;text-align:left;cursor:pointer}
+a.setting:hover{color:var(--ink)}
+.group.slim>.setting+.setting{border-top:1px solid var(--line)}
+.setting .chev{width:18px;height:18px;flex:none;color:var(--ink-3)}
+.ajuda{display:flex;flex-direction:column;gap:14px;margin:0}
+.ajuda dt{font-weight:750;font-size:15px}
+.ajuda dd{margin:3px 0 0;font-size:14px;color:var(--ink-2)}
 #rotate{display:none}
 @media (orientation:landscape) and (max-height:520px){
   #app,#tabbar,#fab,#toastHost{display:none!important}
@@ -1306,19 +1314,31 @@ function toast(msg, isBad = false) {
   host.innerHTML = `<div class="toast${isBad ? " bad" : ""}" role="status">${ic(isBad ? "alert" : "check")}<span>${esc(msg)}</span></div>`;
   clearTimeout(toast.t); toast.t = setTimeout(() => { host.innerHTML = ""; }, isBad ? 3600 : 2400);
 }
-function openSheet(html, { center = false, onClose } = {}) {
+/* travarPor (ms): durante esse tempo, tocar fora, apertar Esc ou botões de
+   fechar não fecham o modal. Padrão 0 — nenhum outro modal muda. O fechamento
+   feito pelo próprio código (sh.close) continua funcionando.                */
+function openSheet(html, { center = false, onClose, travarPor = 0, aoDestravar } = {}) {
   const s = document.createElement("div");
   s.className = "scrim" + (center ? " center" : "");
   s.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${center ? "" : '<div class="grab"></div>'}${html}</div>`;
-  let closed = false;
+  let closed = false, travado = travarPor > 0;
   const close = () => { if (closed) return; closed = true; s.remove(); if (onClose) onClose(); };
-  s.addEventListener("click", e => { if (e.target === s || e.target.closest("[data-close]")) close(); });
+  s.addEventListener("click", e => {
+    if (travado) return;
+    if (e.target === s || e.target.closest("[data-close]")) close();
+  });
   s._close = close;
+  s._travado = () => travado;
   document.body.appendChild(s);
+  if (travado) setTimeout(() => { travado = false; if (aoDestravar && !closed) aoDestravar(); }, travarPor);
   return { el: s.querySelector(".sheet"), close };
 }
 function closeSheets() { $$(".scrim").forEach(s => s._close ? s._close() : s.remove()); }
-document.addEventListener("keydown", e => { if (e.key === "Escape") { const s = $$(".scrim").pop(); if (s && s._close) s._close(); } });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  const s = $$(".scrim").pop();
+  if (s && s._close && !(s._travado && s._travado())) s._close();
+});
 
 function confirmBox(o) {
   return new Promise(resolve => {
@@ -1600,7 +1620,9 @@ function unreadCount(u) { return notifCount(u) + unreadMsgs(u); }
 function renderChrome(rt, u) {
   const bar = $("#tabbar"), fab = $("#fab");
   if (!u || rt.bare) { bar.hidden = true; fab.hidden = true; return; }
-  const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0], ["finder", "#/finder", "fire", "Finder", 0]];
+  /* O Finder saiu do menu: agora é um botão no topo do Início, junto das
+     outras formas de descobrir corrida. O lugar dele no menu vai para Treino. */
+  const tabs = [["feed", "#/feed", "home", "Início", 0], ["buscar", "#/buscar", "search", "Buscar", 0]];
   if (canCreate(u)) tabs.push(["sol", "#/solicitacoes", "list", "Solicitações", isAdmin(u) ? pendingCount() : 0]);
   tabs.push(["perfil", "#/perfil", "user", "Perfil", unreadCount(u)]);
   bar.innerHTML = tabs.map(([k, href, icn, label, badge]) =>
@@ -1724,7 +1746,7 @@ route(/^\/esqueci$/, function vForgot(view) {
    só falta escolher a senha nova.                                            */
 route(/^\/recuperar$/, function vRecover(view, _, q, cur) {
   if (!cur) return redirect("/esqueci");
-  const back = RECOVERY === "perfil" ? "#/perfil" : "#/login";
+  const back = RECOVERY === "perfil" ? "#/perfil/conta/senha" : "#/login";
   view.innerHTML = `<section class="auth">
     <div class="steps-top"><a class="icon-btn" href="${back}" aria-label="Cancelar">${ic("x")}</a></div>
     <div class="step-title"><span class="eyebrow">Recuperar acesso</span><h1 class="disp">Nova senha</h1>
@@ -1751,7 +1773,7 @@ route(/^\/recuperar$/, function vRecover(view, _, q, cur) {
     btn.disabled = false; btn.textContent = "Salvar nova senha";
     if (error) { bad("rcPass", "Não deu para trocar agora: " + error.message); goFirstBad(view); return; }
     RECOVERY = null;
-    go("/perfil"); toast("Senha trocada.");
+    go("/perfil/conta"); toast("Senha trocada.");
   });
 }, { any: true, tab: "perfil" });
 
@@ -1961,13 +1983,13 @@ route(/^\/feed$/, function vFeed(view, _, q, u) {
   view.innerHTML = `
     <header class="topbar"><div class="topbar-in">
       <div class="t"><span class="disp logo-sm">Kohe</span></div>
+      <a class="icon-btn" href="#/finder" aria-label="Abrir o Finder">${ic("fire")}</a>
       <button class="icon-btn" type="button" id="openFilters" aria-label="Filtros${chips.length ? " (" + chips.length + " ativos)" : ""}">${ic("sliders")}${chips.length ? `<span class="dot">${chips.length}</span>` : ""}</button>
     </div></header>
     <section class="page${canCreate(u) ? " has-fab" : ""}">
       <div class="section-title" style="padding-top:0"><h1 class="disp" style="font-size:42px">Próximas largadas</h1></div>
       ${chips.length ? `<div class="active-filters">${chips.map(([k, l]) => `<button class="fchip" type="button" data-rm="${esc(k)}" aria-label="Remover filtro ${esc(l)}">${esc(l)}${ic("x")}</button>`).join("")}</div>` : ""}
       ${f.raio && !o ? `<div class="note">${ic("alert")}<span>A cidade do seu cadastro não está na lista do Kohe, então o raio foi ignorado. Nos filtros, use “Onde estou”.</span></div>` : ""}
-      ${admin && slice.length ? `<p class="eyebrow swipe-hint">${ic("trash")} Arraste um card para a esquerda para excluir</p>` : ""}
       ${slice.length ? list : !anyPublished
         ? `<div class="empty"><h3>Nenhuma corrida publicada</h3><p>Quando novas corridas forem aprovadas, elas aparecem aqui em ordem de data.</p></div>`
         : `<div class="empty"><h3>Nada com esses filtros</h3><p>Tente outra distância, amplie as datas ou aumente o raio.</p><button class="btn btn-sm" type="button" id="clearFilters">Limpar filtros</button></div>`}
@@ -2841,34 +2863,43 @@ const UPGRADE_COPY = {
   organizador: "Organizadores solicitam o cadastro de corridas no Kohe.",
   admin: "Administradores aprovam corridas e pedidos de perfil, e podem excluir corridas do feed."
 };
-route(/^\/perfil$/, function vProfile(view, _, q, u) {
-  const next = NEXT_ROLE[u.role];
-  const last = DB.ups.filter(x => x.uid === u.id).sort((a, b) => b.criado.localeCompare(a.criado))[0];
-  const pend = last && last.status === "pendente" ? last : null;
-  const e = u.end || {}, nUnread = notifCount(u), nMsgs = unreadMsgs(u);
-  const nKon = konexoesOf(u.id).length, nFav = favRacesOf(u).length;
-  const konChip = `<a class="kon-chip" href="#/perfil/konexoes">${ic("link")}${nKon} ${nKon === 1 ? "Konexão" : "Konexões"}</a>`;
-  let upgrade = "";
-  if (pend) upgrade = `<div class="upgrade">
-      <span class="eyebrow">Pedido enviado ${fmtStamp(pend.criado)}</span>
-      <h2 class="disp">Aguardando aprovação</h2>
-      <p>Seu pedido para virar ${ROLE_LABEL[pend.para]} está com a administração. Enquanto isso, o app segue igual para você.</p>
-      <button class="btn btn-sm btn-plain" type="button" id="cancelUp" style="align-self:flex-start">Cancelar pedido</button>
-    </div>`;
-  else if (next) upgrade = `<div class="upgrade">
-      <span class="eyebrow">${last && last.status === "negado" && last.decidido ? `Último pedido negado em ${fmtStamp(last.decidido)}` : "Upgrade de perfil"}</span>
-      <h2 class="disp">Quero ser ${ROLE_LABEL[next]}</h2>
-      <p>${UPGRADE_COPY[next]}</p>
-      <button class="btn btn-ink btn-block" type="button" id="askUp">Solicitar upgrade ${ic("arrow")}</button>
-    </div>`;
+/* ---------- Perfil: Sobre você e Conta ----------
+   O perfil virou duas partes. "Sobre você" é o lado social: foto, Komunidade,
+   Konexões, favoritos. "Conta" junta configurações e dados pessoais, cada um
+   na própria tela — assim e-mail, telefone e endereço só aparecem quando a
+   pessoa entra na opção, e não surgem na tela durante uma gravação.         */
+function perfilTopo(u) {
+  const n = notifCount(u);
+  return `<header class="topbar"><div class="topbar-in">
+      <div class="t"><span class="eyebrow">Você</span><h1 class="disp" style="font-size:30px">Perfil</h1></div>
+      <a class="icon-btn" href="#/perfil/notificacoes" aria-label="Notificações${n ? ` (${n} novas)` : ""}">${ic("bell")}${n ? `<span class="dot alert">${n}</span>` : ""}</a>
+    </div></header>`;
+}
+function perfilAbas(aba) {
+  const b = (rota, rotulo, chave) => `<button type="button" role="tab" data-perfil-aba="${rota}"${aba === chave ? ' class="on" aria-selected="true"' : ' aria-selected="false"'}>${rotulo}</button>`;
+  return `<div class="seg" role="tablist" aria-label="Seções do perfil">${b("/perfil", "Sobre você", "sobre")}${b("/perfil/conta", "Conta", "conta")}</div>`;
+}
+function ligarPerfilAbas(view) {
+  $$("[data-perfil-aba]", view).forEach(el => el.addEventListener("click", () => go(el.dataset.perfilAba)));
+}
+function abrirAjuda() {
+  openSheet(`
+    <div class="sheet-head"><h2 class="disp">Ajuda</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+    <dl class="ajuda">
+      <div><dt>Favoritar corridas</dt><dd>Toque no coração de uma corrida. Ela aparece em Perfil › Favoritos e no seu calendário.</dd></div>
+      <div><dt>Finder</dt><dd>Fica no topo do Início. Deslize para a direita para favoritar e para a esquerda para descartar.</dd></div>
+      <div><dt>Komunidades</dt><dd>Grupos de corrida. Você participa de uma por vez e sai pela tela da própria Komunidade.</dd></div>
+      <div><dt>Konexões e mensagens</dt><dd>Toda Konexão precisa ser aprovada. Depois disso, vocês podem conversar.</dd></div>
+      <div><dt>Perfil privado</dt><dd>Ligado, só suas Konexões veem suas favoritas e Konexões.</dd></div>
+    </dl>`);
+}
 
-  view.innerHTML = `
-    <header class="topbar"><div class="topbar-in">
-      <div class="t"><span class="eyebrow">Configurações</span><h1 class="disp" style="font-size:30px">Perfil</h1></div>
-      <a class="icon-btn" href="#/perfil/notificacoes" aria-label="Notificações${nUnread ? ` (${nUnread} novas)` : ""}">${ic("bell")}${nUnread ? `<span class="dot alert">${nUnread}</span>` : ""}</a>
-      <button class="icon-btn" type="button" id="logout" aria-label="Sair da conta">${ic("logout")}</button>
-    </div></header>
+route(/^\/perfil$/, function vProfile(view, _, q, u) {
+  const nMsgs = unreadMsgs(u), nKon = konexoesOf(u.id).length, nFav = favRacesOf(u).length;
+  const konChip = `<a class="kon-chip" href="#/perfil/konexoes">${ic("link")}${nKon} ${nKon === 1 ? "Konexão" : "Konexões"}</a>`;
+  view.innerHTML = `${perfilTopo(u)}
     <section class="page">
+      ${perfilAbas("sobre")}
       <div class="me">
         <label class="av-edit">${avatarHTML(u)}<span class="av-cam">${ic("camera")}</span><input type="file" id="fotoIn" accept="image/*" aria-label="${u.foto ? "Trocar foto de perfil" : "Adicionar foto de perfil"}"></label>
         <div class="who">
@@ -2881,80 +2912,11 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
       <nav class="quick" aria-label="Seu conteúdo">
         <a class="qtile" href="#/perfil/favoritas">${ic("heart")}<b>Favoritos</b><span class="ct num">${nFav} ${nFav === 1 ? "corrida" : "corridas"}</span></a>
         <a class="qtile" href="#/mensagens">${ic("chat")}<b>Mensagens</b><span class="ct">${nMsgs ? `${nMsgs} nova${nMsgs === 1 ? "" : "s"}` : "Suas conversas"}</span>${nMsgs ? `<span class="badge-num">${nMsgs}</span>` : ""}</a>
-        <a class="qtile wide premium-tile${u.premium ? " is-premium" : ""}" href="#/premium?de=perfil">${ic("bolt")}<b>${u.premium ? "Você é Premium" : "Seja Premium"}</b><span class="ct">${u.premium ? "Ativo" : "Slides ilimitados"}</span>${ic("chev", "chev")}</a>
       </nav>
-      <div class="group slim">
-        <div class="setting sm">
-          <span class="txt"><b>Modo noturno</b></span>
-          <label class="switch sm"><input type="checkbox" role="switch" id="darkSw"${isDark() ? " checked" : ""} aria-label="Modo noturno"><i></i></label>
-        </div>
-        <div class="setting sm" style="border-top:1px solid var(--line)">
-          <span class="txt"><b>Perfil privado</b></span>
-          <label class="switch sm"><input type="checkbox" role="switch" id="privSw"${u.privado ? " checked" : ""} aria-label="Perfil privado"><i></i></label>
-        </div>
-      </div>
-      <div class="group">
-        <h2 class="disp">Seus dados</h2>
-        <form class="form" id="pf" novalidate>
-          <div class="field"><label for="pfNick">Nickname</label><input id="pfNick" class="input" value="@${esc(u.nick)}" readonly><span class="lock">${ic("lock")} Não é possível alterar</span></div>
-          <div class="field"><label for="pfEmail">E-mail</label><input id="pfEmail" class="input" value="${esc(u.email)}" readonly><span class="lock">${ic("lock")} Não é possível alterar</span></div>
-          ${F({ id: "pf_nome", label: "Nome", value: u.nome, attrs: 'autocomplete="name"', err: "Informe seu nome." })}
-          ${F({ id: "pf_tel", label: "Celular com DDD", type: "tel", value: u.tel, attrs: 'autocomplete="tel" inputmode="tel"', err: "Informe o celular com DDD." })}
-          ${F({ id: "pf_nasc", label: "Data de nascimento", type: "date", value: u.nasc, attrs: `max="${ymd(new Date())}"`, err: "Informe sua data de nascimento." })}
-          <div class="row-num">${F({ id: "pf_rua", label: "Rua", value: e.rua, err: "Informe a rua." })}${F({ id: "pf_num", label: "Número", value: e.num, attrs: 'inputmode="numeric"', err: "Informe o nº." })}</div>
-          ${F({ id: "pf_bairro", label: "Bairro", value: e.bairro, err: "Informe o bairro." })}
-          ${F({ id: "pf_cidade", label: "Cidade", value: e.cidade, wrap: "city", err: "Informe a cidade." })}
-          <button class="btn btn-volt btn-block" type="submit">Salvar alterações</button>
-        </form>
-      </div>
-      <div class="group">
-        <h2 class="disp">Senha</h2>
-        <form class="form" id="pwf" novalidate>
-          ${F({ id: "pw_old", label: "Senha atual", type: "password", wrap: "eye", attrs: 'autocomplete="current-password"', err: "Informe a senha atual." })}
-          <button class="linkbtn forgot" type="button" id="pwForgot">Esqueci minha senha</button>
-          ${F({ id: "pw_new", label: "Nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Crie a nova senha." })}
-          <ul class="rules" id="pwRules">${rulesHTML("")}</ul>
-          ${F({ id: "pw_new2", label: "Confirme a nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Repita a nova senha." })}
-          <button class="btn btn-block" type="submit">${ic("key")} Trocar senha</button>
-        </form>
-      </div>
-      <div class="group danger-zone">
-        <h2 class="disp">Conta</h2>
-        <button class="btn btn-block" type="button" id="logout2">${ic("logout")} Sair</button>
-        <button class="btn btn-outline-danger btn-block" type="button" id="delAcc">${ic("trash")} Excluir minha conta</button>
-      </div>
-      ${upgrade}
       <a class="linkbtn small-link" href="#/komunidade/novo">${ic("plus")} Criar Komunidade</a>
-      ${isAdmin(u) ? `<button class="linkbtn small-link" type="button" id="finderToggle" style="margin-top:-14px">${ic("fire")} Finder ${DB.config.finder ? "ativado · desativar" : "desativado · ativar"}</button>` : ""}
     </section>`;
 
-  bindPhone($("#pf_tel")); bindCity($("#pf_cidade"));
-  $("#darkSw").addEventListener("change", ev => setMode(ev.target.checked));
-  $("#privSw").addEventListener("change", async ev => {
-    const on = ev.target.checked;
-    const { error } = await sb.from("profiles").update({ privado: on }).eq("id", u.id);
-    if (error) { ev.target.checked = !on; toast("Não deu para salvar agora. Tente de novo.", true); return; }
-    u.privado = on; DB.save();
-    toast(on ? "Perfil privado: só suas Konexões veem suas favoritas e Konexões." : "Perfil público: todo mundo vê suas favoritas e Konexões.");
-  });
-  const logout = async () => { await Session.clear(); SS.del("kohe.draft"); toast("Você saiu da conta."); go("/login"); };
-  $("#logout").addEventListener("click", logout); $("#logout2").addEventListener("click", logout);
-  $("#pwForgot").addEventListener("click", () => { RECOVERY = "perfil"; go("/recuperar"); });
-  const ft = $("#finderToggle");
-  if (ft) ft.addEventListener("click", async () => {
-    if (!isAdmin(u)) return;
-    const on = !DB.config.finder;
-    const ok = await confirmBox({
-      title: on ? "Ativar o Finder?" : "Desativar o Finder?", ok: on ? "Ativar" : "Desativar", danger: !on,
-      text: on ? "Todos os perfis deste aparelho passam a deslizar corridas na aba Finder." : "A aba Finder volta a mostrar “Novidades em breve” para todos os perfis."
-    });
-    if (!ok) return;
-    const { error } = await sb.from("app_config").update({ finder: on }).eq("id", true);
-    if (error) { toast("Não deu para mudar agora: " + error.message, true); return; }
-    DB.config.finder = on; DB.save(); render();
-    toast(on ? "Finder ativado para todos." : "Finder desativado para todos.");
-  });
-
+  ligarPerfilAbas(view);
   $("#fotoIn").addEventListener("change", async ev => {
     const file = ev.target.files && ev.target.files[0]; if (!file) return;
     try {
@@ -2972,7 +2934,77 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
     if (error) { toast("Não deu para remover agora. Tente de novo.", true); return; }
     u.foto = null; DB.save(); render(); toast("Foto removida.");
   });
+}, { tab: "perfil" });
 
+route(/^\/perfil\/conta$/, function vConta(view, _, q, u) {
+  const next = NEXT_ROLE[u.role];
+  const last = DB.ups.filter(x => x.uid === u.id).sort((a, b) => b.criado.localeCompare(a.criado))[0];
+  const pend = last && last.status === "pendente" ? last : null;
+  let upgrade = "";
+  if (pend) upgrade = `<div class="upgrade">
+      <span class="eyebrow">Pedido enviado ${fmtStamp(pend.criado)}</span>
+      <h2 class="disp">Aguardando aprovação</h2>
+      <p>Seu pedido para virar ${ROLE_LABEL[pend.para]} está com a administração. Enquanto isso, o app segue igual para você.</p>
+      <button class="btn btn-sm btn-plain" type="button" id="cancelUp" style="align-self:flex-start">Cancelar pedido</button>
+    </div>`;
+  else if (next) upgrade = `<div class="upgrade">
+      <span class="eyebrow">${last && last.status === "negado" && last.decidido ? `Último pedido negado em ${fmtStamp(last.decidido)}` : "Upgrade de perfil"}</span>
+      <h2 class="disp">Quero ser ${ROLE_LABEL[next]}</h2>
+      <p>${UPGRADE_COPY[next]}</p>
+      <button class="btn btn-ink btn-block" type="button" id="askUp">Solicitar upgrade ${ic("arrow")}</button>
+    </div>`;
+  const linha = (href, titulo, sub) => `<a class="setting sm" href="${href}"><span class="txt"><b>${titulo}</b>${sub ? `<span>${sub}</span>` : ""}</span>${ic("chev", "chev")}</a>`;
+
+  view.innerHTML = `${perfilTopo(u)}
+    <section class="page">
+      ${perfilAbas("conta")}
+      <div class="group slim">
+        ${linha("#/perfil/conta/dados", "Seus dados", "E-mail, telefone e nascimento")}
+        ${linha("#/perfil/conta/endereco", "Endereço", "")}
+        ${linha("#/perfil/conta/senha", "Senha", "")}
+      </div>
+      <div class="group slim">
+        ${linha("#/premium?de=perfil", "Perfil Premium", u.premium ? "Ativo" : "Slides ilimitados no Finder")}
+        ${linha("#/perfil/conta/historico", "Histórico de corridas", "Favoritas que já passaram")}
+        <button class="setting sm" type="button" id="ajuda"><span class="txt"><b>Ajuda</b></span>${ic("chev", "chev")}</button>
+      </div>
+      <div class="group slim">
+        <div class="setting sm"><span class="txt"><b>Modo escuro</b></span><label class="switch sm"><input type="checkbox" role="switch" id="darkSw"${isDark() ? " checked" : ""} aria-label="Modo escuro"><i></i></label></div>
+        <div class="setting sm"><span class="txt"><b>Perfil privado</b><span>Só Konexões veem suas favoritas e Konexões</span></span><label class="switch sm"><input type="checkbox" role="switch" id="privSw"${u.privado ? " checked" : ""} aria-label="Perfil privado"><i></i></label></div>
+      </div>
+      ${upgrade}
+      ${isAdmin(u) ? `<button class="linkbtn small-link" type="button" id="finderToggle">${ic("fire")} Finder ${DB.config.finder ? "ativado · desativar" : "desativado · ativar"}</button>` : ""}
+      <div class="danger-zone">
+        <button class="btn btn-block" type="button" id="sair">${ic("logout")} Sair da conta</button>
+        <button class="btn btn-outline-danger btn-block" type="button" id="delAcc">${ic("trash")} Excluir minha conta</button>
+      </div>
+    </section>`;
+
+  ligarPerfilAbas(view);
+  $("#darkSw").addEventListener("change", ev => setMode(ev.target.checked));
+  $("#privSw").addEventListener("change", async ev => {
+    const on = ev.target.checked;
+    const { error } = await sb.from("profiles").update({ privado: on }).eq("id", u.id);
+    if (error) { ev.target.checked = !on; toast("Não deu para salvar agora. Tente de novo.", true); return; }
+    u.privado = on; DB.save();
+    toast(on ? "Perfil privado: só suas Konexões veem suas favoritas e Konexões." : "Perfil público: todo mundo vê suas favoritas e Konexões.");
+  });
+  $("#ajuda").addEventListener("click", abrirAjuda);
+  $("#sair").addEventListener("click", async () => { await Session.clear(); SS.del("kohe.draft"); toast("Você saiu da conta."); go("/login"); });
+  const ft = $("#finderToggle");
+  if (ft) ft.addEventListener("click", async () => {
+    if (!isAdmin(u)) return;
+    const on = !DB.config.finder;
+    const ok = await confirmBox({
+      title: on ? "Ativar o Finder?" : "Desativar o Finder?", ok: on ? "Ativar" : "Desativar", danger: !on,
+      text: on ? "Todos os perfis passam a deslizar corridas no Finder." : "O Finder volta a mostrar “Novidades em breve” para todos os perfis."
+    });
+    if (!ok) return;
+    const { error } = await sb.from("app_config").update({ finder: on }).eq("id", true);
+    if (error) { toast("Não deu para mudar agora: " + error.message, true); return; }
+    DB.config.finder = on; DB.save(); render();
+    toast(on ? "Finder ativado para todos." : "Finder desativado para todos.");
+  });
   const ask = $("#askUp");
   if (ask) ask.addEventListener("click", async () => {
     const ok = await confirmBox({ title: `Virar ${ROLE_LABEL[next]}?`, ok: "Enviar pedido", text: "O pedido vai para a administração do Kohe. Você continua usando o app normalmente enquanto espera." });
@@ -2990,50 +3022,6 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
     if (error) { toast("Não deu para cancelar agora. Tente de novo.", true); return; }
     await carregarPedidos(); render(); toast("Pedido cancelado.");
   });
-
-  $("#pf").addEventListener("submit", async ev => {
-    ev.preventDefault();
-    const d = {}; ["nome", "tel", "nasc", "rua", "num", "bairro", "cidade"].forEach(k => { d[k] = val("pf_" + k); });
-    if (!d.nome || d.nome.length < 2) bad("pf_nome");
-    if (!phoneOk(d.tel)) bad("pf_tel", "Informe o celular com DDD. Formato: +55 (19) 99876-5432");
-    if (!d.nasc) bad("pf_nasc"); else if (ageOf(d.nasc) < MIN_IDADE) bad("pf_nasc", "É preciso ter 18 anos ou mais.");
-    ["rua", "num", "bairro", "cidade"].forEach(k => { if (!d[k]) bad("pf_" + k); });
-    if (goFirstBad(view)) return;
-    const c = findCity(d.cidade), cidade = c ? c.n : d.cidade;
-    const [r1, r2] = await Promise.all([
-      sb.from("profiles").update({ nome: d.nome }).eq("id", u.id),
-      sb.from("profiles_private").update({
-        tel: d.tel, nasc: d.nasc,
-        end_rua: d.rua, end_num: d.num, end_bairro: d.bairro, end_cidade: cidade
-      }).eq("id", u.id)
-    ]);
-    const erro = r1.error || r2.error;
-    if (erro) { toast("Não deu para salvar: " + erro.message, true); return; }
-    Object.assign(u, { nome: d.nome, tel: d.tel, nasc: d.nasc, end: { rua: d.rua, num: d.num, bairro: d.bairro, cidade } });
-    DB.save(); toast("Dados salvos.");
-  });
-
-  $("#pw_new").addEventListener("input", ev => { $("#pwRules").innerHTML = rulesHTML(ev.target.value); });
-  $("#pwf").addEventListener("submit", async ev => {
-    ev.preventDefault();
-    const old = $("#pw_old").value, nw = $("#pw_new").value, nw2 = $("#pw_new2").value;
-    if (!old) bad("pw_old");
-    if (!nw) bad("pw_new"); else if (!passOk(nw)) bad("pw_new", "A nova senha ainda não cumpre todas as regras.");
-    if (!nw2) bad("pw_new2"); else if (nw2 !== nw) bad("pw_new2", "As senhas não são iguais.");
-    if (goFirstBad(view)) return;
-
-    /* O servidor troca a senha sem pedir a atual. Conferimos a atual fazendo
-       um login com ela — é o que impede alguém de trocar a sua senha num
-       celular que você deixou destravado.                                    */
-    const conf = await sb.auth.signInWithPassword({ email: u.email, password: old });
-    if (conf.error) { bad("pw_old", "A senha atual não confere. Se esqueceu, use “Esqueci minha senha”."); goFirstBad(view); return; }
-
-    const { error } = await sb.auth.updateUser({ password: nw });
-    if (error) { bad("pw_new", "Não deu para trocar agora: " + error.message); goFirstBad(view); return; }
-    ["pw_old", "pw_new", "pw_new2"].forEach(id => { $("#" + id).value = ""; });
-    $("#pwRules").innerHTML = rulesHTML(""); toast("Senha trocada.");
-  });
-
   $("#delAcc").addEventListener("click", async () => {
     const ok = await confirmBox({
       title: "Excluir conta?", danger: true, ok: "Excluir conta", typeToConfirm: u.nick,
@@ -3054,6 +3042,114 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
     DB.save(); await Session.clear(); SS.del("kohe.draft");
     go("/login"); toast("Conta excluída.");
   });
+}, { tab: "perfil" });
+
+route(/^\/perfil\/conta\/dados$/, function vDados(view, _, q, u) {
+  view.innerHTML = `${subHead("Seus dados", "#/perfil/conta", "Conta")}
+    <section class="page">
+      <div class="group">
+        <form class="form" id="pf" novalidate>
+          <div class="field"><label for="pfNick">Nickname</label><input id="pfNick" class="input" value="@${esc(u.nick)}" readonly><span class="lock">${ic("lock")} Não é possível alterar</span></div>
+          <div class="field"><label for="pfEmail">E-mail</label><input id="pfEmail" class="input" value="${esc(u.email)}" readonly><span class="lock">${ic("lock")} Não é possível alterar</span></div>
+          ${F({ id: "pf_nome", label: "Nome", value: u.nome, attrs: 'autocomplete="name"', err: "Informe seu nome." })}
+          ${F({ id: "pf_tel", label: "Celular com DDD", type: "tel", value: u.tel, attrs: 'autocomplete="tel" inputmode="tel"', err: "Informe o celular com DDD." })}
+          ${F({ id: "pf_nasc", label: "Data de nascimento", type: "date", value: u.nasc, attrs: `max="${ymd(new Date())}"`, err: "Informe sua data de nascimento." })}
+          <button class="btn btn-volt btn-block" type="submit">Salvar alterações</button>
+        </form>
+      </div>
+    </section>`;
+  bindPhone($("#pf_tel"));
+  $("#pf").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const d = {}; ["nome", "tel", "nasc"].forEach(k => { d[k] = val("pf_" + k); });
+    if (!d.nome || d.nome.length < 2) bad("pf_nome");
+    if (!phoneOk(d.tel)) bad("pf_tel", "Informe o celular com DDD. Formato: +55 (19) 99876-5432");
+    if (!d.nasc) bad("pf_nasc"); else if (ageOf(d.nasc) < MIN_IDADE) bad("pf_nasc", "É preciso ter 18 anos ou mais.");
+    if (goFirstBad(view)) return;
+    const [r1, r2] = await Promise.all([
+      sb.from("profiles").update({ nome: d.nome }).eq("id", u.id),
+      sb.from("profiles_private").update({ tel: d.tel, nasc: d.nasc }).eq("id", u.id)
+    ]);
+    const erro = r1.error || r2.error;
+    if (erro) { toast("Não deu para salvar: " + erro.message, true); return; }
+    Object.assign(u, { nome: d.nome, tel: d.tel, nasc: d.nasc });
+    DB.save(); toast("Dados salvos.");
+  });
+}, { tab: "perfil" });
+
+route(/^\/perfil\/conta\/endereco$/, function vEndereco(view, _, q, u) {
+  const e = u.end || {};
+  view.innerHTML = `${subHead("Endereço", "#/perfil/conta", "Conta")}
+    <section class="page">
+      <p class="muted" style="font-size:13.5px">Só você vê seu endereço. A cidade serve de ponto de partida para o filtro de raio das corridas.</p>
+      <div class="group">
+        <form class="form" id="pfEnd" novalidate>
+          <div class="row-num">${F({ id: "pf_rua", label: "Rua", value: e.rua, err: "Informe a rua." })}${F({ id: "pf_num", label: "Número", value: e.num, attrs: 'inputmode="numeric"', err: "Informe o nº." })}</div>
+          ${F({ id: "pf_bairro", label: "Bairro", value: e.bairro, err: "Informe o bairro." })}
+          ${F({ id: "pf_cidade", label: "Cidade", value: e.cidade, wrap: "city", err: "Informe a cidade." })}
+          <button class="btn btn-volt btn-block" type="submit">Salvar endereço</button>
+        </form>
+      </div>
+    </section>`;
+  bindCity($("#pf_cidade"));
+  $("#pfEnd").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const d = {}; ["rua", "num", "bairro", "cidade"].forEach(k => { d[k] = val("pf_" + k); });
+    ["rua", "num", "bairro", "cidade"].forEach(k => { if (!d[k]) bad("pf_" + k); });
+    if (goFirstBad(view)) return;
+    const c = findCity(d.cidade), cidade = c ? c.n : d.cidade;
+    const { error } = await sb.from("profiles_private")
+      .update({ end_rua: d.rua, end_num: d.num, end_bairro: d.bairro, end_cidade: cidade }).eq("id", u.id);
+    if (error) { toast("Não deu para salvar: " + error.message, true); return; }
+    u.end = { rua: d.rua, num: d.num, bairro: d.bairro, cidade };
+    DB.save(); toast("Endereço salvo.");
+  });
+}, { tab: "perfil" });
+
+route(/^\/perfil\/conta\/senha$/, function vSenha(view, _, q, u) {
+  view.innerHTML = `${subHead("Senha", "#/perfil/conta", "Conta")}
+    <section class="page">
+      <div class="group">
+        <form class="form" id="pwf" novalidate>
+          ${F({ id: "pw_old", label: "Senha atual", type: "password", wrap: "eye", attrs: 'autocomplete="current-password"', err: "Informe a senha atual." })}
+          <button class="linkbtn forgot" type="button" id="pwForgot">Esqueci minha senha</button>
+          ${F({ id: "pw_new", label: "Nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Crie a nova senha." })}
+          <ul class="rules" id="pwRules">${rulesHTML("")}</ul>
+          ${F({ id: "pw_new2", label: "Confirme a nova senha", type: "password", wrap: "eye", attrs: 'autocomplete="new-password"', err: "Repita a nova senha." })}
+          <button class="btn btn-volt btn-block" type="submit">${ic("key")} Trocar senha</button>
+        </form>
+      </div>
+    </section>`;
+  $("#pwForgot").addEventListener("click", () => { RECOVERY = "perfil"; go("/recuperar"); });
+  $("#pw_new").addEventListener("input", ev => { $("#pwRules").innerHTML = rulesHTML(ev.target.value); });
+  $("#pwf").addEventListener("submit", async ev => {
+    ev.preventDefault();
+    const old = $("#pw_old").value, nw = $("#pw_new").value, nw2 = $("#pw_new2").value;
+    if (!old) bad("pw_old");
+    if (!nw) bad("pw_new"); else if (!passOk(nw)) bad("pw_new", "A nova senha ainda não cumpre todas as regras.");
+    if (!nw2) bad("pw_new2"); else if (nw2 !== nw) bad("pw_new2", "As senhas não são iguais.");
+    if (goFirstBad(view)) return;
+
+    /* O servidor troca a senha sem pedir a atual. Conferimos a atual fazendo
+       um login com ela — é o que impede alguém de trocar a sua senha num
+       celular que você deixou destravado.                                    */
+    const conf = await sb.auth.signInWithPassword({ email: u.email, password: old });
+    if (conf.error) { bad("pw_old", "A senha atual não confere. Se esqueceu, use “Esqueci minha senha”."); goFirstBad(view); return; }
+
+    const { error } = await sb.auth.updateUser({ password: nw });
+    if (error) { bad("pw_new", "Não deu para trocar agora: " + error.message); goFirstBad(view); return; }
+    ["pw_old", "pw_new", "pw_new2"].forEach(id => { $("#" + id).value = ""; });
+    $("#pwRules").innerHTML = rulesHTML(""); toast("Senha trocada.");
+  });
+}, { tab: "perfil" });
+
+route(/^\/perfil\/conta\/historico$/, function vHistorico(view, _, q, u) {
+  const passadas = favRacesOf(u).filter(isOver);
+  view.innerHTML = `${subHead("Histórico de corridas", "#/perfil/conta", "Conta")}
+    <section class="page">
+      ${passadas.length ? listaPorDia(passadas, u, "fav")
+        : `<div class="empty"><h3>Nada por aqui ainda</h3><p>As corridas que você favoritou aparecem aqui depois que a data passa.</p></div>`}
+    </section>`;
 }, { tab: "perfil" });
 
 route(/^\/perfil\/favoritas$/, function vFavs(view, _, q, u) {
@@ -3511,7 +3607,7 @@ route(/^\/finder$/, function vFinder(view, _, q, u) {
     st.hint = true; DB.save(); salvarFinder(u);
     if (!reducedMotion()) card.classList.add("hinting");
   }
-}, { tab: "finder" });
+}, { tab: "feed" });
 /* =====================================================================
    TELAS — Komunidades
    ===================================================================== */
@@ -3640,7 +3736,7 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
     <section class="page">
       <div class="komunidade-hero">${komunidadeLogoHTML(k)}<h1 class="disp">${esc(k.nome)}</h1>${k.sigla ? `<span class="sigla">@${esc(k.sigla)}</span>` : ""}</div>
       ${mine
-        ? `<div class="state-ok">${ic("check")} Kohendo com ${esc(komunidadeTag(k))}</div><button class="linkbtn" type="button" id="kLeave" style="align-self:center;font-size:13px;color:var(--danger)">Sair da Komunidade</button>`
+        ? `<div class="state-ok">${ic("check")} Kohendo com ${esc(komunidadeTag(k))}</div>`
         : `<button class="btn btn-volt btn-block" type="button" id="kJoin">${ic("users")} Koher junto</button>${other ? `<p class="eyebrow" style="text-align:center">Você está no ${esc(komunidadeTag(other))}. Ao entrar aqui, sai de lá.</p>` : ""}`}
       <dl class="dl">
         <div><dt>${ic("pin")}Cidade</dt><dd>${esc(k.cidade)}</dd></div>
@@ -3651,6 +3747,7 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
       <div class="section-title"><h2 class="disp">Membros</h2><span class="eyebrow num">${members.length}</span></div>
       ${members.length ? `<div class="rows">${members.map(p => `<div class="person-row">${avatarHTML(p, "avatar av-sm")}<a class="who" href="${p.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(p.nick) + "?de=komunidade:" + k.id}" style="color:inherit;text-decoration:none"><b>@${esc(p.nick)}</b><span>${esc(p.nome)}${p.id === k.dono ? " · responsável" : ""}</span></a>${manage && p.id !== u.id ? `<button class="btn btn-sm" type="button" data-kick="${p.id}" aria-label="Remover @${esc(p.nick)} da Komunidade">Remover</button>` : ""}</div>`).join("")}</div>`
         : `<div class="empty sm"><p>Ninguém kohendo aqui ainda. Toque em Koher junto para ser a primeira pessoa.</p></div>`}
+      ${mine ? `<button class="linkbtn" type="button" id="kLeave" style="align-self:center;font-size:12.5px;color:var(--ink-3);margin-top:6px">Sair da Komunidade</button>` : ""}
     </section>`;
   const join = $("#kJoin");
   if (join) join.addEventListener("click", async () => {
@@ -3664,7 +3761,7 @@ route(/^\/komunidade\/([\w-]+)$/, function vKomunidade(view, [id], q, u) {
   });
   const leave = $("#kLeave");
   if (leave) leave.addEventListener("click", async () => {
-    const ok = await confirmBox({ title: "Sair da Komunidade?", ok: "Sair", danger: true, text: `Você deixa de aparecer entre os membros da <b>${esc(komunidadeTag(k))}</b>.` });
+    const ok = await confirmBox({ title: "Sair da Komunidade?", ok: "Sair", danger: true, text: `Você deixará de aparecer entre os membros da <b>${esc(komunidadeTag(k))}</b>. Deseja sair da Komunidade?` });
     if (!ok) return;
     const { error } = await sb.from("profiles").update({ komunidade_id: null }).eq("id", u.id);
     if (error) { toast("Não deu para sair agora. Tente de novo.", true); return; }
@@ -3702,13 +3799,13 @@ route(/^\/kohedores\/([\w-]+)$/, function vKohedores(view, [id], q, u) {
         : `<div class="empty"><h3>Ninguém ainda</h3><p>Ninguém mais favoritou essa corrida por enquanto. Quem favoritar aparece aqui.</p><a class="btn btn-sm" href="#/corrida/${r.id}?de=finder">Saber mais da corrida</a></div>`}
     </section>`;
   $$("[data-kon]", view).forEach(b => b.addEventListener("click", async () => { if (await askKonexao(u, userById(b.dataset.kon))) render(); }));
-}, { tab: "finder" });
+}, { tab: "feed" });
 
 route(/^\/premium$/, function vPremium(view, _, q, u) {
   const from = q.get("de") === "finder" ? "finder" : "perfil";
-  if (from === "finder") renderChrome({ tab: "finder" }, u);
+  if (from === "finder") renderChrome({ tab: "feed" }, u);
   const pagar = q.get("passo") === "pagar" && !u.premium;
-  const back = pagar ? `#/premium?de=${from}` : from === "finder" ? "#/finder" : "#/perfil";
+  const back = pagar ? `#/premium?de=${from}` : from === "finder" ? "#/finder" : "#/perfil/conta";
   let body;
   if (u.premium) body = `
     <div class="premium-hero">${ic("bolt")}<span class="eyebrow">Kohe Premium</span><h1 class="disp">Você é Premium</h1><p>Slides ilimitados no Finder já estão liberados.</p></div>
@@ -3912,14 +4009,34 @@ function maybeInstallTip() {
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   setTimeout(() => {
     if ($(".scrim")) return;
+    /* Nos primeiros segundos o aviso não fecha: sem X, sem "Entendi", sem
+       tocar fora. Tempo para a pessoa ler antes de dispensar por reflexo.
+       O X fica invisível (e não oculto) para o cabeçalho não pular quando ele
+       aparecer.                                                              */
+    const TRAVA = 5;
+    let contagem = null;
     const sh = openSheet(`
-      <div class="sheet-head"><h2 class="disp">Abra como app</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+      <div class="sheet-head"><h2 class="disp">Abra como app</h2><button class="icon-btn" type="button" data-close aria-label="Fechar" id="tipX" style="visibility:hidden">${ic("x")}</button></div>
       <p class="lead">Coloque o Kohe na tela inicial para abrir em tela cheia, sem a barra do navegador. Não precisa instalar nada da loja.</p>
       <ol class="steps">${ios
         ? `<li>Toque em <b>Compartilhar</b> ${ic("share")} na barra do Safari.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li>`
         : `<li>Toque no menu ${ic("dots")} do Chrome.</li><li>Escolha <b>Adicionar à tela inicial</b> (ou <b>Instalar app</b>) e confirme.</li>`}<li>Abra o Kohe pelo ícone verde.</li></ol>
       ${ios ? "" : `<button class="btn btn-volt btn-block" type="button" id="tipInstall"${INSTALL_EVT ? "" : " hidden"}>${ic("plus")} Adicionar à tela inicial</button>`}
-      <button class="btn${ios ? " btn-volt" : ""} btn-block" type="button" data-close>Entendi</button>`);
+      <button class="btn${ios ? " btn-volt" : ""} btn-block" type="button" data-close id="tipOk" disabled>Entendi (${TRAVA})</button>`, {
+      travarPor: TRAVA * 1000,
+      aoDestravar: () => {
+        if (contagem) clearInterval(contagem);
+        const x = $("#tipX"); if (x) x.style.visibility = "";
+        const ok = $("#tipOk"); if (ok) { ok.disabled = false; ok.textContent = "Entendi"; }
+      },
+      onClose: () => { if (contagem) clearInterval(contagem); }
+    });
+    let resta = TRAVA;
+    contagem = setInterval(() => {
+      resta -= 1;
+      const ok = $("#tipOk");
+      if (ok && resta > 0) ok.textContent = `Entendi (${resta})`;
+    }, 1000);
     sh.el.addEventListener("click", ev => { if (ev.target.closest("[data-close]")) { Prefs.d.dicaTela = true; Prefs.save(); } });
     const tipBtn = $("#tipInstall", sh.el);
     if (tipBtn) tipBtn.addEventListener("click", async () => {
