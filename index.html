@@ -698,6 +698,13 @@ html.kb-open .chat{padding-bottom:84px}
 .cal-item:first-child{border-top:0}
 .cal-item b{font-size:14.5px}
 .cal-item span{font-size:12.5px;color:var(--ink-2)}
+/* campo da logo da Komunidade (estilo próprio, sem depender do avatar do perfil) */
+.klogo-campo{display:flex;align-items:center;gap:14px;margin-bottom:2px}
+.klogo-campo label{position:relative;display:inline-grid;place-items:center;cursor:pointer;flex:none}
+.klogo-campo input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.klogo-campo .cam{position:absolute;right:-4px;bottom:-4px;width:26px;height:26px;border-radius:50%;
+  background:var(--volt);color:var(--on-volt);display:grid;place-items:center;border:2px solid var(--ground);pointer-events:none}
+.klogo-campo .cam .i{width:14px;height:14px}
 #rotate{display:none}
 @media (orientation:landscape) and (max-height:520px){
   #app,#tabbar,#fab,#toastHost{display:none!important}
@@ -1227,6 +1234,20 @@ async function subirImagem(balde, dataUrl, nome) {
   return sb.storage.from(balde).getPublicUrl(caminho).data.publicUrl;
 }
 
+/* Apaga o arquivo a partir do endereço público dele. O endereço tem a forma
+   .../object/public/<pasta>/<caminho>, então dá para extrair os dois.       */
+function apagarImagem(url) {
+  if (!sb || !url) return;
+  const partes = String(url).split("/object/public/");
+  if (partes.length < 2) return;
+  const resto = partes[1].split("/");
+  const balde = resto.shift();
+  const caminho = resto.join("/");
+  if (!balde || !caminho) return;
+  sb.storage.from(balde).remove([decodeURIComponent(caminho)])
+    .then(({ error }) => { if (error) console.warn("Kohe: imagem não apagada —", error.message); });
+}
+
 /* ---------- Finder e configuração global (KM 8) ---------- */
 async function carregarConfig() {
   if (!sb || !CURRENT) return;
@@ -1292,10 +1313,30 @@ async function carregarMensagens() {
    outra tela. O aviso respeita as mesmas regras da tabela: você só é avisado
    de mensagem que já teria permissão de ler.                                */
 let CANAL_MSGS = null;
+let CANAL_CONFIG = null, CONFIG_AO_VIVO = false;
 
 function pararDeOuvir() {
   if (sb && CANAL_MSGS) { sb.removeChannel(CANAL_MSGS); }
-  CANAL_MSGS = null;
+  if (sb && CANAL_CONFIG) { sb.removeChannel(CANAL_CONFIG); }
+  CANAL_MSGS = null; CANAL_CONFIG = null; CONFIG_AO_VIVO = false;
+}
+
+/* O servidor avisa quando o admin liga ou desliga o Finder, então a deslizada
+   não precisa mais perguntar nada — reage na hora. Se este canal cair,
+   CONFIG_AO_VIVO fica falso e a deslizada volta a checar no servidor, que é a
+   rede de segurança para não existir janela de Finder já desligado.         */
+function ouvirConfig() {
+  if (!sb || !CURRENT) return;
+  if (CANAL_CONFIG) { sb.removeChannel(CANAL_CONFIG); CANAL_CONFIG = null; }
+  CONFIG_AO_VIVO = false;
+  CANAL_CONFIG = sb.channel("config-" + CURRENT.id)
+    .on("postgres_changes", { event: "UPDATE", schema: "public", table: "app_config" }, payload => {
+      const antes = DB.config.finder;
+      DB.config.finder = !!(payload.new && payload.new.finder);
+      DB.save();
+      if (antes !== DB.config.finder && !$(".scrim")) render();
+    })
+    .subscribe(status => { CONFIG_AO_VIVO = status === "SUBSCRIBED"; });
 }
 
 function ouvirMensagens() {
@@ -1615,8 +1656,14 @@ async function excludeRace(r, u, motivo, via) {
     exclusao: { t, por: u.id, motivo: motivo || "", via, antes: r.status }
   };
   if (pedido) campos.pedido_exclusao = Object.assign({}, r.pedidoExclusao, { status: "aprovado", decidido: t, decididoPor: u.id });
+  /* A arte sai junto. Consequência assumida: restaurar dentro dos 7 dias traz
+     a corrida de volta sem a imagem — por isso o campo também é limpo, para
+     não sobrar link quebrado.                                               */
+  const arteAntiga = r.arte;
+  campos.arte_url = null;
   const { error } = await sb.from("races").update(campos).eq("id", r.id);
   if (error) { toast("Não deu para excluir: " + error.message, true); return false; }
+  apagarImagem(arteAntiga);
   await salvarEvento(r.id, "excluida", motivo || "");
   await carregarCorridas();
   return true;
@@ -1724,8 +1771,7 @@ route(/^\/login$/, function vLogin(view, _, q) {
       <div class="testacc">
         <div class="testacc-head"><span class="eyebrow">E-mail · senha</span><span class="eyebrow">toque para preencher</span></div>
         ${TEST_ACCOUNTS.map(a => `<button class="acc" type="button" data-acc="${a.id}"><span class="who"><b>${esc(a.email)}</b><span>${ROLE_LABEL[a.role]} · ${a.pass ? esc(a.pass) : "senha não fica no código"}</span></span><span class="use">Usar</span></button>`).join("")}
-      </div>
-      <button class="linkbtn" type="button" id="resetData" style="align-self:flex-start;font-size:13px">Restaurar dados iniciais</button>`);
+      </div>`);
     $$("[data-acc]", sh.el).forEach(b => b.addEventListener("click", () => {
       const a = TEST_ACCOUNTS.find(x => x.id === b.dataset.acc);
       $("#lgUser").value = a.email;
@@ -1734,7 +1780,6 @@ route(/^\/login$/, function vLogin(view, _, q) {
       sh.close();
       if (!a.pass) { $("#lgPass").focus(); toast("Digite a senha da conta de administrador."); }
     }));
-    $("#resetData", sh.el).addEventListener("click", () => { sh.close(); resetAll(); });
   });
   $("#loginForm").addEventListener("submit", async e => {
     e.preventDefault();
@@ -2478,10 +2523,11 @@ route(/^\/nova$/, function vRaceForm(view, _, q, u) {
          guarda só um endereço curto, e não a imagem inteira em texto */
       const url = await subirImagem("race-art", comprimida, "arte");
       if (!url) return;
+      apagarImagem(d.arte);   // trocou a arte: a anterior não fica ocupando espaço
       d.arte = url; rerender(); toast("Arte adicionada.");
     } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
   });
-  const rm = $("#arteRm"); if (rm) rm.addEventListener("click", () => { d.arte = null; rerender(); });
+  const rm = $("#arteRm"); if (rm) rm.addEventListener("click", () => { apagarImagem(d.arte); d.arte = null; rerender(); });
 
   $("#rf").addEventListener("submit", e => {
     e.preventDefault(); collect();
@@ -2976,11 +3022,6 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
         <button class="btn btn-block" type="button" id="logout2">${ic("logout")} Sair</button>
         <button class="btn btn-outline-danger btn-block" type="button" id="delAcc">${ic("trash")} Excluir minha conta</button>
       </div>
-      ${isAdmin(u) ? `<div class="group">
-        <h2 class="disp">Fase de testes</h2>
-        <p class="muted" style="font-size:13.5px">Tudo fica salvo só neste aparelho. Restaurar volta às 4 contas de teste, às corridas iniciais e à Komunidade BRC.</p>
-        <button class="btn btn-block" type="button" id="reset">${ic("refresh")} Restaurar dados iniciais</button>
-      </div>` : ""}
       ${upgrade}
       <a class="linkbtn small-link" href="#/komunidade/novo">${ic("plus")} Criar Komunidade</a>
       ${isAdmin(u) ? `<button class="linkbtn small-link" type="button" id="finderToggle" style="margin-top:-14px">${ic("fire")} Finder ${DB.config.finder ? "ativado · desativar" : "desativado · ativar"}</button>` : ""}
@@ -2997,7 +3038,6 @@ route(/^\/perfil$/, function vProfile(view, _, q, u) {
   });
   const logout = async () => { await Session.clear(); SS.del("kohe.draft"); toast("Você saiu da conta."); go("/login"); };
   $("#logout").addEventListener("click", logout); $("#logout2").addEventListener("click", logout);
-  const rs = $("#reset"); if (rs) rs.addEventListener("click", resetAll);
   $("#pwForgot").addEventListener("click", () => { RECOVERY = "perfil"; go("/recuperar"); });
   const ft = $("#finderToggle");
   if (ft) ft.addEventListener("click", async () => {
@@ -3409,6 +3449,9 @@ function finderCardInner(r) {
    deslizada confere no servidor primeiro.                                    */
 async function finderAindaLigado() {
   if (!sb) return true;
+  /* Com o canal de tempo real de pé, o valor em memória já está atualizado:
+     zero espera no gesto. Sem ele, pergunta ao servidor.                    */
+  if (CONFIG_AO_VIVO) return !!DB.config.finder;
   const { data, error } = await sb.from("app_config").select("finder").eq("id", true).maybeSingle();
   if (error) return true;   // rede instável não deve travar quem está usando
   const ligado = !!(data && data.finder);
@@ -3567,6 +3610,14 @@ function komunidadeForm(view, u, k) {
     </div></header>
     <section class="page">
       ${current ? `<div class="note">${ic("alert")}<span>Você está na ${esc(komunidadeTag(current))}. Ao criar uma Komunidade nova, sai de lá e passa a koher com ela.</span></div>` : ""}
+      <div class="klogo-campo">
+        <label>
+          <span id="kfLogoPrev">${komunidadeLogoHTML({ id: d.id || "", nome: d.nome || "Komunidade", sigla: d.sigla || "", foto: d.foto || null })}</span>
+          <span class="cam">${ic("camera")}</span>
+          <input type="file" id="kf_logo" accept="image/*" aria-label="${d.foto ? "Trocar a logo" : "Adicionar uma logo"}">
+        </label>
+        <span class="muted" style="font-size:13px">${d.foto ? "Toque para trocar a logo" : "Toque para adicionar uma logo"}</span>
+      </div>
       <form class="form" id="kf" novalidate>
         ${F({ id: "kf_nome", label: "Nome", value: d.nome, ph: "Ex.: Barão Running Club", attrs: 'maxlength="60" autocapitalize="words"', err: "Dê um nome para a Komunidade." })}
         ${F({ id: "kf_cidade", label: "Cidade", value: d.cidade, wrap: "city", ph: "Comece a digitar", err: "Informe a cidade da Komunidade." })}
@@ -3578,6 +3629,24 @@ function komunidadeForm(view, u, k) {
       </form>
     </section>`;
   bindCity($("#kf_cidade"));
+  /* A logo sobe na hora da escolha. No caso de Komunidade nova ela ainda não
+     existe no banco, mas o caminho do arquivo usa o SEU id, então o envio já
+     é permitido e o endereço entra junto na criação.                        */
+  let logoUrl = d.foto || null;
+  const logoIn = $("#kf_logo");
+  if (logoIn) logoIn.addEventListener("change", async ev => {
+    const file = ev.target.files && ev.target.files[0]; if (!file) return;
+    try {
+      const comprimida = await compressImage(file, { max: 320, q: 0.8, square: true });
+      const url = await subirImagem("komunidade-logos", comprimida, "logo");
+      if (!url) return;
+      apagarImagem(logoUrl);
+      logoUrl = url;
+      const prev = $("#kfLogoPrev");
+      if (prev) prev.innerHTML = komunidadeLogoHTML({ id: d.id || "", nome: val("kf_nome") || "Komunidade", sigla: val("kf_sigla") || "", foto: url });
+      toast("Logo pronta. Salve a Komunidade para valer.");
+    } catch (err) { toast("Não deu para ler essa imagem. Tente um JPG ou PNG.", true); }
+  });
   $("#kf_sigla").addEventListener("input", e => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); });
   $("#kf_desde").addEventListener("input", e => { e.target.value = e.target.value.replace(/[^\d/]/g, ""); });
   $("#kf").addEventListener("submit", async e => {
@@ -3592,7 +3661,7 @@ function komunidadeForm(view, u, k) {
     if (v.desde && !validDesde(v.desde)) bad("kf_desde");
     if (goFirstBad(view)) return;
     const c = findCity(v.cidade); v.cidade = c ? c.n : v.cidade;
-    const campos = { nome: v.nome, cidade: v.cidade, sigla: v.sigla || null, local: v.local, horario: v.horario, desde: v.desde };
+    const campos = { nome: v.nome, cidade: v.cidade, sigla: v.sigla || null, local: v.local, horario: v.horario, desde: v.desde, foto_url: logoUrl };
     if (editing) {
       const { error } = await sb.from("komunidades").update(campos).eq("id", k.id);
       if (error) { toast("Não deu para salvar: " + error.message, true); return; }
@@ -3978,6 +4047,7 @@ if (window.visualViewport) {
   await carregarConfig();
   await carregarFinder();
   ouvirMensagens();
+  ouvirConfig();
   purgeExcluded();
   render();
 
@@ -3998,6 +4068,7 @@ if (window.visualViewport) {
     await carregarConfig();
     await carregarFinder();
     ouvirMensagens();
+    ouvirConfig();
     if (!$(".scrim")) render();
   });
 
