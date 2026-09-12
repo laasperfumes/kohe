@@ -801,6 +801,24 @@ button.state-ok{width:100%;background:none;font:inherit;font-weight:800;cursor:p
 .stat-treinos{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--ink-2)}
 .stat-treinos .i{width:15px;height:15px}
 .stat-treinos b{color:var(--ink);font-weight:750}
+/* ---------- compatibilidade, Konexões e pedidos com identidade ---------- */
+.compat{display:inline-flex;align-items:center;gap:1px}
+.compat .i{width:17px;height:17px;color:var(--ink-3);opacity:.4}
+.compat .i.on{color:var(--volt-text);opacity:1}
+.compat b{margin-left:5px;font-family:var(--mono);font-size:10.5px;font-weight:700;color:var(--ink-2)}
+.compat-dica,.compat-hint{display:flex;align-items:center;gap:6px}
+.compat-dica .i,.compat-hint .i{width:14px;height:14px;flex:none}
+.compat-hint{margin-top:-6px}
+.kon-linha{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:30px;font-size:12.5px;font-weight:650;color:var(--volt-text);text-align:left}
+.kon-linha .i{width:14px;height:14px;flex:none}
+.confirmados-linha{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2)}
+.confirmados-linha .i{width:18px;height:18px}
+.confirmados-linha b{color:var(--ink);font-size:16px}
+.pquem{display:flex;align-items:center;gap:10px}
+.pquem .who{display:flex;flex-direction:column;min-width:0;flex:1}
+.pquem .who b{font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ptoque{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:auto;padding-top:6px}
+.ptoque .i{width:13px;height:13px}
 /* ---------- só na vertical ----------
    Quem decide é a orientação do APARELHO, marcada em html.deitado pelo script.
    Antes era a media query de orientação, que mede a área da página: no Android
@@ -1709,6 +1727,7 @@ function raceCard(r, u, dist, opts = {}) {
       <div class="meta">${opts.date ? `<span>${ic("cal")}${fmtShort(r.data)}${isOver(r) ? " · finalizada" : ""}</span>` : ""}<span>${ic("clock")}${r.hora || "hora a confirmar"}</span><span>${ic("pin")}${esc(r.cidade)}${dist != null && dist >= 1 ? " · " + Math.round(dist) + " km" : ""}</span></div>
       <h3><a class="rc-link" href="#/corrida/${r.id}${opts.from ? "?de=" + opts.from : ""}">${esc(r.nome)}</a></h3>
       <div class="chips">${(r.mods || []).map(m => `<span class="chip">${esc(m)}</span>`).join("")}</div>
+      ${opts.konexoes ? konexoesCorridaHTML(r, u) : ""}
       <div class="rc-foot"><span class="price${hasPrice(r) ? "" : " tbd"}">${priceHTML(r)}</span>${favBtn(r.id, u)}</div>
     </div>
   </article>`;
@@ -2163,7 +2182,7 @@ route(/^\/feed$/, function vFeed(view, _, q, u) {
       const d = pDate(r.data), n = daysFrom(r.data);
       list += `<div class="day"><span class="disp dnum num">${pad2(d.getDate())}</span><span class="dtxt"><span class="dname">${DOW_FULL[d.getDay()].replace("-feira", "")}</span><span class="eyebrow">${MON_FULL[d.getMonth()]} ${d.getFullYear()}</span></span><span class="eyebrow rel${n <= 3 ? " soon" : ""}">${relDay(r.data)}</span></div>`;
     }
-    const card = raceCard(r, u, dist);
+    const card = raceCard(r, u, dist, { konexoes: true });
     list += admin
       ? `<div class="swipe" data-swipe="${r.id}"><div class="under"><button type="button" data-del="${r.id}" aria-label="Excluir ${esc(r.nome)}" tabindex="-1">${ic("trash")}<span>Excluir</span></button></div>${card}</div>`
       : card;
@@ -3807,7 +3826,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
         ${roleChipsHTML(p)}
         ${p.role === "organizador" ? `<button class="btn btn-sm btn-outline-danger" type="button" id="tiraCargo">${ic("shield")} Remover cargo de Organizador</button>` : ""}
       </div>` : ""}
-      ${see || PARCEIROS.has(p.id) ? corredorBlocoHTML(p, false) : ""}
+      ${see || PARCEIROS.has(p.id) || from.startsWith("treino:") ? corredorBlocoHTML(p, false) : ""}
       ${see ? `
         <div class="section-title"><h2 class="disp">Konexões</h2><span class="eyebrow num">${kons.length}</span></div>
         ${kons.length ? `<div class="rows">${kons.map(x => personRow(x, x.id === u.id ? "#/perfil" : "#/u/" + encodeURIComponent(x.nick) + "?de=busca")).join("")}</div>` : `<div class="empty sm"><p>@${esc(p.nick)} ainda não tem Konexões.</p></div>`}
@@ -4283,9 +4302,15 @@ route(/^\/kohedores\/([\w-]+)$/, function vKohedores(view, [id], q, u) {
 
 route(/^\/premium$/, function vPremium(view, _, q, u) {
   const from = q.get("de") === "finder" ? "finder" : "perfil";
-  if (from === "finder") renderChrome({ tab: "feed" }, u);
+  /* Vindo de "ver quais Konexões": explica o motivo e, depois do upgrade,
+     volta para a corrida ou o treino de onde a pessoa saiu.                */
+  const volta = (q.get("volta") || "").startsWith("#/") ? q.get("volta") : "";
+  const motivo = q.get("motivo") === "konexoes";
+  const aba = { finder: "feed", feed: "feed", treino: "treino" }[q.get("de")];
+  if (aba) renderChrome({ tab: aba }, u);
+  const params = `de=${encodeURIComponent(q.get("de") || from)}${motivo ? "&motivo=konexoes" : ""}${volta ? "&volta=" + encodeURIComponent(volta) : ""}`;
   const pagar = q.get("passo") === "pagar" && !u.premium;
-  const back = pagar ? `#/premium?de=${from}` : from === "finder" ? "#/finder" : "#/perfil/conta";
+  const back = pagar ? `#/premium?${params}` : volta || (from === "finder" ? "#/finder" : "#/perfil/conta");
   let body;
   if (u.premium) body = `
     <div class="premium-hero">${ic("bolt")}<span class="eyebrow">Kohe Premium</span><h1 class="disp">Você é Premium</h1><p>Slides ilimitados no Finder já estão liberados.</p></div>
@@ -4301,10 +4326,12 @@ route(/^\/premium$/, function vPremium(view, _, q, u) {
     <ul class="perks">
       <li>${ic("fire")}<span><b>Slides ilimitados</b> no Finder, sem esperar o dia seguinte.</span></li>
       <li>${ic("link")}<span><b>Konexão de monte</b> com quem favorita as mesmas corridas.</span></li>
+      <li>${ic("users")}<span><b>Quais Konexões</b> favoritaram cada corrida e estão confirmadas nos treinos.</span></li>
       <li>${ic("clock")}<span><b>Pace da galera:</b> veja o ritmo que o pessoal costuma fazer. <span class="soon">em breve</span></span></li>
     </ul>
-    <a class="btn btn-volt btn-block" href="#/premium?de=${from}&passo=pagar">Quero ser Premium ${ic("arrow")}</a>`;
-  view.innerHTML = `${subHead("Premium", back, "Kohe")}<section class="page">${body}</section>`;
+    <a class="btn btn-volt btn-block" href="#/premium?${params}&passo=pagar">Quero ser Premium ${ic("arrow")}</a>`;
+  const aviso = motivo && !u.premium ? `<div class="note">${ic("lock")}<span>Ver quais Konexões favoritaram uma corrida ou estão confirmadas num treino é exclusivo do Kohe Premium.</span></div>` : "";
+  view.innerHTML = `${subHead("Premium", back, "Kohe")}<section class="page">${aviso}${body}</section>`;
   const goP = $("#prGo");
   const mudarPremium = async valor => {
     const { error } = await sb.from("profiles").update({ premium: valor }).eq("id", u.id);
@@ -4312,7 +4339,7 @@ route(/^\/premium$/, function vPremium(view, _, q, u) {
     u.premium = valor; DB.save(); return true;
   };
   if (goP) goP.addEventListener("click", async () => {
-    if (await mudarPremium(true)) { go("/premium?de=" + from); toast("Pronto: agora você é Premium."); }
+    if (await mudarPremium(true)) { go(volta ? volta.slice(1) : "/premium?de=" + from); toast("Pronto: agora você é Premium."); }
   });
   const off = $("#prOff");
   if (off) off.addEventListener("click", async () => {
@@ -4577,7 +4604,7 @@ function pedirPerfilCorredor(u, motivo) {
     const sh = openSheet(`
       <div class="sheet-head"><h2 class="disp">Antes do primeiro treino</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
       <p class="lead">${motivo === "pedir"
-        ? "Quem organiza vê isto no seu pedido, sem seu nome, foto ou @."
+        ? "Quem organiza vê isto no seu pedido, junto com o seu perfil."
         : "Quem você aceitar no treino vê isto no seu perfil."} Você preenche uma vez e muda quando quiser em Perfil.</p>
       <form class="form" id="corForm" novalidate>${corredorCamposHTML(d)}<button class="btn btn-volt btn-block" type="submit">Salvar e continuar ${ic("arrow")}</button></form>`,
       { onClose: () => resolve(salvo) });
@@ -4597,7 +4624,7 @@ route(/^\/perfil\/corredor$/, function vCorredor(view, _, q, u) {
   const d = corredorDe(u);
   view.innerHTML = `${subHead("Perfil de korredor", "#/perfil", "Sobre você")}
     <section class="page">
-      <p class="privacy-note">Aparece no seu perfil. Quando você pede para entrar num treino, quem organiza vê só isto antes de aceitar, sem seu nome, foto ou @.</p>
+      <p class="privacy-note">Aparece no seu perfil e junto com os seus pedidos de treino.</p>
       <form class="form" id="corForm" novalidate>${corredorCamposHTML(d)}<button class="btn btn-volt btn-block" type="submit">Salvar</button></form>
     </section>`;
   ligarCorredor(view, d);
@@ -4614,8 +4641,6 @@ route(/^\/perfil\/corredor$/, function vCorredor(view, _, q, u) {
 /* ---------- treino: formatos e peças ---------- */
 const paceTxt = s => `${Math.floor(s / 60)}:${pad2(s % 60)}`;
 const PACES = Array.from({ length: 29 }, (_, i) => 180 + i * 15);   // 3:00 a 10:00 /km, de 15 em 15 s
-const PACES_BUSCA = [240, 270, 300, 330, 360, 390, 420, 450, 480];   // busca por "perto de", ±30 s
-const DIST_BUSCA = [["", "Qualquer", null, null], ["ate5", "Até 5 km", null, 5], ["5a10", "5 a 10 km", 5, 10], ["10a15", "10 a 15 km", 10, 15], ["15mais", "15 km ou mais", 15, null]];
 const DESC_MAX = 280;
 const horaTreino = t => String(t.hora || "").slice(0, 5);
 const kmTreino = t => kmTxt(Math.round(Number(t.distancia_km) * 100) / 100);
@@ -4636,12 +4661,55 @@ const PAPEL_TAG = {
   organizador: `<span class="papel org">${ic("flag")}Você organiza</span>`,
   participante: `<span class="papel par">${ic("run")}Você participa</span>`
 };
-const PEDIDO_PILL = { pendente: ["st-pend", "Aguardando"], aceito: ["st-pub", "Confirmado"], recusado: ["st-neg", "Não aceito"] };
+const PEDIDO_PILL = { pendente: ["st-pend", "Aguardando"], aceito: ["st-pub", "Confirmado"], recusado: ["st-neg", "Não aceito"], removido: ["st-neg", "Removido"] };
 const pedidoPill = s => PEDIDO_PILL[s] ? `<span class="st ${PEDIDO_PILL[s][0]}">${PEDIDO_PILL[s][1]}</span>` : "";
+
+/* ---------- compatibilidade na busca (0 a 3 corredores) ----------
+   Só entra na conta o que a pessoa informou. Vale a pior nota entre pace e
+   distância; cidade diferente zera.                                        */
+function compatTreino(t, f) {
+  const notas = [];
+  if (f.cidade) notas.push(norm(t.cidade) === norm(f.cidade) ? 3 : 0);
+  if (f.pace) { const d = Math.abs(t.pace_seg - Number(f.pace)); notas.push(d <= 15 ? 3 : d <= 30 ? 2 : d <= 45 ? 1 : 0); }
+  const alvo = parseFloat(String(f.km || "").replace(",", "."));
+  if (alvo > 0) { const d = Math.abs(Number(t.distancia_km) - alvo); notas.push(d <= 1 ? 3 : d <= 2 ? 2 : d <= 3 ? 1 : 0); }
+  return notas.length ? Math.min(...notas) : null;
+}
+const compatHTML = n => `<span class="compat" role="img" aria-label="Compatibilidade ${n} de 3">${[1, 2, 3].map(i => ic("run", i <= n ? "on" : "")).join("")}<b class="num">${n}/3</b></span>`;
+
+/* ---------- Konexões em corridas e treinos ----------
+   O número aparece para todo mundo. Ver QUEM são é do Premium: sem Premium,
+   o toque leva à tela de upgrade. No treino, a lista também é conferida no
+   servidor, e só conta participantes aceitos, nunca quem organiza.         */
+function konexoesCorridaHTML(r, u) {
+  const n = konexoesOf(u.id).filter(p => favsOf(p).includes(r.id)).length;
+  return n ? `<button class="kon-linha" type="button" data-konfav="${r.id}">${ic("link")}${n === 1 ? "1 Konexão favoritou esta corrida" : `${n} Konexões favoritaram esta corrida`}</button>` : "";
+}
+function konexoesTreinoHTML(t) {
+  const n = Number(t.conexoes_confirmadas) || 0;
+  return n ? `<button class="kon-linha" type="button" data-kontreino="${t.id}">${ic("link")}${n === 1 ? "1 Konexão está confirmada neste treino" : `${n} Konexões estão confirmadas neste treino`}</button>` : "";
+}
+function listaKonexoesSheet(titulo, pessoas) {
+  openSheet(`<div class="sheet-head"><h2 class="disp">${esc(titulo)}</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>
+    ${pessoas.length ? `<div class="rows">${pessoas.map(p => personRow(p, "#/u/" + encodeURIComponent(p.nick) + "?de=busca")).join("")}</div>` : `<p class="lead">Ninguém por enquanto.</p>`}`);
+}
+document.addEventListener("click", async e => {
+  const bf = e.target.closest && e.target.closest("[data-konfav]");
+  const bt = e.target.closest && e.target.closest("[data-kontreino]");
+  if (!bf && !bt) return;
+  e.preventDefault(); e.stopPropagation();
+  const card = (bf || bt).closest(".rc"); if (card && card.dataset.moved) return;
+  const u = me(); if (!u) return;
+  if (!u.premium) { go(`/premium?de=${bf ? "feed" : "treino"}&motivo=konexoes&volta=${encodeURIComponent(location.hash)}`); return; }
+  if (bf) { listaKonexoesSheet("Konexões que favoritaram", konexoesOf(u.id).filter(p => favsOf(p).includes(bf.dataset.konfav))); return; }
+  const { data, error } = await sb.rpc("konexoes_no_treino", { p_treino: bt.dataset.kontreino });
+  if (error) { toast(error.message, true); return; }
+  listaKonexoesSheet("Konexões no treino", (data || []).map(x => userById(x.id) || { id: x.id, nick: x.nick, nome: "", foto: x.foto }));
+}, true);
 
 /* O card de corrida serve de molde: a "arte" é o número de peito com a
    distância do treino, igual às corridas sem imagem.                        */
-function treinoCard(t, { de = "", comData = false, extra = "" } = {}) {
+function treinoCard(t, { de = "", comData = false, extra = "", compat = null } = {}) {
   const km = kmTreino(t);
   return `<article class="rc tc">
     <div class="thumb">${bibHTML({ id: t.id, mods: [km + " km"] })}</div>
@@ -4649,6 +4717,8 @@ function treinoCard(t, { de = "", comData = false, extra = "" } = {}) {
       <div class="meta">${comData ? `<span>${ic("cal")}${fmtShort(t.data)}</span>` : ""}<span>${ic("clock")}${horaTreino(t)}</span><span>${ic("pin")}${esc(t.cidade)}</span></div>
       <h3><a class="rc-link" href="#/treino/${t.id}${de ? "?de=" + de : ""}">${esc(t.local)}</a></h3>
       <div class="chips"><span class="chip">${km} km</span><span class="chip">Pace ${paceTxt(t.pace_seg)}/km</span>${t.aceite_automatico ? `<span class="chip chip-auto">${ic("bolt")}Entrada na hora</span>` : ""}</div>
+      ${konexoesTreinoHTML(t)}
+      ${compat == null ? "" : compatHTML(compat)}
       <div class="rc-foot"><span class="conf">${ic("users")}${confirmadosTxt(t.confirmados)}</span>${extra}</div>
     </div>
   </article>`;
@@ -4674,7 +4744,8 @@ const AVISO_TREINO = {
   treino_recusado: () => "Pedido de treino não aceito",
   treino_cancelado: () => "Treino cancelado",
   treino_desistencia: p => `@${p ? p.nick : "alguém"} desistiu do treino`,
-  treino_entrada: p => `@${p ? p.nick : "alguém"} entrou no seu treino`
+  treino_entrada: p => `@${p ? p.nick : "alguém"} entrou no seu treino`,
+  treino_removido: () => "Você foi removido de um treino"
 };
 function avisoTreinoHTML(n, p, nova) {
   const titulo = (AVISO_TREINO[n.tipo] || (() => "Novidade de treino"))(p);
@@ -4685,7 +4756,7 @@ function avisoTreinoHTML(n, p, nova) {
 
 /* ---------- Procurar ---------- */
 const BUSCA_TREINO = "kohe.treinoBusca";
-const buscaTreinoVazia = () => ({ cidade: "", local: "", data: "", hora: "", pace: "", dist: "" });
+const buscaTreinoVazia = () => ({ cidade: "", local: "", data: "", hora: "", pace: "", km: "" });
 const buscaTreino = () => Object.assign(buscaTreinoVazia(), SS.get(BUSCA_TREINO) || {});
 let RESULTADO_TREINOS = null;   // { chave, lista }: redesenha na hora enquanto a busca refaz
 
@@ -4701,30 +4772,32 @@ function abrirBuscaTreino() {
         ${F({ id: "tb_hora", label: "A partir de", type: "time", value: f.hora })}
       </div>
       <div class="row2">
-        <div class="field"><label for="tb_pace">Pace (±30 s)</label><div class="select-wrap"><select id="tb_pace" class="input"><option value="">Qualquer</option>${PACES_BUSCA.map(s => `<option value="${s}"${String(s) === String(f.pace) ? " selected" : ""}>${paceTxt(s)} /km</option>`).join("")}</select></div></div>
-        <div class="field"><label for="tb_dist">Distância</label><div class="select-wrap"><select id="tb_dist" class="input">${DIST_BUSCA.map(([v, t]) => `<option value="${v}"${v === f.dist ? " selected" : ""}>${t}</option>`).join("")}</select></div></div>
+        <div class="field"><label for="tb_pace">Pace desejado</label><div class="select-wrap"><select id="tb_pace" class="input"><option value="">Qualquer</option>${PACES.map(s => `<option value="${s}"${String(s) === String(f.pace) ? " selected" : ""}>${paceTxt(s)} /km</option>`).join("")}</select></div></div>
+        <div class="field"><label for="tb_km">Distância desejada</label><div class="input-wrap km"><input id="tb_km" class="input" inputmode="decimal" autocomplete="off" maxlength="5" placeholder="Ex.: 8" value="${esc(f.km || "")}"><span class="post">km</span></div></div>
       </div>
+      <p class="hint compat-hint">${ic("run")} Cidade, pace e distância não escondem treinos: viram a compatibilidade de 0 a 3 corredores.</p>
       <div class="btn-row"><button class="btn" type="button" id="tbLimpar">Limpar</button><button class="btn btn-volt" type="submit">${ic("search")} Ver treinos</button></div>
     </form>`);
   bindCity($("#tb_cidade", sh.el));
+  $("#tb_km", sh.el).addEventListener("input", e => { const v = kmInput(e.target.value); if (v !== e.target.value) e.target.value = v; });
   $("#tbLimpar", sh.el).addEventListener("click", () => { SS.set(BUSCA_TREINO, buscaTreinoVazia()); sh.close(); render(); });
   $("#tbForm", sh.el).addEventListener("submit", e => {
     e.preventDefault();
     const c = findCity(val("tb_cidade"));
-    SS.set(BUSCA_TREINO, { cidade: c ? c.n : val("tb_cidade"), local: val("tb_local"), data: val("tb_data"), hora: val("tb_hora"), pace: val("tb_pace"), dist: val("tb_dist") });
+    SS.set(BUSCA_TREINO, { cidade: c ? c.n : val("tb_cidade"), local: val("tb_local"), data: val("tb_data"), hora: val("tb_hora"), pace: val("tb_pace"), km: val("tb_km") });
     sh.close(); render();
   });
 }
 
 route(/^\/treino$/, function vTreinoProcurar(view, _, q, u) {
-  const f = buscaTreino(), dist = DIST_BUSCA.find(x => x[0] === f.dist) || DIST_BUSCA[0];
+  const f = buscaTreino();
   const chips = [];
   if (f.cidade) chips.push(["cidade", f.cidade]);
   if (f.local) chips.push(["local", `“${f.local}”`]);
   if (f.data) chips.push(["data", fmtShort(f.data)]);
   if (f.hora) chips.push(["hora", `a partir de ${f.hora}`]);
-  if (f.pace) chips.push(["pace", `pace ~${paceTxt(+f.pace)}`]);
-  if (f.dist) chips.push(["dist", dist[1]]);
+  if (f.pace) chips.push(["pace", `pace ${paceTxt(+f.pace)}`]);
+  if (f.km) chips.push(["km", `${String(f.km).replace(".", ",")} km`]);
   view.innerHTML = `${treinoTopo()}
     <section class="page">
       ${treinoAbas("procurar")}
@@ -4741,23 +4814,29 @@ route(/^\/treino$/, function vTreinoProcurar(view, _, q, u) {
   const out = $("#tbOut"), chave = JSON.stringify(f);
   const pintar = lista => {
     if (!lista.length) {
-      out.innerHTML = `<div class="empty"><h3>${chips.length ? "Nada com essa busca" : "Nenhum treino por aqui"}</h3><p>${chips.length ? "Tente outra data, outro pace ou tire algum filtro." : "Ninguém ofereceu treino ainda. Que tal abrir o primeiro?"}</p><a class="btn btn-sm btn-volt" href="#/treino/oferecer">${ic("plus")} Oferecer treino</a></div>`;
+      out.innerHTML = `<div class="empty"><h3>${chips.length ? "Nada com essa busca" : "Nenhum treino por aqui"}</h3><p>${chips.length ? "Tente outra data ou horário, ou tire algum filtro." : "Ninguém ofereceu treino ainda. Que tal abrir o primeiro?"}</p><a class="btn btn-sm btn-volt" href="#/treino/oferecer">${ic("plus")} Oferecer treino</a></div>`;
+      return;
+    }
+    const extra = t => t.meu_treino ? PAPEL_TAG.organizador : pedidoPill(t.meu_pedido);
+    /* com cidade, pace ou distância informados: os mais compatíveis primeiro */
+    if (compatTreino(lista[0], f) != null) {
+      out.innerHTML = `<p class="eyebrow compat-dica">${ic("run")}Mais compatíveis primeiro</p>`
+        + lista.map(t => ({ t, c: compatTreino(t, f) }))
+          .sort((a, b) => b.c - a.c || inicioTreino(a.t) - inicioTreino(b.t))
+          .map(({ t, c }) => treinoCard(t, { de: "procurar", comData: true, compat: c, extra: extra(t) })).join("");
       return;
     }
     let html = "", ultimo = "";
     lista.forEach(t => {
       if (t.data !== ultimo) { ultimo = t.data; html += diaTreinoHTML(t.data); }
-      html += treinoCard(t, { de: "procurar", extra: t.meu_treino ? PAPEL_TAG.organizador : pedidoPill(t.meu_pedido) });
+      html += treinoCard(t, { de: "procurar", extra: extra(t) });
     });
     out.innerHTML = html;
   };
   if (RESULTADO_TREINOS && RESULTADO_TREINOS.chave === chave) pintar(RESULTADO_TREINOS.lista);
   else out.innerHTML = `<p class="eyebrow carregando">Procurando treinos…</p>`;
-  sb.rpc("buscar_treinos", {
-    p_cidade: f.cidade || null, p_local: f.local || null, p_data: f.data || null, p_hora_de: f.hora || null,
-    p_pace_min: f.pace ? +f.pace - 30 : null, p_pace_max: f.pace ? +f.pace + 30 : null,
-    p_dist_min: dist[2], p_dist_max: dist[3]
-  }).then(({ data, error }) => {
+  /* cidade, pace e distância não escondem treino: viram a nota de compatibilidade */
+  sb.rpc("buscar_treinos", { p_local: f.local || null, p_data: f.data || null, p_hora_de: f.hora || null }).then(({ data, error }) => {
     if (!document.body.contains(out)) return;   // a tela já mudou
     if (error) { out.innerHTML = `<div class="note">${ic("alert")}<span>${esc(erroTreino(error))}</span></div>`; return; }
     RESULTADO_TREINOS = { chave, lista: data || [] };
@@ -4897,7 +4976,7 @@ route(/^\/treino\/meus$/, function vTreinoMeus(view, _, q, u) {
     const recebidas = organizo.filter(t => t.pendentes > 0);
     const semPedido = organizo.filter(t => !(t.pendentes > 0));
     const participo = futuros.filter(t => t.papel === "participante" && t.pedido === "aceito");
-    const enviadas = futuros.filter(t => t.papel === "participante" && (t.pedido === "pendente" || t.pedido === "recusado"));
+    const enviadas = futuros.filter(t => t.papel === "participante" && (t.pedido === "pendente" || t.pedido === "recusado" || t.pedido === "removido"));
     const historico = MEUS_TREINOS
       .filter(t => (!treinoFuturo(t) || t.status === "cancelado")
         && (t.papel === "organizador" || t.pedido === "aceito" || (t.status === "cancelado" && t.pedido === "pendente")))
@@ -4937,7 +5016,7 @@ route(/^\/treino\/meus$/, function vTreinoMeus(view, _, q, u) {
 const PEDIDOS_DECIDIDOS = new Set();
 let DECISAO_PENDENTE = null;
 const DESFAZER_MS = 4000;
-function ligarPilha(view, aoDecidir) {
+function ligarPilha(view, aoDecidir, aoTocar) {
   const card = $("#pcard", view); if (!card) return;
   const back = $(".pilha-pedidos .fcard.back", view);
   let x0 = 0, y0 = 0, dx = 0, dy = 0, down = false, moved = false, busy = false;
@@ -4976,7 +5055,8 @@ function ligarPilha(view, aoDecidir) {
   });
   card.addEventListener("pointerup", () => {
     if (!down) return; down = false;
-    if (moved && Math.abs(dx) > card.getBoundingClientRect().width * 0.28) decide(dx > 0 ? 1 : -1);
+    if (!moved) { setT(0, 0, false); if (aoTocar && card.dataset.nick) aoTocar(card.dataset.nick); return; }
+    if (Math.abs(dx) > card.getBoundingClientRect().width * 0.28) decide(dx > 0 ? 1 : -1);
     else setT(0, 0, true);
   });
   card.addEventListener("pointercancel", () => { down = false; setT(0, 0, true); });
@@ -5037,7 +5117,7 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
     if (t.sou_organizador || t.estou_confirmado) {
       /* perfil e chat de quem vai precisam dessas pessoas no cache, e o chat
          precisa saber que agora vocês treinam juntos */
-      const ids = [t.organizador && t.organizador.id, ...(t.participantes || []).map(x => x.id)].filter(Boolean);
+      const ids = [t.organizador && t.organizador.id, ...(t.participantes || []).map(x => x.id), ...pedidos.map(x => x.participante_id)].filter(Boolean);
       await Promise.all([carregarTreinos(), ids.some(x => !userById(x)) ? carregarPessoas() : null]);
     }
     return { t, pedidos };
@@ -5065,10 +5145,11 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
     else if (conf) acao = `<div class="state-ok">${ic("check")} Presença confirmada</div><button class="linkbtn small-link" type="button" id="trSair" style="color:var(--danger)">Desistir do treino</button>`;
     else if (t.meu_pedido === "pendente") acao = `<div class="state-ok espera">${ic("clock")} Pedido enviado · aguardando resposta</div><button class="linkbtn small-link" type="button" id="trDesistirPedido">Cancelar pedido</button>`;
     else if (t.meu_pedido === "recusado") acao = aviso("Quem organiza não aceitou seu pedido para este treino.");
+    else if (t.meu_pedido === "removido") acao = aviso("Quem organiza removeu você deste treino.");
     else if (t.aceite_automatico) acao = `<button class="btn btn-volt btn-block" type="button" id="trPedir">${ic("bolt")} Participar</button>
       <p class="privacy-note">Participação automática: você entra na hora, sem esperar aprovação. Ao entrar, você passa a ver quem organiza e o ponto de encontro, e quem vai passa a ver você.</p>`;
     else acao = `<button class="btn btn-volt btn-block" type="button" id="trPedir">${ic("run")} Solicitar participação</button>
-      <p class="privacy-note">Antes de aceitar, quem organiza vê só seu nível, se você gosta de conversar, sua mini biografia e seus hobbies, sem nome, foto ou @. O ponto de encontro e quem vai aparecem depois do aceite.</p>`;
+      <p class="privacy-note">Quem organiza recebe seu pedido junto com o seu perfil. Você só fica sabendo quem organiza, o ponto de encontro e quem vai depois do aceite.</p>`;
 
     const mapa = t.lat != null && t.lon != null
       ? `<a class="mapa" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(t.lat + "," + t.lon)}" target="_blank" rel="noopener">${ic("external")}Abrir no mapa</a>` : "";
@@ -5080,16 +5161,21 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
        vem por trás. Os já decididos nesta tela somem na hora, antes mesmo de o
        servidor confirmar (dá para desfazer por alguns segundos).            */
     const pilha = pendentes.filter(x => !PEDIDOS_DECIDIDOS.has(x.pedido_id));
-    const pedidoInner = x => `<div class="fbody pbody">
-        <span class="eyebrow">Pedido · ${fmtStamp(x.criado_em)}</span>
+    /* quem organiza vê quem pediu e abre o perfil tocando no card */
+    const pedidoInner = x => {
+      const p = x.participante_id ? (userById(x.participante_id) || { nick: x.nick, foto: x.foto }) : null;
+      return `<div class="fbody pbody">
+        ${p ? `<div class="pquem">${avatarHTML(p, "avatar av-xs")}<span class="who"><b>@${esc(p.nick)}</b><span class="eyebrow">Pedido · ${fmtStamp(x.criado_em)}</span></span></div>` : `<span class="eyebrow">Pedido · ${fmtStamp(x.criado_em)}</span>`}
         ${corredorTagsHTML(x)}
         ${x.bio ? `<p class="prose">${esc(x.bio)}</p>` : `<p class="muted" style="font-size:13.5px">Sem mini biografia.</p>`}
         ${hobbiesHTML(x.hobbies)}
+        ${p ? `<span class="eyebrow ptoque">${ic("user")}Toque para ver o perfil</span>` : ""}
       </div>`;
+    };
     const pilhaHTML = !pilha.length ? "" : `
       <div class="deck pilha-pedidos">
         ${pilha[1] ? `<article class="fcard back" aria-hidden="true">${pedidoInner(pilha[1])}</article>` : ""}
-        <article class="fcard" id="pcard" data-pedido="${pilha[0].pedido_id}" aria-label="Pedido de participação. Arraste para a direita para aceitar ou para a esquerda para recusar.">${pedidoInner(pilha[0])}<span class="stamp like">${ic("check")}Aceitar</span><span class="stamp nope">${ic("x")}Recusar</span></article>
+        <article class="fcard" id="pcard" data-pedido="${pilha[0].pedido_id}" data-nick="${esc(pilha[0].nick || "")}" aria-label="Pedido de participação. Arraste para a direita para aceitar ou para a esquerda para recusar.">${pedidoInner(pilha[0])}<span class="stamp like">${ic("check")}Aceitar</span><span class="stamp nope">${ic("x")}Recusar</span></article>
       </div>
       <p class="eyebrow pilha-dica">${pilha.length > 1 ? `1 de ${pilha.length} · ` : ""}direita aceita · esquerda recusa</p>
       <div class="fbtns pilha-acoes">
@@ -5100,7 +5186,7 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
       if (!pp) return "";
       if (pp.id === u.id) return `<div class="person-row">${avatarHTML(u, "avatar av-sm")}<span class="who"><b>@${esc(u.nick)}</b><span>${papel} · você</span></span></div>`;
       const x = userById(pp.id) || { nick: pp.nick, foto: pp.foto }, nick = encodeURIComponent(x.nick);
-      return `<div class="person-row">${avatarHTML(x, "avatar av-sm")}<a class="who" href="#/u/${nick}?de=treino:${t.id}" style="color:inherit;text-decoration:none"><b>@${esc(x.nick)}</b><span>${papel}</span></a>${chatAberto ? `<a class="btn btn-sm" href="#/chat/${nick}?de=treino:${t.id}" aria-label="Mandar mensagem para @${esc(x.nick)}">${ic("chat")}</a>` : ""}</div>`;
+      return `<div class="person-row">${avatarHTML(x, "avatar av-sm")}<a class="who" href="#/u/${nick}?de=treino:${t.id}" style="color:inherit;text-decoration:none"><b>@${esc(x.nick)}</b><span>${papel}</span></a>${chatAberto ? `<a class="btn btn-sm" href="#/chat/${nick}?de=treino:${t.id}" aria-label="Mandar mensagem para @${esc(x.nick)}">${ic("chat")}</a>` : ""}${org && pp.id !== u.id && papel !== "Organiza" && !cancelado ? `<button class="btn btn-sm" type="button" data-remover="${pp.id}" data-nick="${esc(x.nick)}" aria-label="Remover @${esc(x.nick)} do treino">${ic("x")}</button>` : ""}</div>`;
     };
     const quemVai = envolvido ? [pessoa(t.organizador, "Organiza"), ...(t.participantes || []).map(pp => pessoa(pp, "Presença confirmada"))].filter(Boolean) : [];
 
@@ -5121,6 +5207,8 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
           <div><dt>${ic("users")}Confirmados</dt><dd class="num">${t.confirmados || 0}</dd></div>
           <div class="wide"><dt>${ic("pin")}Ponto de encontro</dt>${ponto}</div>
         </dl>
+        ${envolvido || cancelado ? "" : `<p class="confirmados-linha">${ic("users")}<b class="num">${t.confirmados || 0}</b> ${(t.confirmados || 0) === 1 ? "pessoa confirmada" : "pessoas confirmadas"} neste treino</p>`}
+        ${konexoesTreinoHTML(t)}
         ${t.descricao ? `<div class="field"><span class="label">Sobre o treino</span><p class="prose">${esc(t.descricao)}</p></div>` : ""}
         ${acao}
         ${org && !cancelado && futuro ? `<div class="section-title"><h2 class="disp">Solicitações</h2><span class="eyebrow num">${pilha.length}</span></div>${pilha.length ? pilhaHTML : `<div class="empty sm"><p>${t.aceite_automatico ? "Participação automática ligada: quem pede já entra direto." : "Nenhuma solicitação esperando você."}</p></div>`}` : ""}
@@ -5158,7 +5246,13 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
       if (!(await confirmBox({ title: "Cancelar treino?", ok: "Cancelar treino", cancel: "Voltar", danger: true, text: "Quem pediu para participar e quem já foi aceito recebem um aviso. Não dá para desfazer." }))) return;
       rodar(b, "cancelar_treino", { p_treino: t.id }, "Treino cancelado.");
     });
-    ligarPilha(view, (pedidoId, aceitar) => decidirPedido(pedidoId, aceitar, aposDecisao));
+    $$("[data-remover]", view).forEach(b => b.addEventListener("click", async () => {
+      const nick = b.dataset.nick;
+      if (!(await confirmBox({ title: "Remover do treino?", ok: "Remover", cancel: "Voltar", danger: true, text: `<b>@${esc(nick)}</b> recebe um aviso, deixa de ver o ponto de encontro e o chat do treino, e não pode pedir para entrar de novo.` }))) return;
+      rodar(b, "remover_participante", { p_treino: t.id, p_participante: b.dataset.remover }, `@${nick} saiu do treino.`);
+    }));
+    ligarPilha(view, (pedidoId, aceitar) => decidirPedido(pedidoId, aceitar, aposDecisao),
+      nick => go("/u/" + encodeURIComponent(nick) + "?de=treino:" + t.id));
   }
   /* depois de decidir um pedido da pilha: redesenha na hora com o que já está
      em memória; quando o servidor grava, recarrega de verdade */
