@@ -805,6 +805,8 @@ button.state-ok{width:100%;background:none;font:inherit;font-weight:800;cursor:p
 .conf-bloco{display:flex;flex-direction:column;align-items:flex-start;gap:0;margin-right:auto;min-width:0}
 .conf-bloco .kon-linha{min-height:26px}
 .pilha-pedidos.alta{min-height:340px}
+.edicao-link{align-self:flex-start;gap:6px;min-height:36px;font-size:13px;color:var(--ink-2)}
+.edicao-link .i{width:15px;height:15px}
 .kon-linha{position:relative;z-index:2;display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:30px;font-size:12.5px;font-weight:650;color:var(--volt-text);text-align:left}
 .kon-linha .i{width:14px;height:14px;flex:none}
 .confirmados-linha{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--ink-2)}
@@ -1260,10 +1262,11 @@ async function carregarNotificacoes() {
   if (!sb || !CURRENT) return;
   const pedir = colunas => sb.from("notifications").select(colunas)
     .order("criado_em", { ascending: false }).limit(50);
-  let { data, error } = await pedir("id, para, tipo, de, criado_em, lida, treino_id, resumo");
+  let { data, error } = await pedir("id, para, tipo, de, criado_em, lida, treino_id, resumo, treino_edicao_id");
+  if (error) ({ data, error } = await pedir("id, para, tipo, de, criado_em, lida, treino_id, resumo"));   // banco ainda sem o SQL 19
   if (error) ({ data, error } = await pedir("id, para, tipo, de, criado_em, lida"));   // banco ainda sem a etapa C
   if (error || !data) return;
-  DB.notifs = data.map(n => ({ id: n.id, para: n.para, tipo: n.tipo, de: n.de, t: n.criado_em, lida: n.lida, treino: n.treino_id || null, resumo: n.resumo || "" }));
+  DB.notifs = data.map(n => ({ id: n.id, para: n.para, tipo: n.tipo, de: n.de, t: n.criado_em, lida: n.lida, treino: n.treino_id || null, resumo: n.resumo || "", edicao: n.treino_edicao_id || null }));
   DB.save();
 }
 
@@ -2597,8 +2600,18 @@ route(/^\/corrida\/([\w-]+)$/, function vRace(view, [id], q, u) {
     <div class="cover top">${bibHTML(r, true)}
       <div class="cover-bar"><a class="glassbtn" href="${esc(back)}" aria-label="Voltar">${ic("back")}</a>${st !== "publicada" ? stPill(st) : ""}</div>
     </div>
-    <article class="detail">${raceBodyHTML(r, u)}${edicaoRodapeHTML(r, u)}${botaoDenunciar("Denunciar corrida", "denCorrida")}</article>`;
+    <article class="detail">${raceBodyHTML(r, u)}${edicaoRodapeHTML(r, u)}${isAdmin(u) && r.status !== "excluida" ? `<button class="btn btn-block btn-outline-danger" type="button" id="excluirCorrida">${ic("trash")} Excluir corrida</button>` : ""}${botaoDenunciar("Denunciar corrida", "denCorrida")}</article>`;
   ligarEdicaoRodape(view, r);
+  /* admin exclui direto da página — o caminho mais curto a partir de uma denúncia */
+  const excluir = $("#excluirCorrida", view);
+  if (excluir) excluir.addEventListener("click", async () => {
+    const ok = await confirmBox({ title: "Excluir corrida?", danger: true, ok: "Excluir", text: `<b>${esc(r.nome)}</b> sai do feed para todos os perfis e fica ${EXCLUIDA_DIAS} dias em Solicitações › Excluídas, onde dá para restaurar.` });
+    if (!ok) return;
+    excluir.disabled = true;
+    if (!(await excludeRace(r, u, "", "admin"))) { excluir.disabled = false; return; }
+    toast(`Corrida excluída. Dá para restaurar por ${EXCLUIDA_DIAS} dias.`);
+    go(from === "sol" ? "/solicitacoes?ver=aprovar" : back.replace(/^#/, ""));   // de volta às denúncias
+  });
   const denCorrida = $("#denCorrida", view);
   if (denCorrida) denCorrida.addEventListener("click", () => denunciar("corrida", r.id, { oque: "com esta corrida" }));
 }, { tab: "feed" });
@@ -3799,7 +3812,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
   /* quem vai treinar junto conversa sem Konexão (até o fim do dia do treino) */
   const treinam = PARCEIROS.has(p.id) && !(c && c.status === "ativa");
   let action;
-  if (c && c.status === "ativa") action = `<a class="btn btn-volt btn-block" href="#/chat/${encodeURIComponent(p.nick)}?de=u">${ic("chat")} Mandar mensagem</a><div class="state-ok">${ic("check")} Vocês estão konectados</div><button class="linkbtn" type="button" id="kUndo" style="align-self:center;font-size:13px;color:var(--danger)">Desfazer konexão</button>`;
+  if (c && c.status === "ativa") action = `<a class="btn btn-volt btn-block" href="#/chat/${encodeURIComponent(p.nick)}?de=u">${ic("chat")} Mandar mensagem</a><button class="state-ok" type="button" id="kUndo" aria-label="Vocês estão konectados. Toque para desfazer a konexão">${ic("check")} Vocês estão konectados</button>`;
   else if (c && c.de === u.id) action = `<div class="state-ok" style="border-color:var(--line-2);color:var(--ink-2)">${ic("clock")} Pedido enviado. @${esc(p.nick)} precisa aprovar</div><button class="linkbtn" type="button" id="kCancel" style="align-self:center;font-size:13px">Cancelar pedido</button>`;
   else if (c) action = `<p class="muted" style="text-align:center">@${esc(p.nick)} quer se konectar com você.</p><div class="btn-row"><button class="btn" type="button" id="kDeny">Recusar</button><button class="btn btn-volt" type="button" id="kAccept">${ic("check")} Aceitar</button></div>`;
   else action = `<button class="btn ${treinam ? "" : "btn-volt "}btn-block" type="button" id="kGo">${ic("link")} Konectar</button><p class="eyebrow" style="text-align:center">@${esc(p.nick)} precisa aprovar o pedido</p>`;
@@ -3849,7 +3862,7 @@ route(/^\/u\/([^/]+)$/, function vUser(view, [nickEnc], q, u) {
   on("kAccept", async () => { if (await acceptConn(c, u)) { render(); toast(`Konectado com @${p.nick}.`); } });
   on("kDeny", async () => { if (await removeConn(c)) { render(); toast("Pedido recusado."); } });
   on("kUndo", async () => {
-    const ok = await confirmBox({ title: "Desfazer konexão?", ok: "Desfazer", danger: true, text: `Você e <b>@${esc(p.nick)}</b> deixam de aparecer nas Konexões um do outro.` });
+    const ok = await confirmBox({ title: "Desfazer konexão?", ok: "Desfazer", danger: true, text: `Você deseja desfazer a konexão com <b>@${esc(p.nick)}</b>? Vocês deixam de aparecer nas Konexões um do outro.` });
     if (!ok) return;
     if (await removeConn(c)) { render(); toast("Konexão desfeita."); }
   });
@@ -4729,11 +4742,13 @@ const AVISO_TREINO = {
   treino_cancelado: () => "Treino cancelado",
   treino_desistencia: p => `@${p ? p.nick : "alguém"} desistiu do treino`,
   treino_entrada: p => `@${p ? p.nick : "alguém"} entrou no seu treino`,
-  treino_removido: () => "Você foi removido de um treino"
+  treino_removido: () => "Você foi removido de um treino",
+  treino_editado: p => `@${p ? p.nick : "Quem organiza"} editou o treino`
 };
 function avisoTreinoHTML(n, p, nova) {
   const titulo = (AVISO_TREINO[n.tipo] || (() => "Novidade de treino"))(p);
-  const href = n.treino ? `#/treino/${n.treino}?de=notif` : "#/treino/meus";
+  /* aviso de edição abre o treino já com o antes e depois daquela edição */
+  const href = n.treino ? `#/treino/${n.treino}?de=notif${n.edicao ? "&edicao=" + n.edicao : ""}` : "#/treino/meus";
   const av = p ? avatarHTML(p, "avatar av-sm") : `<span class="avatar av-sm">${ic("run")}</span>`;
   return `<a class="person-row" href="${href}">${av}<span class="who"><b>${esc(titulo)}</b><span>${n.resumo ? esc(n.resumo) + " · " : ""}${fmtStamp(n.t)}</span></span>${nova}</a>`;
 }
@@ -4836,8 +4851,25 @@ route(/^\/treino$/, function vTreinoProcurar(view, _, q, u) {
 /* ---------- Oferecer ---------- */
 const RASCUNHO_TREINO = "kohe.treinoRascunho";
 route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
-  const d = Object.assign({ cidade: "", local: "", ponto: "", lat: null, lon: null, data: "", hora: "", pace: "", dist: "", desc: "", auto: false }, SS.get(RASCUNHO_TREINO) || {});
-  const guardar = () => SS.set(RASCUNHO_TREINO, d);
+  /* ?editar=<id>: o mesmo formulário edita um treino já publicado. Só quem
+     organiza, e só antes do horário de início (o banco confere as duas coisas). */
+  const editId = q.get("editar");
+  const base = editId && DETALHE_TREINO[editId] ? DETALHE_TREINO[editId].t : null;
+  if (editId && !(base && base.sou_organizador)) {
+    view.innerHTML = `${subHead("Editar treino", "#/treino/" + encodeURIComponent(editId) + "?de=meus", "Treino")}<section class="page"><p class="eyebrow carregando">Carregando treino…</p></section>`;
+    sb.rpc("detalhe_treino", { p_treino: editId }).then(({ data, error }) => {
+      if (!location.hash.includes("editar=" + editId)) return;
+      if (error || !data || !data.sou_organizador) { toast(error ? erroTreino(error) : "Só quem organiza pode editar este treino.", true); redirect("/treino/" + editId + "?de=meus"); return; }
+      DETALHE_TREINO[editId] = Object.assign({ pedidos: [], edicoes: [] }, DETALHE_TREINO[editId], { t: data });
+      vTreinoOferecer(view, _, q, u);
+    });
+    return;
+  }
+  if (editId && (base.status !== "ativo" || !treinoFuturo(base))) { toast("Esse treino não pode mais ser editado.", true); return redirect("/treino/" + editId + "?de=meus"); }
+  const chaveRascunho = editId ? "kohe.treinoEdicao." + editId : RASCUNHO_TREINO;
+  const doTreino = t => ({ cidade: t.cidade, local: t.local, ponto: t.ponto_encontro || "", lat: t.lat ?? null, lon: t.lon ?? null, data: t.data, hora: horaTreino(t), pace: String(t.pace_seg), dist: kmTreino(t), desc: t.descricao || "", auto: !!t.aceite_automatico });
+  const d = Object.assign({ cidade: "", local: "", ponto: "", lat: null, lon: null, data: "", hora: "", pace: "", dist: "", desc: "", auto: false }, base ? doTreino(base) : {}, SS.get(chaveRascunho) || {});
+  const guardar = () => SS.set(chaveRascunho, d);
   const coletar = () => {
     ["cidade", "local", "ponto", "data", "hora", "pace", "dist", "desc"].forEach(k => {
       const el = document.getElementById("tr_" + k); if (el) d[k] = el.value.trim();
@@ -4848,9 +4880,9 @@ route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
   const privacidadeTxt = auto => auto
     ? "Na busca aparecem só local, data, horário, pace e distância. Com a participação automática, quem pedir entra na hora e já vê quem você é e o ponto de encontro."
     : "Na busca aparecem só local, data, horário, pace e distância. Quem você é, o ponto de encontro e a localização ficam visíveis apenas para quem você aceitar.";
-  view.innerHTML = `${treinoTopo()}
+  view.innerHTML = `${editId ? subHead("Editar treino", "#/treino/" + editId + "?de=meus", "Treino") : treinoTopo()}
     <section class="page">
-      ${treinoAbas("oferecer")}
+      ${editId ? `<p class="privacy-note">Quem já está confirmado recebe um aviso com o antes e depois do que você mudar.</p>` : treinoAbas("oferecer")}
       <form class="form" id="trForm" novalidate>
         ${F({ id: "tr_cidade", label: "Cidade", value: d.cidade, wrap: "city", ph: "Comece a digitar", err: "Informe a cidade." })}
         ${F({ id: "tr_local", label: "Local do treino", value: d.local, ph: "Ex.: Parque Taquaral", attrs: 'maxlength="60" autocapitalize="words"', hint: "Aparece na busca. Use o nome de um lugar público.", err: "Informe o local do treino." })}
@@ -4879,7 +4911,7 @@ route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
           </div>
         </div>
         <div class="lock-card" id="tr_privacidade">${ic("lock")}<span>${privacidadeTxt(d.auto)}</span></div>
-        <button class="btn btn-volt btn-block" type="submit">Publicar treino ${ic("arrow")}</button>
+        <button class="btn btn-volt btn-block" type="submit">${editId ? `${ic("check")} Salvar alterações` : `Publicar treino ${ic("arrow")}`}</button>
       </form>
     </section>`;
 
@@ -4936,6 +4968,22 @@ route(/^\/treino\/oferecer$/, function vTreinoOferecer(view, _, q, u) {
     if (!d.dist) bad("tr_dist");
     else if (!(km > 0 && km <= 100)) bad("tr_dist", "Use um valor entre 0,1 e 100 km.");
     if (goFirstBad(view)) return;
+    if (editId) {
+      const btnE = $("button[type=submit]", form); btnE.disabled = true;
+      const cidadeE = findCity(d.cidade);
+      const { data: res, error } = await sb.rpc("editar_treino", { p_treino: editId, p_dados: {
+        cidade: cidadeE ? cidadeE.n : d.cidade, local: d.local, ponto_encontro: d.ponto || null, lat: d.lat, lon: d.lon,
+        data: d.data, hora: d.hora, pace_seg: +d.pace, distancia_km: Math.round(km * 100) / 100,
+        descricao: d.desc || null, aceite_automatico: !!d.auto } });
+      if (error) { btnE.disabled = false; toast("Não deu para salvar: " + erroTreino(error), true); return; }
+      clearTimeout(vTreinoOferecer.t); SS.del(chaveRascunho);
+      delete DETALHE_TREINO[editId];
+      await carregarTreinos();
+      const n = (res && res.avisados) || 0;
+      toast(!res || !res.edicao_id ? "Nada mudou no treino." : n ? `Treino atualizado. ${n === 1 ? "1 confirmado foi avisado" : `${n} confirmados foram avisados`}.` : "Treino atualizado.");
+      go("/treino/" + editId + "?de=meus");
+      return;
+    }
     if (!temPerfilCorredor(u) && !(await pedirPerfilCorredor(u, "oferecer"))) return;
     const btn = $("button[type=submit]", form); btn.disabled = true;
     const cidade = findCity(d.cidade);
@@ -5084,6 +5132,33 @@ function mostrarDesfazer(texto, desfazer) {
 function esconderDesfazer() { const el = $("#desfazer"); if (el) el.hidden = true; }
 window.addEventListener("pagehide", confirmarDecisaoPendente);
 
+/* ---------- antes e depois de uma edição de treino ---------- */
+const ROTULO_TREINO = { data: "Data", hora: "Horário", cidade: "Cidade", local: "Local", ponto_encontro: "Ponto de encontro", lat: "Localização no mapa", pace_seg: "Pace previsto", distancia_km: "Distância", descricao: "Descrição", aceite_automatico: "Participação automática" };
+function valorTreinoHTML(k, lado) {
+  const v = k === "lat" ? ("lat" in lado ? lado.lat : lado.lon) : lado[k];
+  if (v === null || v === undefined || v === "") return k === "lat" ? "Sem localização" : "—";
+  switch (k) {
+    case "data": return esc(fmtLong(String(v)));
+    case "hora": return esc(String(v).slice(0, 5));
+    case "pace_seg": return `${paceTxt(Number(v))} /km`;
+    case "distancia_km": return `${kmTxt(Math.round(Number(v) * 100) / 100)} km`;
+    case "aceite_automatico": return v ? "Ligada" : "Desligada";
+    case "lat": return lado.lat != null && lado.lon != null
+      ? `Marcada · <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lado.lat + "," + lado.lon)}" target="_blank" rel="noopener">abrir</a>` : "Marcada no mapa";
+    default: return esc(String(v));
+  }
+}
+function mudancasTreinoHTML(ed) {
+  const chaves = new Set(Object.keys(ed.depois || {}).map(k => k === "lon" ? "lat" : k));
+  const campos = Object.keys(ROTULO_TREINO).filter(k => chaves.has(k));
+  if (!campos.length) return "";
+  return `<div class="group mudancas"><span class="eyebrow">Editado em ${quandoTxt(ed.criado_em)} · o que mudou</span>${campos.map(k => `
+    <div class="mudanca"><b>${ROTULO_TREINO[k]}</b>
+      <div class="lado antes"><span class="eyebrow">Antes</span><div>${valorTreinoHTML(k, ed.antes || {})}</div></div>
+      <div class="lado depois"><span class="eyebrow">Depois</span><div>${valorTreinoHTML(k, ed.depois || {})}</div></div>
+    </div>`).join("")}</div>`;
+}
+
 /* ---------- detalhe do treino ---------- */
 const DETALHE_TREINO = {};   // id -> { t, pedidos }: redesenha na hora enquanto recarrega
 route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})$/, function vTreinoDetalhe(view, [id], q, u) {
@@ -5098,7 +5173,7 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
     const { data: t, error } = await sb.rpc("detalhe_treino", { p_treino: id });
     if (error) return { erro: erroTreino(error) };
     if (!t) return { t: null };
-    let pedidos = [];
+    let pedidos = [], edicoes = [];
     if (t.sou_organizador) {
       const r = await sb.rpc("pedidos_do_treino", { p_treino: id });
       if (!r.error) pedidos = r.data || [];
@@ -5107,9 +5182,11 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
       /* perfil e chat de quem vai precisam dessas pessoas no cache, e o chat
          precisa saber que agora vocês treinam juntos */
       const ids = [t.organizador && t.organizador.id, ...(t.participantes || []).map(x => x.id), ...pedidos.map(x => x.participante_id)].filter(Boolean);
-      await Promise.all([carregarTreinos(), ids.some(x => !userById(x)) ? carregarPessoas() : null]);
+      const [, , ed] = await Promise.all([carregarTreinos(), ids.some(x => !userById(x)) ? carregarPessoas() : null,
+        sb.from("treino_edicoes").select("id, antes, depois, criado_em").eq("treino_id", id).order("criado_em", { ascending: false }).limit(20)]);
+      if (ed && !ed.error) edicoes = ed.data || [];
     }
-    return { t, pedidos };
+    return { t, pedidos, edicoes };
   }
   async function atualizar() {
     const r = await buscar();
@@ -5118,7 +5195,7 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
     renderChrome({ tab: aba }, u);
     const sc = view.scrollTop; pintar(r); view.scrollTop = sc;
   }
-  function pintar({ t, pedidos = [], erro }) {
+  function pintar({ t, pedidos = [], edicoes = [], erro }) {
     if (erro) { view.innerHTML = `${topo()}<section class="page"><div class="note">${ic("alert")}<span>${esc(erro)}</span></div></section>`; return; }
     if (!t) { view.innerHTML = notFoundHTML("Treino não encontrado", "Esse endereço não leva a nenhum treino.", "#/treino", "Procurar treinos"); return; }
     const km = kmTreino(t), futuro = treinoFuturo(t), cancelado = t.status === "cancelado";
@@ -5126,6 +5203,13 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
     const chatAberto = !cancelado && t.data >= ymd(new Date());   // a regra do banco vale até o fim do dia
     const pendentes = pedidos.filter(x => x.status === "pendente");
     const aviso = txt => `<div class="note">${ic("alert")}<span>${txt}</span></div>`;
+    /* edição feita por quem organiza: vindo do aviso, o antes e depois já aparece
+       aberto; senão, fica a linha "Editado em … · ver o que mudou" */
+    const edicaoPedida = q.get("edicao") ? edicoes.find(e => e.id === q.get("edicao")) : null;
+    const ultimaEdicao = edicoes[0];
+    const blocoEdicao = !envolvido || !ultimaEdicao ? ""
+      : edicaoPedida ? mudancasTreinoHTML(edicaoPedida)
+      : `<button class="linkbtn edicao-link" type="button" id="trVerEdicao">${ic("edit")}Editado em ${quandoTxt(ultimaEdicao.criado_em)} · ver o que mudou</button>`;
 
     let acao;
     if (cancelado) acao = aviso(org ? "Você cancelou este treino." : "Este treino foi cancelado.");
@@ -5192,6 +5276,7 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
             <span class="komunidade-line">${ic("pin")}${esc(t.cidade)}</span>
           </div>
         </div>
+        ${blocoEdicao}
         <dl class="dl">
           <div><dt>${ic("clock")}Horário</dt><dd class="num">${horaTreino(t)}</dd></div>
           <div><dt>${ic("bolt")}Pace previsto</dt><dd class="num">${paceTxt(t.pace_seg)} /km</dd></div>
@@ -5205,7 +5290,11 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
         ${org && !cancelado && futuro ? `<div class="section-title"><h2 class="disp">Solicitações</h2><span class="eyebrow num">${pilha.length}</span></div>${pilha.length ? pilhaHTML : `<div class="empty sm"><p>${t.aceite_automatico ? "Participação automática ligada: quem pede já entra direto." : "Nenhuma solicitação esperando você."}</p></div>`}` : ""}
         ${envolvido ? `<a class="btn btn-block" href="#/treino/${t.id}/chat">${ic("chat")} Chat do treino${cancelado || !futuro ? " · encerrado" : ""}</a>` : ""}
         ${quemVai.length ? `<div class="section-title"><h2 class="disp">Quem vai</h2><span class="eyebrow num">${quemVai.length}</span></div><div class="rows">${quemVai.join("")}</div>` : ""}
-        ${org && !cancelado && futuro ? `<button class="linkbtn small-link" type="button" id="trCancelar" style="color:var(--danger)">Cancelar treino</button>` : ""}
+        ${org && !cancelado && futuro ? `<div class="edicao-rodape">
+          <a class="icon-btn" href="#/treino/oferecer?editar=${t.id}" id="trEditar" aria-label="Editar treino">${ic("edit")}</a>
+          <span class="eyebrow">Editar · quem está confirmado recebe um aviso</span>
+        </div>
+        <button class="linkbtn small-link" type="button" id="trCancelar" style="color:var(--danger)">Cancelar treino</button>` : ""}
         ${org ? "" : botaoDenunciar("Denunciar treino", "trDenunciar")}
       </section>`;
 
@@ -5243,13 +5332,15 @@ route(/^\/treino\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})
       rodar(b, "cancelar_pedido_treino", { p_treino: t.id }, "Você saiu do treino.");
     });
     ao("#trDenunciar", () => denunciar("treino", t.id, { oque: "com este treino" }));
+    ao("#trEditar", () => { SS.del("kohe.treinoEdicao." + t.id); });   // começa do treino atual, não de um rascunho velho
+    ao("#trVerEdicao", () => openSheet(`<div class="sheet-head"><h2 class="disp">Treino editado</h2><button class="icon-btn" type="button" data-close aria-label="Fechar">${ic("x")}</button></div>${mudancasTreinoHTML(ultimaEdicao)}`));
     ao("#trCancelar", async b => {
       if (!(await confirmBox({ title: "Cancelar treino?", ok: "Cancelar treino", cancel: "Voltar", danger: true, text: "Quem pediu para participar e quem já foi aceito recebem um aviso. Não dá para desfazer." }))) return;
       rodar(b, "cancelar_treino", { p_treino: t.id }, "Treino cancelado.");
     });
     $$("[data-remover]", view).forEach(b => b.addEventListener("click", async () => {
       const nick = b.dataset.nick;
-      if (!(await confirmBox({ title: "Remover do treino?", ok: "Remover", cancel: "Voltar", danger: true, text: `<b>@${esc(nick)}</b> recebe um aviso, deixa de ver o ponto de encontro e o chat do treino, e não pode pedir para entrar de novo.` }))) return;
+      if (!(await confirmBox({ title: "Remover do treino?", ok: "Remover", cancel: "Voltar", danger: true, text: `<b>@${esc(nick)}</b> recebe um aviso, deixa de ver o ponto de encontro e o chat do treino, e só volta se pedir de novo com uma justificativa e você aceitar.` }))) return;
       rodar(b, "remover_participante", { p_treino: t.id, p_participante: b.dataset.remover }, `@${nick} saiu do treino.`);
     }));
     ligarPilha(view, (pedidoId, aceitar) => decidirPedido(pedidoId, aceitar, aposDecisao),
